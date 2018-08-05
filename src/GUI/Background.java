@@ -17,15 +17,15 @@ public class Background extends JPanel{
     private void init() throws Exception{
         this.background = ImageIO.read(new File("/Users/cirun/Documents/admin/code/java/project/src/GUI/assets/background.png"));
         this.setLayout(null);
-        this.setPreferredSize(new Dimension(1100,700));
+        this.setPreferredSize(new Dimension(1024, 768));
 
         chessboard = new Chessboard();
-        chessboard.setBounds(283,67,535,536);
+        chessboard.setBounds(245,117,535,536);
         this.add(chessboard);
     }
 
     @Override
-    protected void paintComponent(Graphics g){
+    public void paintComponent(Graphics g){
         g.drawImage(background,0,0,null);
     }
 

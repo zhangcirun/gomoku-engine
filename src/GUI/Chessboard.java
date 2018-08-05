@@ -4,6 +4,7 @@ import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 import java.awt.image.BufferedImage;
 import java.io.File;
 
@@ -13,6 +14,8 @@ public class Chessboard extends JPanel {
     private int Y_OFFSET = 25;
     private int BOARD_WIDTH;  //535 px
     private int BOARD_HETGHT; //536 px
+    private int targetX = 0;
+    private int targetY = 0;
     private double TILE_WIDTH;   //about 35 px
     private boolean isBlack = true;
     private int chess[][];
@@ -20,6 +23,7 @@ public class Chessboard extends JPanel {
     private BufferedImage board;
     private BufferedImage black;
     private BufferedImage white;
+    private BufferedImage target;
 
     public Chessboard() throws  Exception{
         init();
@@ -29,35 +33,70 @@ public class Chessboard extends JPanel {
         this.board = ImageIO.read(new File("/Users/cirun/Documents/admin/code/java/project/src/GUI/assets/chessboard.jpg"));
         this.black = ImageIO.read(new File("/Users/cirun/Documents/admin/code/java/project/src/GUI/assets/black.png"));
         this.white = ImageIO.read(new File("/Users/cirun/Documents/admin/code/java/project/src/GUI/assets/white.png"));
+        this.target = ImageIO.read(new File("/Users/cirun/Documents/admin/code/java/project/src/GUI/assets/target.png"));
         BOARD_WIDTH = board.getWidth();
         BOARD_HETGHT = board.getHeight();
         this.setPreferredSize(new Dimension(BOARD_WIDTH, BOARD_HETGHT));
         TILE_WIDTH = BOARD_WIDTH / TILE_NUM;
         chess = new int[TILE_NUM][TILE_NUM]; // 0 for empty 1 black -1 white
-        System.out.println(TILE_WIDTH);
-        enter();
+        addActionListener();
 
     }
 
-    private void enter(){
+    private void addActionListener(){
         this.addMouseListener(new MouseAdapter(){
             @Override
-            public void mouseClicked(MouseEvent e){
+            public void mouseClicked(MouseEvent e) {
 
-                int xArrayPosition =  (int)Math.round((e.getX() - X_OFFSET) / TILE_WIDTH);
-                int yArrayPosition =   (int)Math.round((e.getY() - Y_OFFSET) / TILE_WIDTH);
+                int xArrayPosition = (int) Math.round((e.getX() - X_OFFSET) / TILE_WIDTH);
+                int yArrayPosition = (int) Math.round((e.getY() - Y_OFFSET) / TILE_WIDTH);
+
+
                 //add to array
-                chess[xArrayPosition][yArrayPosition] = isBlack? 1 : -1;
-                //reverse the flag
-                isBlack = !isBlack;
-                repaint();
+                if (validateArrayPosition(xArrayPosition) && validateArrayPosition(yArrayPosition)
+                        && chess[xArrayPosition][yArrayPosition] == 0)
+                {
+                    chess[xArrayPosition][yArrayPosition] = isBlack ? 1 : -1;
+                    System.out.println("placing");
+                    //reverse the flag
+                    isBlack = !isBlack;
+
+                    repaint();
+                }
+
+            }
+            @Override
+            public void mouseExited(MouseEvent e){
+                    targetX = -50;
+                    targetY = -50;
+                    repaint();
             }
         });
+
+        this.addMouseMotionListener(new MouseMotionAdapter() {
+            @Override
+            public void mouseMoved(MouseEvent e) {
+                 int targetArrayX = (int) Math.round((e.getX() - X_OFFSET) / TILE_WIDTH);
+                 int targetArrayY = (int) Math.round((e.getY() - Y_OFFSET) / TILE_WIDTH);
+                 if(validateArrayPosition(targetArrayX) && validateArrayPosition(targetArrayY)){
+                     int newTargetX = (int)(targetArrayX * TILE_WIDTH);
+                     int newTargetY = (int)(targetArrayY * TILE_WIDTH);
+
+                     if(newTargetX != targetX || newTargetY != targetY){
+                         targetX = newTargetX;
+                         targetY = newTargetY;
+                         repaint();
+                     }
+                 }
+            }
+        });
+
     }
 
     @Override
     public void paint(Graphics g){
         g.drawImage(board, 0, 0, null);
+        g.drawImage(target, targetX + 4, targetY + 3, null);
 
         for(int i = 0; i < TILE_NUM; i++){
             for(int j = 0; j < TILE_NUM; j++){
@@ -69,5 +108,9 @@ public class Chessboard extends JPanel {
                 }
             }
         }
+    }
+
+    private boolean validateArrayPosition(int arrayPosition){
+        return arrayPosition >= 0 && arrayPosition <= 14;
     }
 }
