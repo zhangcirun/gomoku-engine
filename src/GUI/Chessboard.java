@@ -21,12 +21,17 @@ public class Chessboard extends JPanel {
     private BufferedImage black;
     private BufferedImage white;
 
-    public void init() throws Exception{
+    public Chessboard() throws  Exception{
+        init();
+    }
+
+    private void init() throws Exception{
         this.board = ImageIO.read(new File("/Users/cirun/Documents/admin/code/java/project/src/GUI/assets/chessboard.jpg"));
         this.black = ImageIO.read(new File("/Users/cirun/Documents/admin/code/java/project/src/GUI/assets/black.png"));
         this.white = ImageIO.read(new File("/Users/cirun/Documents/admin/code/java/project/src/GUI/assets/white.png"));
         BOARD_WIDTH = board.getWidth();
         BOARD_HETGHT = board.getHeight();
+        this.setPreferredSize(new Dimension(BOARD_WIDTH, BOARD_HETGHT));
         TILE_WIDTH = BOARD_WIDTH / TILE_NUM;
         chess = new int[TILE_NUM][TILE_NUM]; // 0 for empty 1 black -1 white
         System.out.println(TILE_WIDTH);
