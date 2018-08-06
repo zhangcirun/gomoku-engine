@@ -1,4 +1,4 @@
-package GUI;
+package gui;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -15,12 +15,12 @@ public class Background extends JPanel{
     }
 
     private void init() throws Exception{
-        this.background = ImageIO.read(new File("/Users/cirun/Documents/admin/code/java/project/src/GUI/assets/background.png"));
+        this.background = ImageIO.read(new File("/Users/cirun/Documents/admin/code/java/project/src/gui/assets/backgroundAutumn.jpg"));
         this.setLayout(null);
-        this.setPreferredSize(new Dimension(1024, 768));
+        this.setPreferredSize(new Dimension(1024, 576));
 
         chessboard = new Chessboard();
-        chessboard.setBounds(245,117,535,536);
+        chessboard.setBounds(245,12,535,536);
         this.add(chessboard);
     }
 

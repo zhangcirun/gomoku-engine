@@ -1,4 +1,6 @@
-package GUI;
+package gui;
+import controller.GomokuController;
+
 import javax.swing.*;
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -9,11 +11,11 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 
 public class Chessboard extends JPanel {
-    private int TILE_NUM = 15;
+    public static int TILE_NUM = 15;
     private int X_OFFSET  = 24;
     private int Y_OFFSET = 25;
     private int BOARD_WIDTH;  //535 px
-    private int BOARD_HETGHT; //536 px
+    private int BOARD_HEIGHT; //536 px
     private int targetX = 0;
     private int targetY = 0;
     private double TILE_WIDTH;   //about 35 px
@@ -25,20 +27,25 @@ public class Chessboard extends JPanel {
     private BufferedImage white;
     private BufferedImage target;
 
+    private GomokuController controller;
+
     public Chessboard() throws  Exception{
         init();
     }
 
     private void init() throws Exception{
-        this.board = ImageIO.read(new File("/Users/cirun/Documents/admin/code/java/project/src/GUI/assets/chessboard.jpg"));
-        this.black = ImageIO.read(new File("/Users/cirun/Documents/admin/code/java/project/src/GUI/assets/black.png"));
-        this.white = ImageIO.read(new File("/Users/cirun/Documents/admin/code/java/project/src/GUI/assets/white.png"));
-        this.target = ImageIO.read(new File("/Users/cirun/Documents/admin/code/java/project/src/GUI/assets/target.png"));
-        BOARD_WIDTH = board.getWidth();
-        BOARD_HETGHT = board.getHeight();
-        this.setPreferredSize(new Dimension(BOARD_WIDTH, BOARD_HETGHT));
-        TILE_WIDTH = BOARD_WIDTH / TILE_NUM;
-        chess = new int[TILE_NUM][TILE_NUM]; // 0 for empty 1 black -1 white
+        this.board = ImageIO.read(new File("/Users/cirun/Documents/admin/code/java/project/src/gui/assets/chessboard.jpg"));
+        this.black = ImageIO.read(new File("/Users/cirun/Documents/admin/code/java/project/src/gui/assets/black.png"));
+        this.white = ImageIO.read(new File("/Users/cirun/Documents/admin/code/java/project/src/gui/assets/white.png"));
+        this.target = ImageIO.read(new File("/Users/cirun/Documents/admin/code/java/project/src/gui/assets/target.png"));
+        this.BOARD_WIDTH = board.getWidth();
+        this.BOARD_HEIGHT = board.getHeight();
+        this.setPreferredSize(new Dimension(BOARD_WIDTH, BOARD_HEIGHT));
+        this.TILE_WIDTH = BOARD_WIDTH / TILE_NUM;
+
+        this.chess = new int[TILE_NUM][TILE_NUM]; // 0 for empty 1 black -1 white
+
+        this.controller = new GomokuController();
         addActionListener();
 
     }
@@ -61,7 +68,11 @@ public class Chessboard extends JPanel {
                     //reverse the flag
                     isBlack = !isBlack;
 
+                    //repaint the chessboard GUI
                     repaint();
+                    if(controller.isFiveInLine(chess, xArrayPosition, yArrayPosition)){
+                        System.out.println("WIN!!");
+                    }
                 }
 
             }
@@ -110,7 +121,7 @@ public class Chessboard extends JPanel {
         }
     }
 
-    private boolean validateArrayPosition(int arrayPosition){
+    public static boolean validateArrayPosition(int arrayPosition){
         return arrayPosition >= 0 && arrayPosition <= 14;
     }
 }

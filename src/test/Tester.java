@@ -1,7 +1,6 @@
-package Test;
+package test;
 
-import GUI.Chessboard;
-import GUI.Game;
+import gui.Game;
 
 /**
  * Created by cirun on 2018/7/30.
