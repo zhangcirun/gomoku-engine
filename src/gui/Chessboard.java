@@ -31,11 +31,11 @@ public class Chessboard extends JPanel {
     private BufferedImage whiteWin;
 
     private GomokuController controller;
-    //private GameResult result;
+    private GameResultPane resultPane;
 
     public Chessboard() throws  Exception{
         init();
-        //result = new GameResult();
+        resultPane = new GameResultPane(this);
     }
 
     private void init() throws Exception{
@@ -81,11 +81,11 @@ public class Chessboard extends JPanel {
                     if(controller.isFiveInLine(chess, xArrayPosition, yArrayPosition)){
                         winner = !isBlack ? 1 : -1;
                         System.out.println("WIN!!");
-                        /*
-                        It's too slow to add a new button
-                        add(result);
+
+                        //It's too slow to add a new button
+                        add(resultPane);
                         validate();
-                        */
+                        
                     }
 
                     //repaint the chessboard GUI
@@ -148,5 +148,13 @@ public class Chessboard extends JPanel {
 
     public static boolean validateArrayPosition(int arrayPosition){
         return arrayPosition >= 0 && arrayPosition <= 14;
+    }
+
+    void resetGame(){
+        System.out.println("reset");
+        this.chess = new int[15][15];
+        this.remove(resultPane);
+        //validate();
+        repaint();
     }
 }

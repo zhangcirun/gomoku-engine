@@ -10,7 +10,8 @@ public class Game {
         frame.setSize(1024,576);
         frame.setResizable(false);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        frame.setLocation(200, 95);
+        //center the frame
+        frame.setLocationRelativeTo(null);
         frame.add(background);
         frame.setVisible(true);
     }
