@@ -11,14 +11,15 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 
 public class Chessboard extends JPanel {
-    public static int TILE_NUM = 15;
+    private  int TILE_NUM = 15;
     private int X_OFFSET  = 24;
     private int Y_OFFSET = 25;
     private int BOARD_WIDTH;  //535 px
     private int BOARD_HEIGHT; //536 px
+    private double TILE_WIDTH;   //about 35 px
     private int targetX = 0;
     private int targetY = 0;
-    private double TILE_WIDTH;   //about 35 px
+    private int winner = 0;
     private boolean isBlack = true;
     private int chess[][];
 
@@ -26,11 +27,15 @@ public class Chessboard extends JPanel {
     private BufferedImage black;
     private BufferedImage white;
     private BufferedImage target;
+    private BufferedImage blackWin;
+    private BufferedImage whiteWin;
 
     private GomokuController controller;
+    //private GameResult result;
 
     public Chessboard() throws  Exception{
         init();
+        //result = new GameResult();
     }
 
     private void init() throws Exception{
@@ -38,6 +43,9 @@ public class Chessboard extends JPanel {
         this.black = ImageIO.read(new File("/Users/cirun/Documents/admin/code/java/project/src/gui/assets/black.png"));
         this.white = ImageIO.read(new File("/Users/cirun/Documents/admin/code/java/project/src/gui/assets/white.png"));
         this.target = ImageIO.read(new File("/Users/cirun/Documents/admin/code/java/project/src/gui/assets/target.png"));
+        this.blackWin = ImageIO.read(new File("/Users/cirun/Documents/admin/code/java/project/src/gui/assets/blackWin.png"));
+        this.whiteWin = ImageIO.read(new File("/Users/cirun/Documents/admin/code/java/project/src/gui/assets/whiteWin.png"));
+
         this.BOARD_WIDTH = board.getWidth();
         this.BOARD_HEIGHT = board.getHeight();
         this.setPreferredSize(new Dimension(BOARD_WIDTH, BOARD_HEIGHT));
@@ -60,19 +68,28 @@ public class Chessboard extends JPanel {
 
 
                 //add to array
-                if (validateArrayPosition(xArrayPosition) && validateArrayPosition(yArrayPosition)
-                        && chess[xArrayPosition][yArrayPosition] == 0)
+                if (validateArrayPosition(xArrayPosition) &&
+                        validateArrayPosition(yArrayPosition) &&
+                        chess[xArrayPosition][yArrayPosition] == 0)
                 {
                     chess[xArrayPosition][yArrayPosition] = isBlack ? 1 : -1;
                     System.out.println("placing");
                     //reverse the flag
                     isBlack = !isBlack;
 
+
+                    if(controller.isFiveInLine(chess, xArrayPosition, yArrayPosition)){
+                        winner = !isBlack ? 1 : -1;
+                        System.out.println("WIN!!");
+                        /*
+                        It's too slow to add a new button
+                        add(result);
+                        validate();
+                        */
+                    }
+
                     //repaint the chessboard GUI
                     repaint();
-                    if(controller.isFiveInLine(chess, xArrayPosition, yArrayPosition)){
-                        System.out.println("WIN!!");
-                    }
                 }
 
             }
@@ -105,7 +122,7 @@ public class Chessboard extends JPanel {
     }
 
     @Override
-    public void paint(Graphics g){
+    public void paintComponent(Graphics g){
         g.drawImage(board, 0, 0, null);
         g.drawImage(target, targetX + 4, targetY + 3, null);
 
@@ -118,6 +135,14 @@ public class Chessboard extends JPanel {
                     g.drawImage(white, (int)((i* TILE_WIDTH) + 6), (int)((j* TILE_WIDTH) + 6), null);
                 }
             }
+        }
+
+        if(winner == 1){
+            //g.drawImage(blackWin, 80, 50, null);
+            ///System.out.println("added");
+        }else if(winner == -1){
+            //g.drawImage(whiteWin, 80, 50, null);
+            //System.out.println("added");
         }
     }
 
