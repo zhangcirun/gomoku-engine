@@ -11,7 +11,9 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 
 public class Chessboard extends JPanel {
-    private  int TILE_NUM = 15;
+    private Background background;
+
+    private int TILE_NUM = 15;
     private int X_OFFSET  = 24;
     private int Y_OFFSET = 25;
     private int BOARD_WIDTH;  //535 px
@@ -20,7 +22,6 @@ public class Chessboard extends JPanel {
     private int targetX = 0;
     private int targetY = 0;
     private int winner = 0;
-    private boolean isBlack = true;
     private int chess[][];
 
     private BufferedImage board;
@@ -33,8 +34,9 @@ public class Chessboard extends JPanel {
     private GomokuController controller;
     private GameResultPane resultPane;
 
-    public Chessboard() throws  Exception{
+    public Chessboard(Background background) throws  Exception{
         init();
+        this.background = background;
         resultPane = new GameResultPane(this);
     }
 
@@ -62,36 +64,38 @@ public class Chessboard extends JPanel {
         this.addMouseListener(new MouseAdapter(){
             @Override
             public void mouseClicked(MouseEvent e) {
+                if(Background.isGameProgress) {
 
-                int xArrayPosition = (int) Math.round((e.getX() - X_OFFSET) / TILE_WIDTH);
-                int yArrayPosition = (int) Math.round((e.getY() - Y_OFFSET) / TILE_WIDTH);
-
-
-                //add to array
-                if (validateArrayPosition(xArrayPosition) &&
-                        validateArrayPosition(yArrayPosition) &&
-                        chess[xArrayPosition][yArrayPosition] == 0)
-                {
-                    chess[xArrayPosition][yArrayPosition] = isBlack ? 1 : -1;
-                    System.out.println("placing");
-                    //reverse the flag
-                    isBlack = !isBlack;
+                    int xArrayPosition = (int) Math.round((e.getX() - X_OFFSET) / TILE_WIDTH);
+                    int yArrayPosition = (int) Math.round((e.getY() - Y_OFFSET) / TILE_WIDTH);
 
 
-                    if(controller.isFiveInLine(chess, xArrayPosition, yArrayPosition)){
-                        winner = !isBlack ? 1 : -1;
-                        System.out.println("WIN!!");
+                    //add to array
+                    if (validateArrayPosition(xArrayPosition) &&
+                            validateArrayPosition(yArrayPosition) &&
+                            chess[xArrayPosition][yArrayPosition] == 0) {
+                        chess[xArrayPosition][yArrayPosition] = Background.isBlack ? 1 : -1;
+                        System.out.println("placing");
 
-                        //It's too slow to add a new button
-                        add(resultPane);
-                        validate();
-                        
+                        //reverse the flag
+                        Background.isBlack = !Background.isBlack;
+
+                        //checking is game end
+                        if (controller.isFiveInLine(chess, xArrayPosition, yArrayPosition)) {
+                            winner = !Background.isBlack ? 1 : -1;
+                            System.out.println("WIN!!");
+                            Background.isGameProgress = false;
+                            //It's too slow to add a new button
+                            add(resultPane);
+                            validate();
+
+                        }
+
+                        //repaint the chessboard GUI
+                        repaint();
+                        background.repaint();
                     }
-
-                    //repaint the chessboard GUI
-                    repaint();
                 }
-
             }
             @Override
             public void mouseExited(MouseEvent e){
@@ -154,6 +158,8 @@ public class Chessboard extends JPanel {
         System.out.println("reset");
         this.chess = new int[15][15];
         this.remove(resultPane);
+        Background.isBlack = true;
+        Background.isGameProgress = true;
         //validate();
         repaint();
     }
