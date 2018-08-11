@@ -2,6 +2,7 @@ package gui;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.plaf.basic.BasicOptionPaneUI;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -14,16 +15,21 @@ public class GameResultPane extends JPanel{
     private Chessboard chessboard;
 
     public GameResultPane(Chessboard chessboard) throws Exception{
-        this.setLayout(null);
+        /*
+        * still need to do: centering, change image, button appearance
+        * */
+        /*
+        newGameButton = new JButton("New Game");
+        newGameButton.addActionListener(new buttonListener());
+        //newGameButton.setBorder(null);
+        newGameButton.setSize(new Dimension(30,30));
+        this.add(newGameButton, BorderLayout.CENTER);
+        */
+
         this.chessboard = chessboard;
         this.blackWin = ImageIO.read(new File("/Users/cirun/Documents/admin/code/java/project/src/gui/assets/blackWin.png"));
         this.whiteWin = ImageIO.read(new File("/Users/cirun/Documents/admin/code/java/project/src/gui/assets/whiteWin.png"));
-
-        newGameButton = new JButton("New Game");
-        newGameButton.addActionListener(new buttonListener());
-        newGameButton.setBounds(100,12,50,30);
-        this.add(newGameButton);
-        this.setPreferredSize(new Dimension(300, 300));
+        this.setPreferredSize(new Dimension(400, 300));
         this.setVisible(true);
     }
 
