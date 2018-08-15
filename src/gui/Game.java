@@ -1,15 +1,22 @@
 package gui;
 
-import javax.swing.*;
+import java.awt.BorderLayout;
+import javax.swing.WindowConstants;
+import javax.swing.JFrame;
+import javax.swing.JMenuBar;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-
 public class Game {
     private JFrame frame = new JFrame("Gomoku");
-    public void start() throws Exception{
+
+    public void start() throws Exception {
         Background background = new Background();
-        frame.setSize(1152,648);
+        Chessboard chessboard = new Chessboard();
+        frame.setSize(1152, 648);
         frame.setResizable(false);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         //center the frame
@@ -22,8 +29,7 @@ public class Game {
         JMenu menu1 = new JMenu("Menu");
         JMenuItem resetGame = new JMenuItem("Reset Game");
         resetGame.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
+            @Override public void actionPerformed(ActionEvent e) {
                 System.out.println("Reset Game");
                 background.resetGame();
             }
@@ -37,10 +43,9 @@ public class Game {
         menuBar.add(menu1);
         menuBar.add(menu2);
 
-
-
         //add background panel along with the chessboard
         frame.add(background);
+
         frame.setJMenuBar(menuBar);
         frame.setVisible(true);
     }

@@ -1,9 +1,23 @@
+/**
+ * Chessboard class is the GUI class for chessboard
+ * which provides functionality of drawing chessboard,
+ * pieces placement reaction, and checking wining
+ * condition {@see GomokuController}
+ *
+ * @author Chang ta'z jun
+ * @version Version 1.1
+ */
 package gui;
-import controller.GomokuController;
 
-import javax.swing.*;
+import controller.GomokuController;
+import gui.constant.GuiConst;
+
+import java.io.IOException;
 import javax.imageio.ImageIO;
-import java.awt.*;
+import javax.swing.JPanel;
+
+import java.awt.Dimension;
+import java.awt.Graphics;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
@@ -11,156 +25,182 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 
 public class Chessboard extends JPanel {
+    /**
+     * Parent GUI component
+     */
     private Background background;
 
-    private int TILE_NUM = 15;
-    private int X_OFFSET  = 24;
-    private int Y_OFFSET = 25;
-    private int BOARD_WIDTH;  //535 px
-    private int BOARD_HEIGHT; //536 px
-    private double TILE_WIDTH;   //about 35 px
-    private int targetX = 0;
-    private int targetY = 0;
+    /**
+     * Coordinates of the cross sight
+     */
+    private int crossSightXCoordinate = 0;
+    private int crossSightYCoordinate = 0;
+
+    /**
+     * 2-dimension array for storage the positions of each pieces,
+     * 0 for empty, 1 for black and -1 for white
+     */
+    private int[][] chess;
+
+    /**
+     * 1 for black win and -1 for white win
+     */
     private int winner = 0;
-    private int chess[][];
 
-    private BufferedImage board;
-    private BufferedImage black;
-    private BufferedImage white;
-    private BufferedImage target;
-    private BufferedImage blackWin;
-    private BufferedImage whiteWin;
+    private BufferedImage boardImage, blackImage, whiteImage, crossSightImage;
 
-    private GomokuController controller;
     private GameResultPane resultPane;
 
-    public Chessboard(Background background) throws  Exception{
+    Chessboard() throws Exception{
+        init();
+        resultPane = new GameResultPane(this);
+    }
+
+    Chessboard(Background background) throws Exception {
         init();
         this.background = background;
         resultPane = new GameResultPane(this);
     }
 
-    private void init() throws Exception{
-        this.board = ImageIO.read(new File("/Users/cirun/Documents/admin/code/java/project/src/gui/assets/chessboard.jpg"));
-        this.black = ImageIO.read(new File("/Users/cirun/Documents/admin/code/java/project/src/gui/assets/black.png"));
-        this.white = ImageIO.read(new File("/Users/cirun/Documents/admin/code/java/project/src/gui/assets/white.png"));
-        this.target = ImageIO.read(new File("/Users/cirun/Documents/admin/code/java/project/src/gui/assets/target.png"));
-        this.blackWin = ImageIO.read(new File("/Users/cirun/Documents/admin/code/java/project/src/gui/assets/blackWin.png"));
-        this.whiteWin = ImageIO.read(new File("/Users/cirun/Documents/admin/code/java/project/src/gui/assets/whiteWin.png"));
+    /**
+     * Preload images, initializes array, adds mouse listeners and
+     * sets GUI properties
+     *
+     * @throws IOException if loading images fails
+     */
+    private void init() throws IOException {
+        this.boardImage = ImageIO.read(new File("src/gui/assets/chessboard.jpg"));
+        this.blackImage = ImageIO.read(new File("src/gui/assets/black.png"));
+        this.whiteImage = ImageIO.read(new File("src/gui/assets/white.png"));
+        this.crossSightImage = ImageIO.read(new File("src/gui/assets/target.png"));
 
-        this.BOARD_WIDTH = board.getWidth();
-        this.BOARD_HEIGHT = board.getHeight();
-        this.setPreferredSize(new Dimension(BOARD_WIDTH, BOARD_HEIGHT));
-        this.TILE_WIDTH = BOARD_WIDTH / TILE_NUM;
-
-        this.chess = new int[TILE_NUM][TILE_NUM]; // 0 for empty 1 black -1 white
-
-        this.controller = new GomokuController();
-        addActionListener();
-
+        this.setPreferredSize(new Dimension(GuiConst.BOARD_WIDTH, GuiConst.BOARD_HEIGHT));
+        this.chess = new int[GuiConst.TILE_NUM_PER_ROW][GuiConst.TILE_NUM_PER_ROW];
+        this.addActionListener();
     }
 
-    private void addActionListener(){
-        this.addMouseListener(new MouseAdapter(){
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                if(Background.isGameProgress) {
+    /**
+     * Adds mouse listeners for clicking mouse and moving cursor, repaint the
+     * chessboard when a new piece is placed or the location of cross sight changes.
+     */
+    private void addActionListener() {
+        this.addMouseListener(new MouseAdapter() {
 
-                    int xArrayPosition = (int) Math.round((e.getX() - X_OFFSET) / TILE_WIDTH);
-                    int yArrayPosition = (int) Math.round((e.getY() - Y_OFFSET) / TILE_WIDTH);
+            //Add new piece to the chessboard
+            @Override public void mouseClicked(MouseEvent e) {
+                if (Background.gameOnProgress) {
+                    //Calculates indexes of the new piece in the 2-dimensional array
+                    int xArrayIndex = (int)Math.round((e.getX() - GuiConst.X_AXIS_OFFSET) / GuiConst.TILE_WIDTH);
+                    int yArrayIndex = (int)Math.round((e.getY() - GuiConst.Y_AXIS_OFFSET) / GuiConst.TILE_WIDTH);
 
+                    //If the indexes are valid and the tile is empty, add the new piece to the array
+                    if (validateArrayIndex(xArrayIndex) && validateArrayIndex(yArrayIndex)
+                        && chess[xArrayIndex][yArrayIndex] == 0) {
 
-                    //add to array
-                    if (validateArrayPosition(xArrayPosition) &&
-                            validateArrayPosition(yArrayPosition) &&
-                            chess[xArrayPosition][yArrayPosition] == 0) {
-                        chess[xArrayPosition][yArrayPosition] = Background.isBlack ? 1 : -1;
+                        chess[xArrayIndex][yArrayIndex] = Background.blackTurn ? 1 : -1;
                         System.out.println("placing");
 
-                        //reverse the flag
-                        Background.isBlack = !Background.isBlack;
+                        //Reverses the flag
+                        Background.blackTurn = !Background.blackTurn;
 
-                        //checking is game end
-                        if (controller.isFiveInLine(chess, xArrayPosition, yArrayPosition)) {
-                            winner = !Background.isBlack ? 1 : -1;
+                        //Check is game end
+                        if (GomokuController.isFiveInLine(chess, xArrayIndex, yArrayIndex)) {
+                            winner = !Background.blackTurn ? 1 : -1;
                             System.out.println("WIN!!");
-                            Background.isGameProgress = false;
-                            //It's too slow to add a new button
+                            Background.gameOnProgress = false;
+                            //@TODO It's too slow to add a new button
                             add(resultPane);
                             validate();
 
                         }
 
-                        //repaint the chessboard GUI
+                        //Repaints the chessboard and outer layer GUI
                         repaint();
                         background.repaint();
                     }
                 }
             }
-            @Override
-            public void mouseExited(MouseEvent e){
-                    targetX = -50;
-                    targetY = -50;
-                    repaint();
+
+            //Remove the cross sight when the cursor moves out of the chessboard
+            @Override public void mouseExited(MouseEvent e) {
+                crossSightXCoordinate = -50;
+                crossSightYCoordinate = -50;
+                repaint();
             }
         });
 
         this.addMouseMotionListener(new MouseMotionAdapter() {
-            @Override
-            public void mouseMoved(MouseEvent e) {
-                 int targetArrayX = (int) Math.round((e.getX() - X_OFFSET) / TILE_WIDTH);
-                 int targetArrayY = (int) Math.round((e.getY() - Y_OFFSET) / TILE_WIDTH);
-                 if(validateArrayPosition(targetArrayX) && validateArrayPosition(targetArrayY)){
-                     int newTargetX = (int)(targetArrayX * TILE_WIDTH);
-                     int newTargetY = (int)(targetArrayY * TILE_WIDTH);
+            //Changes cross sight location when cursor moves
+            @Override public void mouseMoved(MouseEvent e) {
+                //Gets relative location in the chessboard
+                int crossSightRelativeX = (int)Math.round((e.getX() - GuiConst.X_AXIS_OFFSET) / GuiConst.TILE_WIDTH);
+                int crossSightRelativeY = (int)Math.round((e.getY() - GuiConst.Y_AXIS_OFFSET) / GuiConst.TILE_WIDTH);
+                if (validateArrayIndex(crossSightRelativeX) && validateArrayIndex(crossSightRelativeY)) {
+                    int crossSightXCoordinate = (int)(crossSightRelativeX * GuiConst.TILE_WIDTH);
+                    int crossSightYCoordinate = (int)(crossSightRelativeY * GuiConst.TILE_WIDTH);
 
-                     if(newTargetX != targetX || newTargetY != targetY){
-                         targetX = newTargetX;
-                         targetY = newTargetY;
-                         repaint();
-                     }
-                 }
+                    //Repaints the chessboard if cross sight moves
+                    if (crossSightXCoordinate != Chessboard.this.crossSightXCoordinate
+                        || crossSightYCoordinate != Chessboard.this.crossSightYCoordinate) {
+
+                        Chessboard.this.crossSightXCoordinate = crossSightXCoordinate;
+                        Chessboard.this.crossSightYCoordinate = crossSightYCoordinate;
+                        repaint();
+                    }
+                }
             }
         });
 
     }
 
-    @Override
-    public void paintComponent(Graphics g){
-        g.drawImage(board, 0, 0, null);
-        g.drawImage(target, targetX + 4, targetY + 3, null);
+    /**
+     * Drawing the chessboard, pieces and cross sight.
+     *
+     * @param g The java.awt.Graphics class is the abstract base class for drawing components.
+     */
+    @Override public void paintComponent(Graphics g) {
+        g.drawImage(boardImage, 0, 0, null);
+        g.drawImage(crossSightImage, crossSightXCoordinate + 4, crossSightYCoordinate + 3, null);
 
-        for(int i = 0; i < TILE_NUM; i++){
-            for(int j = 0; j < TILE_NUM; j++){
-                if(chess[i][j] == 1){
-                    g.drawImage(black, (int)((i* TILE_WIDTH) + 5), (int)((j* TILE_WIDTH) + 5), null);
-                }
-                else if(chess[i][j] == -1){
-                    g.drawImage(white, (int)((i* TILE_WIDTH) + 6), (int)((j* TILE_WIDTH) + 6), null);
+        //Transverses the array and paint all pieces
+        for (int i = 0; i < GuiConst.TILE_NUM_PER_ROW; i++) {
+            for (int j = 0; j < GuiConst.TILE_NUM_PER_ROW; j++) {
+                if (chess[i][j] == 1) {
+                    g.drawImage(blackImage, (int)((i * GuiConst.TILE_WIDTH) + 5), (int)((j * GuiConst.TILE_WIDTH) + 5),
+                        null);
+                } else if (chess[i][j] == -1) {
+                    g.drawImage(whiteImage, (int)((i * GuiConst.TILE_WIDTH) + 6), (int)((j * GuiConst.TILE_WIDTH) + 6),
+                        null);
                 }
             }
         }
-
-        if(winner == 1){
-            //g.drawImage(blackWin, 80, 50, null);
-            ///System.out.println("added");
-        }else if(winner == -1){
-            //g.drawImage(whiteWin, 80, 50, null);
-            //System.out.println("added");
-        }
     }
 
-    public static boolean validateArrayPosition(int arrayPosition){
-        return arrayPosition >= 0 && arrayPosition <= 14;
+    @Override public String toString() {
+        return super.toString();
     }
 
-    void resetGame(){
+    /**
+     * Validates whether the array index within the range.
+     *
+     * @param index Index of the array
+     * @return Return true if the position is valid, vice versa
+     */
+    public static boolean validateArrayIndex(int index) {
+        return index >= 0 && index <= 14;
+    }
+
+    /**
+     * Resets the game, cleans the array
+     */
+    void resetGame() {
         System.out.println("reset");
         this.chess = new int[15][15];
         this.remove(resultPane);
-        Background.isBlack = true;
-        Background.isGameProgress = true;
+        Background.blackTurn = true;
+        Background.gameOnProgress = true;
         //validate();
         repaint();
+        background.repaint();
     }
 }
