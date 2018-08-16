@@ -1,9 +1,15 @@
+/**
+ * This class is the the outer layer above Chessboard which
+ * shows background image and other UI components. It is the
+ * interface between chessboard and other classes.
+ *
+ * @author Chang ta'z jun
+ * @version Version 1.1
+ */
 package gui;
 
 import gui.constant.GuiConst;
 import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import java.awt.Dimension;
@@ -12,13 +18,24 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 
 public class Background extends JPanel {
-    private ImageIcon backgroundIcon;
     private BufferedImage background, blackNext, whiteNext;
-    public Chessboard chessboard;
+
+    /**
+     * Chessboard is the component of this class
+     */
+    private Chessboard chessboard;
+
+    /**
+     * Indicates which player should go in the next turn
+     */
     static boolean blackTurn = true;
+
+    /**
+     * Indicates whether the game is over or not
+     */
     static boolean gameOnProgress = true;
 
-    public Background() throws Exception {
+    Background() throws Exception {
         init();
     }
 
@@ -26,25 +43,19 @@ public class Background extends JPanel {
         this.background = ImageIO.read(new File("src/gui/assets/backgroundAutumn.jpg"));
         this.blackNext = ImageIO.read(new File("src/gui/assets/blackNext.png"));
         this.whiteNext = ImageIO.read(new File("src/gui/assets/whiteNext.png"));
-        this.backgroundIcon = new ImageIcon("src/gui/assets/backgroundAutumn.jpg");
         this.setPreferredSize(new Dimension(GuiConst.FRAME_WIDTH, GuiConst.FRAME_HEIGHT));
         this.setLayout(null);
 
-        JLabel backgroundLabel = new JLabel();
-        backgroundLabel.setSize(GuiConst.FRAME_WIDTH, GuiConst.FRAME_HEIGHT);
-        backgroundLabel.setIcon(backgroundIcon);
-
         chessboard = new Chessboard(this);
         chessboard.setBounds(245, 12, GuiConst.BOARD_WIDTH, GuiConst.BOARD_HEIGHT);
-
-        ///this.add(backgroundLabel);
         this.add(chessboard);
     }
 
-    public void resetGame() {
-        this.chessboard.resetGame();
-    }
-
+    /**
+     * Draws the background and user tips
+     *
+     * @param g The java.awt.Graphics class is the abstract base class for drawing components.
+     */
     @Override public void paintComponent(Graphics g) {
         g.drawImage(background, 0, 0, null);
         if (blackTurn) {
@@ -55,4 +66,7 @@ public class Background extends JPanel {
 
     }
 
+    void resetGame() {
+        this.chessboard.resetGame();
+    }
 }

@@ -49,17 +49,15 @@ public class Chessboard extends JPanel {
 
     private BufferedImage boardImage, blackImage, whiteImage, crossSightImage;
 
+    /**
+     * Shows game result
+     */
     private GameResultPane resultPane;
-
-    Chessboard() throws Exception{
-        init();
-        resultPane = new GameResultPane(this);
-    }
 
     Chessboard(Background background) throws Exception {
         init();
         this.background = background;
-        resultPane = new GameResultPane(this);
+        resultPane = new GameResultPane();
     }
 
     /**
@@ -154,7 +152,7 @@ public class Chessboard extends JPanel {
     }
 
     /**
-     * Drawing the chessboard, pieces and cross sight.
+     * Draws the chessboard, pieces and cross sight.
      *
      * @param g The java.awt.Graphics class is the abstract base class for drawing components.
      */
