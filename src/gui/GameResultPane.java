@@ -1,10 +1,3 @@
-/**
- * This class is a sub-panel of chessboard, it shows the
- * game result.
- *
- * @author Chang ta'z jun
- * @version Version 1.0
- */
 package gui;
 
 import java.io.IOException;
@@ -16,6 +9,13 @@ import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.File;
 
+/**
+ * This class is a sub-panel of chessboard, it shows the
+ * game result.
+ *
+ * @author Chang ta'z jun
+ * @version Version 1.0
+ */
 public class GameResultPane extends JPanel {
 
     private BufferedImage win;
@@ -25,13 +25,12 @@ public class GameResultPane extends JPanel {
         this.setVisible(true);
     }
 
-    private void init() throws IOException{
+    private void init() throws IOException {
         this.win = ImageIO.read(new File("src/gui/assets/win.png"));
         this.setPreferredSize(new Dimension(247, 87));
     }
 
-    @Override
-    public void paintComponent(Graphics g) {
+    @Override public void paintComponent(Graphics g) {
         g.drawImage(win, 0, 0, null);
     }
 

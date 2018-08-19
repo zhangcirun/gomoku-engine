@@ -1,11 +1,3 @@
-/**
- * This class is the the outer layer above Chessboard which
- * shows background image and other UI components. It is the
- * interface between chessboard and other classes.
- *
- * @author Chang ta'z jun
- * @version Version 1.1
- */
 package gui;
 
 import gui.constant.GuiConst;
@@ -17,6 +9,14 @@ import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.File;
 
+/**
+ * This class is the the outer layer above Chessboard which
+ * shows background image and other UI components. It is the
+ * interface between chessboard and other classes.
+ *
+ * @author Chang ta'z jun
+ * @version Version 1.1
+ */
 public class Background extends JPanel {
     private BufferedImage background, blackNext, whiteNext;
 

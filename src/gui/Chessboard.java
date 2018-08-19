@@ -1,15 +1,7 @@
-/**
- * Chessboard class is the GUI class for chessboard
- * which provides functionality of drawing chessboard,
- * pieces placement reaction, and checking wining
- * condition {@see GomokuController}
- *
- * @author Chang ta'z jun
- * @version Version 1.1
- */
 package gui;
 
-import controller.GomokuController;
+import ai.BasicAgent;
+import observer.GomokuController;
 import gui.constant.GuiConst;
 
 import java.io.IOException;
@@ -24,6 +16,15 @@ import java.awt.event.MouseMotionAdapter;
 import java.awt.image.BufferedImage;
 import java.io.File;
 
+/**
+ * Chessboard class is the GUI class for chessboard
+ * which provides functionality of drawing chessboard,
+ * pieces placement reaction, and checking wining
+ * condition {@see GomokuController}
+ *
+ * @author Chang ta'z jun
+ * @version Version 1.1
+ */
 public class Chessboard extends JPanel {
     /**
      * Parent GUI component
@@ -111,6 +112,9 @@ public class Chessboard extends JPanel {
                             validate();
 
                         }
+                        //@Test
+                        System.out.println(BasicAgent.totalmark(chess, xArrayIndex, yArrayIndex, chess[xArrayIndex][yArrayIndex]));
+                        //
 
                         //Repaints the chessboard and outer layer GUI
                         repaint();

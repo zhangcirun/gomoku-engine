@@ -1,15 +1,3 @@
-/**
- * This class is the main frame of the game. The structure
- * of the project is illustrated below
- *
- * |MainFrame |
- *            |Background |
- *                        |Chessboard |
- *                                    |ResultPane
- *
- * @author Chang ta'z jun
- * @version Version 1.1
- */
 package gui;
 
 import gui.constant.GuiConst;
@@ -22,6 +10,18 @@ import javax.swing.JMenuItem;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+/**
+ * This class is the main frame of the game. The structure
+ * of the project is illustrated below
+ *
+ * |MainFrame |
+ *            |Background |
+ *                        |Chessboard |
+ *                                    |ResultPane
+ *
+ * @author Chang ta'z jun
+ * @version Version 1.1
+ */
 public class MainFrame extends JFrame{
     private Background background;
 
@@ -51,11 +51,11 @@ public class MainFrame extends JFrame{
 
         //reset game
         JMenu menu1 = new JMenu("Menu");
-        JMenuItem resetGame = new JMenuItem("Reset MainFrame");
+        JMenuItem resetGame = new JMenuItem("Reset Game");
 
         resetGame.addActionListener(new ActionListener() {
             @Override public void actionPerformed(ActionEvent e) {
-                System.out.println("Reset MainFrame");
+                System.out.println("Reset Game");
                 background.resetGame();
             }
         });

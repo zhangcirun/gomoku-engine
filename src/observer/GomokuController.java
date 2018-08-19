@@ -4,7 +4,7 @@
  * @author Chang ta'z jun
  * @version Version 1.1
  */
-package controller;
+package observer;
 
 import gui.Chessboard;
 
