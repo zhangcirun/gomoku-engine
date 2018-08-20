@@ -2,18 +2,43 @@ package ai;
 
 import ai.constant.AiConst;
 import gui.Chessboard;
-import java.util.HashMap;
-import java.util.Map;
+import gui.constant.GuiConst;
 
 public class BasicAgent {
     private BasicAgent() {
     }
 
-    public static int totalmark(int[][] chess, int x, int y, int pieceType){
-        return marking(horizontalPieces(chess, x, y, pieceType)) +
-            marking(verticalPieces(chess, x, y, pieceType)) +
-            marking(diagonalPieces(chess, x, y, pieceType)) +
-            marking(antiDiagonalPieces(chess, x, y, pieceType));
+    public static int[] nextMove(int[][] chess){
+        int currentMaxScore = 0;
+        int x = 0;
+        int y = 0;
+        for(int i = 0; i < GuiConst.TILE_NUM_PER_ROW; i++){
+            for(int j = 0; j < GuiConst.TILE_NUM_PER_ROW; j++){
+                //for each empty tiles, calculates their marks
+                if(chess[i][j] == 0) {
+                    //-1 for white piece
+                    int score = totalmark(chess, i, j);
+                    if (score > currentMaxScore) {
+                        currentMaxScore = score;
+                        x = i;
+                        y = j;
+                    }
+                }
+            }
+        }
+        System.out.println("currentMax: " + currentMaxScore + " " + x + " " + y);
+        return new int[]{x, y};
+    }
+
+    public static int totalmark(int[][] chess, int x, int y){
+        return marking(horizontalPieces(chess, x, y, -1)) +
+            marking(verticalPieces(chess, x, y, -1)) +
+            marking(diagonalPieces(chess, x, y, -1)) +
+            marking(antiDiagonalPieces(chess, x, y, -1)) +
+            marking(horizontalPieces(chess, x, y, 1)) +
+            marking(verticalPieces(chess, x, y, 1)) +
+            marking(diagonalPieces(chess, x, y, 1)) +
+            marking(antiDiagonalPieces(chess, x, y, 1));
     }
 
     private static int marking(String pieces) {

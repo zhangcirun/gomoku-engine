@@ -103,22 +103,14 @@ public class Chessboard extends JPanel {
                         Background.blackTurn = !Background.blackTurn;
 
                         //Check is game end
-                        if (GomokuController.isFiveInLine(chess, xArrayIndex, yArrayIndex)) {
-                            winner = !Background.blackTurn ? 1 : -1;
-                            System.out.println("WIN!!");
-                            Background.gameOnProgress = false;
-                            //@TODO It's too slow to add a new button
-                            add(resultPane);
-                            validate();
-
-                        }
-                        //@Test
-                        System.out.println(BasicAgent.totalmark(chess, xArrayIndex, yArrayIndex, chess[xArrayIndex][yArrayIndex]));
-                        //
+                        checkFiveInLine(chess, xArrayIndex, yArrayIndex);
 
                         //Repaints the chessboard and outer layer GUI
                         repaint();
                         background.repaint();
+
+                        //computer move
+                        computerMove(chess);
                     }
                 }
             }
@@ -202,6 +194,33 @@ public class Chessboard extends JPanel {
         Background.blackTurn = true;
         Background.gameOnProgress = true;
         //validate();
+        repaint();
+        background.repaint();
+    }
+
+    private void checkFiveInLine(int[][] chess, int xArrayIndex, int yArrayIndex){
+        if (GomokuController.isFiveInLine(chess, xArrayIndex, yArrayIndex)) {
+            winner = !Background.blackTurn ? 1 : -1;
+            System.out.println("WIN!!");
+            Background.gameOnProgress = false;
+            //@TODO It's too slow to add a new button
+            add(resultPane);
+            validate();
+        }
+    }
+
+    private void computerMove(int[][] chess){
+        //Reverses the flag
+        Background.blackTurn = !Background.blackTurn;
+
+        //Check is game end
+        int[] result = BasicAgent.nextMove(chess);
+        int x = result[0];
+        int y = result[1];
+        chess[x][y] = -1;
+        checkFiveInLine(chess, x, y);
+
+        //Repaints the chessboard and outer layer GUI
         repaint();
         background.repaint();
     }
