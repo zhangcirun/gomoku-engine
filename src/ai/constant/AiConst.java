@@ -1,7 +1,7 @@
 package ai.constant;
 
 /**
- * 1 for piece, 0 for empty
+ * 1 for ally, 0 for empty, 2 for opponent
  *
  * @author Chang ta'z jun
  * @version Version 1.0

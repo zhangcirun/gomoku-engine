@@ -8,7 +8,7 @@ package observer;
 
 import gui.Chessboard;
 
-public class GomokuController {
+public class GomokuObserver {
     /**
      * Determines whether five pieces are in one row or not
      *

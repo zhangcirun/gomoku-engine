@@ -4,10 +4,26 @@ import ai.constant.AiConst;
 import gui.Chessboard;
 import gui.constant.GuiConst;
 
+/**
+ * This class is a simple AI agent using simple heuristic function to
+ * evaluate each empty tiles, and return the coordinates of the tile which
+ * has highest score.
+ *
+ * @author Chang ta'z jun
+ * @version Version 1.0
+ */
 public class BasicAgent {
+    //@Todo agent cannot plays correctly sometimes when both computer and human have a potential 5
     private BasicAgent() {
     }
 
+    /**
+     * Evaluate each empty tiles and return the best tile
+     * for the next move.
+     *
+     * @param chess is the 2-dimension array represents the chessboard
+     * @return An array contains the coordinates of the tile
+     */
     public static int[] nextMove(int[][] chess){
         int currentMaxScore = 0;
         int x = 0;
@@ -30,7 +46,15 @@ public class BasicAgent {
         return new int[]{x, y};
     }
 
-    public static int totalmark(int[][] chess, int x, int y){
+    /**
+     * Calculate the total score of one specific tile
+     *
+     * @param chess is the 2-dimension array represents the chessboard
+     * @param x is the coordinate of the tile in x-axis
+     * @param y is the coordinate of the tile in y-axis
+     * @return the total score
+     */
+    private static int totalmark(int[][] chess, int x, int y){
         return marking(horizontalPieces(chess, x, y, -1)) +
             marking(verticalPieces(chess, x, y, -1)) +
             marking(diagonalPieces(chess, x, y, -1)) +
@@ -41,6 +65,13 @@ public class BasicAgent {
             marking(antiDiagonalPieces(chess, x, y, 1));
     }
 
+    /**
+     * Pattern matches a row of pieces with pre-defined patterns
+     * and return the corresponding score
+     *
+     * @param pieces is a row of pieces in String format
+     * @return the mark of the row of pieces
+     */
     private static int marking(String pieces) {
         if (pieces.contains(AiConst.IMPLICATE_FIVE)) {
             return 50000;
@@ -80,12 +111,22 @@ public class BasicAgent {
 
     }
 
-    public static String horizontalPieces(int[][] chess, int xArrayPosition, int yArrayPosition, int pieceType){
+    /**
+     * Returns 8 pieces surround a specific piece horizontally
+     *
+     * @param chess is the 2-dimension array represents the chessboard
+     * @param xArrayPosition is the coordinate of the tile in x-axis
+     * @param yArrayPosition is the coordinate of the tile in y-axis
+     * @param pieceType represents the type of the piece will be placed in the tile
+     * @return the row of pieces horizontally in String format
+     */
+    private static String horizontalPieces(int[][] chess, int xArrayPosition, int yArrayPosition, int pieceType){
         StringBuilder builder = new StringBuilder();
         //check from left to target
         for(int i = xArrayPosition - 4; i < xArrayPosition ; i++){
             if(Chessboard.validateArrayIndex(i)) {
                 int piece = chess[i][yArrayPosition];
+                //0 for empty, 1 for ally, 2 for opponent
                 builder.append(piece == 0 ? "0" : piece == pieceType ? "1" : "2");
             }
         }
@@ -103,7 +144,16 @@ public class BasicAgent {
         return builder.toString();
     }
 
-    public static String verticalPieces(int[][] chess, int xArrayPosition, int yArrayPosition, int pieceType){
+    /**
+     * Returns 8 pieces surround a specific piece vertically
+     *
+     * @param chess is the 2-dimension array represents the chessboard
+     * @param xArrayPosition is the coordinate of the tile in x-axis
+     * @param yArrayPosition is the coordinate of the tile in y-axis
+     * @param pieceType represents the type of the piece will be placed in the tile
+     * @return the row of pieces vertically in String format
+     */
+    private static String verticalPieces(int[][] chess, int xArrayPosition, int yArrayPosition, int pieceType){
         StringBuilder builder = new StringBuilder();
         //check from top to target
         for(int i = yArrayPosition - 4; i < yArrayPosition ; i++){
@@ -126,7 +176,16 @@ public class BasicAgent {
         return builder.toString();
     }
 
-    public static String diagonalPieces(int[][] chess, int xArrayPosition, int yArrayPosition, int pieceType){
+    /**
+     * Returns 8 pieces surround a specific piece diagonally
+     *
+     * @param chess is the 2-dimension array represents the chessboard
+     * @param xArrayPosition is the coordinate of the tile in x-axis
+     * @param yArrayPosition is the coordinate of the tile in y-axis
+     * @param pieceType represents the type of the piece will be placed in the tile
+     * @return the row of pieces diagonally in String format
+     */
+    private static String diagonalPieces(int[][] chess, int xArrayPosition, int yArrayPosition, int pieceType){
         StringBuilder builder = new StringBuilder();
         //check from left top to target
         for(int i = 4; i > 0; i--){
@@ -151,7 +210,16 @@ public class BasicAgent {
         return builder.toString();
     }
 
-    public static String antiDiagonalPieces(int[][] chess, int xArrayPosition, int yArrayPosition, int pieceType){
+    /**
+     * Returns 8 pieces surround a specific piece anti-diagonally
+     *
+     * @param chess is the 2-dimension array represents the chessboard
+     * @param xArrayPosition is the coordinate of the tile in x-axis
+     * @param yArrayPosition is the coordinate of the tile in y-axis
+     * @param pieceType represents the type of the piece will be placed in the tile
+     * @return the row of pieces anti-diagonally in String format
+     */
+    private static String antiDiagonalPieces(int[][] chess, int xArrayPosition, int yArrayPosition, int pieceType){
         StringBuilder builder = new StringBuilder();
         //check from right top to target
         for(int i = 4; i > 0 ; i--){

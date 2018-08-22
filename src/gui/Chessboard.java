@@ -1,7 +1,7 @@
 package gui;
 
 import ai.BasicAgent;
-import observer.GomokuController;
+import observer.GomokuObserver;
 import gui.constant.GuiConst;
 
 import java.io.IOException;
@@ -20,7 +20,7 @@ import java.io.File;
  * Chessboard class is the GUI class for chessboard
  * which provides functionality of drawing chessboard,
  * pieces placement reaction, and checking wining
- * condition {@see GomokuController}
+ * condition {@see GomokuObserver}
  *
  * @author Chang ta'z jun
  * @version Version 1.1
@@ -199,7 +199,7 @@ public class Chessboard extends JPanel {
     }
 
     private void checkFiveInLine(int[][] chess, int xArrayIndex, int yArrayIndex){
-        if (GomokuController.isFiveInLine(chess, xArrayIndex, yArrayIndex)) {
+        if (GomokuObserver.isFiveInLine(chess, xArrayIndex, yArrayIndex)) {
             winner = !Background.blackTurn ? 1 : -1;
             System.out.println("WIN!!");
             Background.gameOnProgress = false;
