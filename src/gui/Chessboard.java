@@ -1,8 +1,9 @@
 package gui;
 
-import ai.BasicAgent;
+import ai.DemoAgent;
 import observer.GomokuObserver;
 import gui.constant.GuiConst;
+import ai.BasicAgent;
 
 import java.io.IOException;
 import javax.imageio.ImageIO;
@@ -16,8 +17,9 @@ import java.awt.event.MouseMotionAdapter;
 import java.awt.image.BufferedImage;
 import java.io.File;
 
+
 /**
- * Chessboard class is the GUI class for chessboard
+ * Chessboard class is the gui class for chessboard
  * which provides functionality of drawing chessboard,
  * pieces placement reaction, and checking wining
  * condition {@see GomokuObserver}
@@ -27,7 +29,7 @@ import java.io.File;
  */
 public class Chessboard extends JPanel {
     /**
-     * Parent GUI component
+     * Parent gui component
      */
     private Background background;
 
@@ -63,7 +65,7 @@ public class Chessboard extends JPanel {
 
     /**
      * Preload images, initializes array, adds mouse listeners and
-     * sets GUI properties
+     * sets gui properties
      *
      * @throws IOException if loading images fails
      */
@@ -105,12 +107,12 @@ public class Chessboard extends JPanel {
                         //Check is game end
                         checkFiveInLine(chess, xArrayIndex, yArrayIndex);
 
-                        //Repaints the chessboard and outer layer GUI
+                        //Repaints the chessboard and outer layer gui
                         repaint();
                         background.repaint();
 
                         //computer move
-                        computerMove(chess);
+                        demoComputerMove(chess);
                     }
                 }
             }
@@ -220,7 +222,20 @@ public class Chessboard extends JPanel {
         chess[x][y] = -1;
         checkFiveInLine(chess, x, y);
 
-        //Repaints the chessboard and outer layer GUI
+
+        //Repaints the chessboard and outer layer gui
+
+        repaint();
+        background.repaint();
+    }
+
+    private void demoComputerMove(int[][] chess){
+        //Reverses the flag
+        Background.blackTurn = !Background.blackTurn;
+
+        this.chess = DemoAgent.startMiniMax(chess);
+        //Repaints the chessboard and outer layer gui
+
         repaint();
         background.repaint();
     }

@@ -6,4 +6,4 @@ out
 
 #intellij
 .idea
-project.iml
+*.iml

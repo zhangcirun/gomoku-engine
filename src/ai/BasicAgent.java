@@ -55,16 +55,15 @@ public class BasicAgent {
      * @return the total score
      */
     private static int totalmark(int[][] chess, int x, int y){
-        return marking(horizontalPieces(chess, x, y, -1)) +
-            marking(verticalPieces(chess, x, y, -1)) +
-            marking(diagonalPieces(chess, x, y, -1)) +
-            marking(antiDiagonalPieces(chess, x, y, -1)) +
-            marking(horizontalPieces(chess, x, y, 1)) +
-            marking(verticalPieces(chess, x, y, 1)) +
-            marking(diagonalPieces(chess, x, y, 1)) +
-            marking(antiDiagonalPieces(chess, x, y, 1));
+        return markPiece(chess, x, y, -1) + markPiece(chess, x, y, 1);
     }
 
+    public static int markPiece(int[][] chess, int x, int y, int pieceType){
+        return marking(horizontalPieces(chess, x, y, pieceType)) +
+                marking(verticalPieces(chess, x, y, pieceType)) +
+                marking(diagonalPieces(chess, x, y, pieceType)) +
+                marking(antiDiagonalPieces(chess, x, y, pieceType));
+    }
     /**
      * Pattern matches a row of pieces with pre-defined patterns
      * and return the corresponding score
