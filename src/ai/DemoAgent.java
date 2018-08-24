@@ -37,7 +37,7 @@ public class DemoAgent {
                 //if the tile is empty
                 if (chess[i][j] == 0) {
                     //create child node and search it
-                    int[][] dummy = copyArray(chess);
+                    int[][] dummy = ToolKit.copyArray(chess);
                     dummy[i][j] = pieceType;
                     Node child = new Node(i, j, 0, dummy);
 
@@ -66,15 +66,6 @@ public class DemoAgent {
         }
 
         return root;
-    }
-
-    private static int[][] copyArray(int[][] chess) {
-        int[][] a = new int[chess.length][chess[0].length];
-
-        for (int i = 0; i < chess.length; i++) {
-            a[i] = Arrays.copyOf(chess[i], chess[i].length);
-        }
-        return a;
     }
 
     public static int evaluation(int[][] chess, int pieceType) {
