@@ -17,6 +17,7 @@ public class AiConst {
      */
     public static final String IMPLICATE_FOUR_DOUBLE_EMPTY = "011110";
 
+
     public static final String IMPLICATE_FOUR_SINGLE_EMPTY_A = "01111";
 
     public static final String IMPLICATE_FOUR_SINGLE_EMPTY_B = "11110";
@@ -37,6 +38,8 @@ public class AiConst {
     public static final String IMPLICATE_THREE_C = "011010";
 
     public static final String IMPLICATE_THREE_D = "010110";
+
+    public static final String IMPLICATE_THREE_E = "10101";
 
     /**
      * Two pieces cases

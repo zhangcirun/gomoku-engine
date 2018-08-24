@@ -1,6 +1,7 @@
 package gui;
 
 import ai.DemoAgent;
+import ai.HeuristicAgent;
 import observer.GomokuObserver;
 import gui.constant.GuiConst;
 import ai.BasicAgent;
@@ -108,11 +109,16 @@ public class Chessboard extends JPanel {
                         checkFiveInLine(chess, xArrayIndex, yArrayIndex);
 
                         //Repaints the chessboard and outer layer gui
+
+                        new Thread(new Runnable() {
+                            public void run() {
+                                demoComputerMove(chess);
+                            }
+                        }).start();
+
+
                         repaint();
                         background.repaint();
-
-                        //computer move
-                        demoComputerMove(chess);
                     }
                 }
             }
@@ -154,7 +160,8 @@ public class Chessboard extends JPanel {
      *
      * @param g The java.awt.Graphics class is the abstract base class for drawing components.
      */
-    @Override public void paintComponent(Graphics g) {
+    @Override public void paint(Graphics g) {
+        super.paint(g);
         g.drawImage(boardImage, 0, 0, null);
         g.drawImage(crossSightImage, crossSightXCoordinate + 4, crossSightYCoordinate + 3, null);
 
@@ -200,6 +207,12 @@ public class Chessboard extends JPanel {
         background.repaint();
     }
 
+    /**
+     * Checks whether wining condition is reached
+     * @param chess is the 2-dimension array represents the chessboard
+     * @param xArrayIndex x-coordinate of the piece
+     * @param yArrayIndex y-coordinate of the piece
+     */
     private void checkFiveInLine(int[][] chess, int xArrayIndex, int yArrayIndex){
         if (GomokuObserver.isFiveInLine(chess, xArrayIndex, yArrayIndex)) {
             winner = !Background.blackTurn ? 1 : -1;
@@ -234,6 +247,24 @@ public class Chessboard extends JPanel {
         Background.blackTurn = !Background.blackTurn;
 
         this.chess = DemoAgent.startMiniMax(chess);
+        //Repaints the chessboard and outer layer gui
+        repaint();
+        background.repaint();
+
+    }
+
+    private void testMove(int[][] chess){
+        //Reverses the flag
+        Background.blackTurn = !Background.blackTurn;
+
+        //Check is game end
+        int[] result = HeuristicAgent.nextMove(chess);
+        int x = result[0];
+        int y = result[1];
+        chess[x][y] = -1;
+        checkFiveInLine(chess, x, y);
+
+
         //Repaints the chessboard and outer layer gui
 
         repaint();
