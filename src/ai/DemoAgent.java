@@ -8,11 +8,11 @@ public class DemoAgent {
     private DemoAgent() {
     }
 
-    public static int[][] startMiniMax(int[][] chess) {
+    public static int[] startMiniMax(int[][] chess) {
         Node root = new Node(-1, -1, -1, chess);
         Node result = miniMax(root, 0, -1, true);
         System.out.println("x " + result.getX() + "y " + result.getY() + "score " + result.getScore());
-        return result.getChess();
+        return new int[]{result.getX(), result.getY()};
     }
 
     public static Node miniMax(Node root, int depth, int pieceType, boolean isMax) {

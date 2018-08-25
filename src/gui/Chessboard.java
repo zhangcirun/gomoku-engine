@@ -8,7 +8,7 @@ import ai.BasicAgent;
 
 import java.io.IOException;
 import javax.imageio.ImageIO;
-import javax.swing.JPanel;
+import javax.swing.*;
 
 import java.awt.Dimension;
 import java.awt.Graphics;
@@ -89,7 +89,8 @@ public class Chessboard extends JPanel {
         this.addMouseListener(new MouseAdapter() {
 
             //Add new piece to the chessboard
-            @Override public void mouseClicked(MouseEvent e) {
+            @Override
+            public void mouseClicked(MouseEvent e) {
                 if (Background.gameOnProgress) {
                     //Calculates indexes of the new piece in the 2-dimensional array
                     int xArrayIndex = (int)Math.round((e.getX() - GuiConst.X_AXIS_OFFSET) / GuiConst.TILE_WIDTH);
@@ -116,9 +117,16 @@ public class Chessboard extends JPanel {
                             }
                         }).start();
 
-
                         repaint();
                         background.repaint();
+                        /*
+                        Runnable aiMove = new Runnable() {
+                            public void run() {
+                                demoComputerMove(chess);
+                            }
+                        };
+                        SwingUtilities.invokeLater(aiMove);
+                        */
                     }
                 }
             }
@@ -133,7 +141,8 @@ public class Chessboard extends JPanel {
 
         this.addMouseMotionListener(new MouseMotionAdapter() {
             //Changes cross sight location when cursor moves
-            @Override public void mouseMoved(MouseEvent e) {
+            @Override
+            public void mouseMoved(MouseEvent e) {
                 //Gets relative location in the chessboard
                 int crossSightRelativeX = (int)Math.round((e.getX() - GuiConst.X_AXIS_OFFSET) / GuiConst.TILE_WIDTH);
                 int crossSightRelativeY = (int)Math.round((e.getY() - GuiConst.Y_AXIS_OFFSET) / GuiConst.TILE_WIDTH);
@@ -160,8 +169,8 @@ public class Chessboard extends JPanel {
      *
      * @param g The java.awt.Graphics class is the abstract base class for drawing components.
      */
-    @Override public void paint(Graphics g) {
-        super.paint(g);
+    @Override
+    public void paintComponent(Graphics g) {
         g.drawImage(boardImage, 0, 0, null);
         g.drawImage(crossSightImage, crossSightXCoordinate + 4, crossSightYCoordinate + 3, null);
 
@@ -179,7 +188,8 @@ public class Chessboard extends JPanel {
         }
     }
 
-    @Override public String toString() {
+    @Override
+    public String toString() {
         return super.toString();
     }
 
@@ -219,7 +229,7 @@ public class Chessboard extends JPanel {
             System.out.println("WIN!!");
             Background.gameOnProgress = false;
             //@TODO It's too slow to add a new button
-            add(resultPane);
+            this.add(resultPane);
             validate();
         }
     }
@@ -246,8 +256,13 @@ public class Chessboard extends JPanel {
         //Reverses the flag
         Background.blackTurn = !Background.blackTurn;
 
-        this.chess = DemoAgent.startMiniMax(chess);
+        int[] result = DemoAgent.startMiniMax(chess);
+        int x = result[0];
+        int y = result[1];
+        this.chess[x][y] = -1;
+        checkFiveInLine(chess, x, y);
         //Repaints the chessboard and outer layer gui
+        setVisible(true);
         repaint();
         background.repaint();
 
