@@ -3,6 +3,13 @@ package ai;
 import ai.constant.AiConst;
 import gui.constant.GuiConst;
 
+/**
+ * This class provides a basic heuristic function for the game
+ *
+ * @author  Chang ta'z jun
+ * @version 1.0
+ */
+
 public class HeuristicAgent {
     private HeuristicAgent() {
     }
@@ -11,10 +18,23 @@ public class HeuristicAgent {
      * Returns the score of the whole chessboard regard to black or white
      *
      * @param chess is the 2 dimension array represents the chessboard
-     * @param pieceType indicates which player goes next
      * @return score of the chessboard
      */
-    public static int heuristic(int[][] chess, int pieceType){
+    static int heuristic(int[][] chess){
+        int allyScore = scanVertical(chess, -1) +
+            scanHorizontal(chess, -1) +
+            scanDiagonal(chess, -1) +
+            scanAntiDiagonal(chess, -1);
+
+        int opponentScore = scanVertical(chess, 1) +
+            scanHorizontal(chess, 1) +
+            scanDiagonal(chess, 1) +
+            scanAntiDiagonal(chess, 1);
+        return allyScore - opponentScore;
+    }
+
+    @Deprecated
+    static int heuristic_megaMax(int[][] chess, int pieceType){
         int allyScore = scanVertical(chess, pieceType) +
             scanHorizontal(chess, pieceType) +
             scanDiagonal(chess, pieceType) +
@@ -152,6 +172,12 @@ public class HeuristicAgent {
         return score;
     }
 
+    /**
+     * Returns the score of one row of pieces
+     *
+     * @param pieces the string represents a row of pieces
+     * @return the score of the pieces
+     */
     private static int eval(String pieces){
         if (pieces.contains(AiConst.IMPLICATE_FIVE)) {
             return 50000;
@@ -190,14 +216,6 @@ public class HeuristicAgent {
 
         return 0;
     }
-
-    /**
-     * Evaluate each empty tiles and return the best tile
-     * for the next move.
-     *
-     * @param chess is the 2-dimension array represents the chessboard
-     * @return An array contains the coordinates of next move
-     */
 
     @Deprecated
     public static int[] nextMove(int[][] chess){

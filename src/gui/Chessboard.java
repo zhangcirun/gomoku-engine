@@ -113,7 +113,7 @@ public class Chessboard extends JPanel {
 
                         new Thread(new Runnable() {
                             public void run() {
-                                demoComputerMove(chess);
+                                abMove(chess);
                             }
                         }).start();
 
@@ -282,6 +282,20 @@ public class Chessboard extends JPanel {
 
         //Repaints the chessboard and outer layer gui
 
+        repaint();
+        background.repaint();
+    }
+
+    private void abMove(int[][] chess){
+        Background.blackTurn = !Background.blackTurn;
+
+        int[] result = DemoAgent.startAlphaBetaPruning(chess);
+        int x = result[0];
+        int y = result[1];
+        this.chess[x][y] = -1;
+        checkFiveInLine(chess, x, y);
+        //Repaints the chessboard and outer layer gui
+        setVisible(true);
         repaint();
         background.repaint();
     }

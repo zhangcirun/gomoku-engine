@@ -13,4 +13,10 @@ public class ToolKit {
         }
         return a;
     }
+
+    static int[][] nextMoveChessboard(int[][] chess, int x, int y, int pieceType){
+        int[][] a = copyArray(chess);
+        a[x][y] = pieceType;
+        return a;
+    }
 }
