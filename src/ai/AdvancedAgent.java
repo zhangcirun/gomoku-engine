@@ -2,16 +2,18 @@ package ai;
 
 import gui.constant.GuiConst;
 
+import java.util.List;
+
 /**
  * This class is an AI agent using miniMax search with alpha beta pruning
  *
  * @author Chang ta'z jun
  * @version Version 1.1
  */
-public class DemoAgent {
+public class AdvancedAgent {
     static int count = 0;
 
-    private DemoAgent() {
+    private AdvancedAgent() {
     }
 
     /**
@@ -55,7 +57,7 @@ public class DemoAgent {
                 //if the tile is empty
                 if (chess[i][j] == 0) {
                     //create child node and search it
-                    int[][] dummy = ToolKit.copyArray(chess);
+                    int[][] dummy = aiUtils.copyArray(chess);
                     dummy[i][j] = pieceType;
                     Node child = new Node(i, j, 0, dummy);
 
@@ -131,7 +133,7 @@ public class DemoAgent {
             for (int j = 0; j < GuiConst.TILE_NUM_PER_ROW; j++) {
                 // for each possible moves, do depth first search
                 if (chess[i][j] == 0) {
-                    int[][] nextMove = ToolKit.nextMoveChessboard(chess, i, j, pieceType);
+                    int[][] nextMove = aiUtils.nextMoveChessboard(chess, i, j, pieceType);
                     Node child = new Node(i, j, -1, nextMove);
 
                     int score = alphaBetaPruning_Minimizer(child, depth + 1, pieceType * -1, alpha, beta).getScore();
@@ -188,7 +190,7 @@ public class DemoAgent {
             for (int j = 0; j < GuiConst.TILE_NUM_PER_ROW; j++) {
                 // for each possible moves, do depth first search
                 if (chess[i][j] == 0) {
-                    int[][] nextMove = ToolKit.nextMoveChessboard(chess, i, j, pieceType);
+                    int[][] nextMove = aiUtils.nextMoveChessboard(chess, i, j, pieceType);
                     Node child = new Node(i, j, -1, nextMove);
 
                     int score = alphaBetaPruning_Maximizer(child, depth + 1, pieceType * -1, alpha, beta).getScore();
@@ -209,6 +211,143 @@ public class DemoAgent {
         root.setScore(bestScore);
 
         if (depth == 0) {
+            return bestChild;
+        }
+
+        return root;
+    }
+
+    /**
+     * Starts depth first miniMax search with alpha beta pruning, and the nodes are
+     * pre sorted by manhattan distances.
+     *
+     * @param chess 2-dimension array represents the chessboard
+     * @return most valuable node
+     */
+    public static int[] startAlphaBetaPruning_preSort(int[][] chess) {
+        //instantiate root node with preset x and y to the center of the chessboard(good for pruning)
+        Node root = new Node(7, 7, -1, chess);
+        Node bestMove = alphaBetaPruning_Maximizer_preSort(root, 0, -1, Integer.MIN_VALUE, Integer.MAX_VALUE);
+        int[] result = new int[2];
+        result[0] = bestMove.getX();
+        result[1] = bestMove.getY();
+        System.out.println("x " + bestMove.getX() + "y " + bestMove.getY() + "score " + bestMove.getScore());
+
+        return result;
+    }
+
+    /**
+     * This methods is the maximizer of alpha beta pruning, it prunes the current node
+     * when the alpha value of current node is greater than or equal to the beta value
+     * of its ancient node. Every possible moves are sorted by their manhattan distance
+     * to the last move to improve pruning
+     *
+     * @param root      Current tree node
+     * @param depth     Current depth of the node
+     * @param pieceType Identification of players, 1 for black piece and -1 white piece
+     * @param alpha     alpha value for Max node
+     * @param beta      beta value for Min node
+     * @return The most valuable node
+     */
+    private static Node alphaBetaPruning_Maximizer_preSort(Node root, int depth, int pieceType, int alpha, int beta) {
+        count++;
+        //base case
+        if (depth >= 2) {
+            root.setScore(HeuristicAgent.heuristic(root.getChess()));
+            return root;
+        }
+
+        int[][] chess = root.getChess();
+        int lastX = root.getX();
+        int lastY = root.getY();
+        int bestScore = Integer.MIN_VALUE;
+        Node bestChild = null;
+
+        List<int[]> moves = aiUtils.moveGeneratorWithSort(chess, lastX, lastY);
+
+        for(int[] move : moves){
+            int newX = move[0];
+            int newY = move[1];
+            int[][] nextMove = aiUtils.nextMoveChessboard(chess, newX, newY, pieceType);
+            Node child = new Node(newX, newY, -1 , nextMove);
+
+            int score = alphaBetaPruning_Minimizer_preSort(child, depth + 1, pieceType * -1, alpha, beta).getScore();
+            if (score > bestScore) {
+                bestScore = score;
+                bestChild = child;
+                alpha = score;
+            }
+            //beta pruning
+            if (score >= beta) {
+                root.setScore(bestScore);
+                return bestChild;
+            }
+        }
+
+        root.setScore(bestScore);
+
+        if (depth == 0) {
+            System.out.println("total nodes: " + count);
+            count = 0;
+            return bestChild;
+        }
+
+        return root;
+    }
+
+    /**
+     * This methods is the minimizer of alpha beta pruning, it prunes the current node
+     * when the beta value of current node is less than or equal to the alpha value
+     * of its ancient node. Every possible moves are sorted by their manhattan distance
+     * to the last move to improve pruning
+     *
+     * @param root      Current tree node
+     * @param depth     Current depth of the node
+     * @param pieceType Identification of players, 1 for black piece and -1 white piece
+     * @param alpha     Alpha value for Max node
+     * @param beta      Beta value for Min node
+     * @return The most valuable node
+     */
+    private static Node alphaBetaPruning_Minimizer_preSort(Node root, int depth, int pieceType, int alpha, int beta) {
+        count++;
+        //base case
+        if (depth >= 2) {
+            root.setScore(HeuristicAgent.heuristic(root.getChess()));
+            return root;
+        }
+
+        int[][] chess = root.getChess();
+        int lastX = root.getX();
+        int lastY = root.getY();
+        int bestScore = Integer.MAX_VALUE;
+        Node bestChild = null;
+
+        List<int[]> moves = aiUtils.moveGeneratorWithSort(chess, lastX, lastY);
+
+        for(int[] move : moves){
+            int newX = move[0];
+            int newY = move[1];
+            int[][] nextMove = aiUtils.nextMoveChessboard(chess, newX, newY, pieceType);
+            Node child = new Node(newX, newY, -1 , nextMove);
+
+            int score = alphaBetaPruning_Maximizer_preSort(child, depth + 1, pieceType * -1, alpha, beta).getScore();
+            if (score < bestScore) {
+                bestScore = score;
+                bestChild = child;
+                beta = score;
+            }
+            //alpha pruning
+            if (score <= alpha) {
+                root.setScore(bestScore);
+                return bestChild;
+            }
+        }
+
+        root.setScore(bestScore);
+
+        if (depth == 0) {
+            System.out.println("total nodes: " + count);
+            count = 0;
             return bestChild;
         }
 

@@ -51,7 +51,7 @@ public class HeuristicAgent {
     @Deprecated
     private static int heuristicTest(int [][] chess, int x, int y){
         int score = 0;
-        int[][] dummy = ToolKit.copyArray(chess);
+        int[][] dummy = aiUtils.copyArray(chess);
         dummy[x][y] = -1;
         score += scanVertical(dummy, -1) +
             scanHorizontal(dummy, -1) +
@@ -217,7 +217,6 @@ public class HeuristicAgent {
         return 0;
     }
 
-    @Deprecated
     public static int[] nextMove(int[][] chess){
         int currentMaxScore = 0;
         int x = 0;
@@ -226,7 +225,7 @@ public class HeuristicAgent {
             for(int j = 0; j < GuiConst.TILE_NUM_PER_ROW; j++){
                 //for each empty tiles, calculates their marks
                 if(chess[i][j] == 0) {
-                    //int[][] dummy = ToolKit.copyArray(chess);
+                    //int[][] dummy = aiUtils.copyArray(chess);
                     //dummy[i][j] = -1;
                     //int score = heuristic(dummy, -1);
                     int score = heuristicTest(chess, x, y);

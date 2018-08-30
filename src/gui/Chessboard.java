@@ -1,6 +1,6 @@
 package gui;
 
-import ai.DemoAgent;
+import ai.AdvancedAgent;
 import ai.HeuristicAgent;
 import observer.GomokuObserver;
 import gui.constant.GuiConst;
@@ -256,7 +256,7 @@ public class Chessboard extends JPanel {
         //Reverses the flag
         Background.blackTurn = !Background.blackTurn;
 
-        int[] result = DemoAgent.startMiniMax(chess);
+        int[] result = AdvancedAgent.startMiniMax(chess);
         int x = result[0];
         int y = result[1];
         this.chess[x][y] = -1;
@@ -289,7 +289,7 @@ public class Chessboard extends JPanel {
     private void abMove(int[][] chess){
         Background.blackTurn = !Background.blackTurn;
 
-        int[] result = DemoAgent.startAlphaBetaPruning(chess);
+        int[] result = AdvancedAgent.startAlphaBetaPruning_preSort(chess);
         int x = result[0];
         int y = result[1];
         this.chess[x][y] = -1;
