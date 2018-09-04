@@ -1,6 +1,7 @@
 package ai.constant;
 
 /**
+ * For test use
  * 1 for ally, 0 for empty, 2 for opponent
  *
  * @author Chang ta'z jun

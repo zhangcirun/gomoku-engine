@@ -12,16 +12,22 @@ import java.util.List;
  * This class is a tool class which provides some useful methods
  * for ai package
  *
- * @author  Chang ta'z jun
+ * @author Chang ta'z jun
  * @version Version 1.0
  */
 public class aiUtils {
     private aiUtils() {
     }
 
-    private static Comparator<int[]> moveComparator = new Comparator<int[]>() {
+    private static Comparator<int[]> moveComparator_asc = new Comparator<int[]>() {
         @Override public int compare(int[] moveOne, int[] moveTwo) {
             return moveOne[2] - moveTwo[2];
+        }
+    };
+
+    private static Comparator<int[]> moveComparator_desc = new Comparator<int[]>() {
+        @Override public int compare(int[] moveOne, int[] moveTwo) {
+            return moveTwo[2] - moveOne[2];
         }
     };
 
@@ -64,8 +70,8 @@ public class aiUtils {
      * @param y     Y coordinate of the last move
      * @return List contains all possible moves store in an array [x, y, dist] individually
      */
-    public static List<int[]> moveGeneratorWithSort(int[][] chess, int x, int y) {
-        List<int[]> moves = new ArrayList<>();
+    public static List<int[]> moveGeneratorWithDistanceSort(int[][] chess, int x, int y) {
+        List<int[]> moves = new ArrayList<>(100);
         for (int i = 0; i < GuiConst.TILE_NUM_PER_ROW; i++) {
             for (int j = 0; j < GuiConst.TILE_NUM_PER_ROW; j++) {
                 if (chess[i][j] == 0) {
@@ -73,8 +79,36 @@ public class aiUtils {
                 }
             }
         }
-        moves.sort(moveComparator);
+
+        moves.sort(moveComparator_asc);
+
         return moves;
+
+    }
+
+    /**
+     * Generates all possible moves and sorted by a heuristic function{@see BasicAgent}
+     *
+     * @param chess 2-dimension array represents the chessboard
+     * @return List contains all possible moves store in an array [x, y, dist] individually
+     */
+    public static List<int[]> moveGeneratorWithHeuristicSort(int[][] chess) {
+        List<int[]> moves = new ArrayList<>(100);
+        for (int i = 0; i < GuiConst.TILE_NUM_PER_ROW; i++) {
+            for (int j = 0; j < GuiConst.TILE_NUM_PER_ROW; j++) {
+                if (chess[i][j] == 0) {
+                    moves.add(new int[] {i, j, BasicAgent.totalmark(chess, i, j)});
+                }
+            }
+        }
+
+        moves.sort(moveComparator_desc);
+
+        if(moves.size() > 24){
+            return moves.subList(0, 24);
+        }else{
+            return moves;
+        }
     }
 
 }

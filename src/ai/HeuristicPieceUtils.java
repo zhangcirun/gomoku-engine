@@ -3,8 +3,18 @@ package ai;
 import ai.constant.DemoConst;
 import gui.Chessboard;
 
-public class EvalAgent {
-    private EvalAgent(){}
+/**
+ * This class provides a heuristic function for pieces
+ *
+ * @author Chang ta'z jun
+ * @version 1.0
+ */
+public class HeuristicPieceUtils {
+    private HeuristicPieceUtils(){}
+
+    static int evalAll(int[][] chess, int x, int y){
+        return eval(chess, x, y, -1) + eval(chess, x, y, 1);
+    }
 
     static int eval(int[][] chess, int x, int y, int pieceType){
         int score = 0;

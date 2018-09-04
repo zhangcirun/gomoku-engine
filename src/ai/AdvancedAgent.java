@@ -1,6 +1,8 @@
 package ai;
 
+import ai.constant.AiConst;
 import gui.constant.GuiConst;
+import observer.GomokuObserver;
 
 import java.util.List;
 
@@ -11,7 +13,7 @@ import java.util.List;
  * @version Version 1.1
  */
 public class AdvancedAgent {
-    static int count = 0;
+    private static int count = 0;
 
     private AdvancedAgent() {
     }
@@ -43,7 +45,7 @@ public class AdvancedAgent {
         count++;
         if (depth >= 2) {
             //@Todo
-            root.setScore(HeuristicAgent.heuristic(root.getChess()));
+            root.setScore(HeuristicChessboardUtils.heuristic(root.getChess()));
             return root;
         }
 
@@ -121,7 +123,7 @@ public class AdvancedAgent {
         count++;
         //base case
         if (depth >= 2) {
-            root.setScore(HeuristicAgent.heuristic(root.getChess()));
+            root.setScore(HeuristicChessboardUtils.heuristic(root.getChess()));
             return root;
         }
 
@@ -178,7 +180,7 @@ public class AdvancedAgent {
         count++;
         //base case
         if (depth >= 2) {
-            root.setScore(HeuristicAgent.heuristic(root.getChess()));
+            root.setScore(HeuristicChessboardUtils.heuristic(root.getChess()));
             return root;
         }
 
@@ -226,12 +228,10 @@ public class AdvancedAgent {
      */
     public static int[] startAlphaBetaPruning_preSort(int[][] chess) {
         //instantiate root node with preset x and y to the center of the chessboard(good for pruning)
-        Node root = new Node(7, 7, -1, chess);
+        Node root = new Node(-1, -1, -1, chess);
         Node bestMove = alphaBetaPruning_Maximizer_preSort(root, 0, -1, Integer.MIN_VALUE, Integer.MAX_VALUE);
-        int[] result = new int[2];
-        result[0] = bestMove.getX();
-        result[1] = bestMove.getY();
-        System.out.println("x " + bestMove.getX() + "y " + bestMove.getY() + "score " + bestMove.getScore());
+        int[] result = bestMove.getCoordinates();
+        System.out.println("x " + result[0] + " y " + result[1] + " score " + bestMove.getScore());
 
         return result;
     }
@@ -252,8 +252,8 @@ public class AdvancedAgent {
     private static Node alphaBetaPruning_Maximizer_preSort(Node root, int depth, int pieceType, int alpha, int beta) {
         count++;
         //base case
-        if (depth >= 2) {
-            root.setScore(HeuristicAgent.heuristic(root.getChess()));
+        if (depth >= 4) {
+            root.setScore(HeuristicChessboardUtils.heuristic(root.getChess()));
             return root;
         }
 
@@ -263,13 +263,28 @@ public class AdvancedAgent {
         int bestScore = Integer.MIN_VALUE;
         Node bestChild = null;
 
-        List<int[]> moves = aiUtils.moveGeneratorWithSort(chess, lastX, lastY);
+        //List<int[]> moves = aiUtils.moveGeneratorWithDistanceSort(chess, lastX, lastY);
+        List<int[]> moves = aiUtils.moveGeneratorWithHeuristicSort(chess);
 
-        for(int[] move : moves){
+        for (int[] move : moves) {
             int newX = move[0];
             int newY = move[1];
             int[][] nextMove = aiUtils.nextMoveChessboard(chess, newX, newY, pieceType);
-            Node child = new Node(newX, newY, -1 , nextMove);
+            Node child = new Node(newX, newY, -1, nextMove);
+
+            if (depth == 0) {
+                if (GomokuObserver.isFiveInLine(nextMove, newX, newY)) {
+                    child.setScore(500000);
+                    return child;
+                }
+                int[][] nextMoveBlack = aiUtils.nextMoveChessboard(chess, newX, newY, 1);
+
+                if (GomokuObserver.isFiveInLine(nextMoveBlack, newX, newY)) {
+                    child.setScore(500000);
+                    return child;
+                }
+
+            }
 
             int score = alphaBetaPruning_Minimizer_preSort(child, depth + 1, pieceType * -1, alpha, beta).getScore();
             if (score > bestScore) {
@@ -280,7 +295,7 @@ public class AdvancedAgent {
             //beta pruning
             if (score >= beta) {
                 root.setScore(bestScore);
-                return bestChild;
+                return root;
             }
         }
 
@@ -311,8 +326,8 @@ public class AdvancedAgent {
     private static Node alphaBetaPruning_Minimizer_preSort(Node root, int depth, int pieceType, int alpha, int beta) {
         count++;
         //base case
-        if (depth >= 2) {
-            root.setScore(HeuristicAgent.heuristic(root.getChess()));
+        if (depth >= 4) {
+            root.setScore(HeuristicChessboardUtils.heuristic(root.getChess()));
             return root;
         }
 
@@ -322,13 +337,28 @@ public class AdvancedAgent {
         int bestScore = Integer.MAX_VALUE;
         Node bestChild = null;
 
-        List<int[]> moves = aiUtils.moveGeneratorWithSort(chess, lastX, lastY);
+        //List<int[]> moves = aiUtils.moveGeneratorWithDistanceSort(chess, lastX, lastY);
+        List<int[]> moves = aiUtils.moveGeneratorWithHeuristicSort(chess);
 
-        for(int[] move : moves){
+        for (int[] move : moves) {
             int newX = move[0];
             int newY = move[1];
             int[][] nextMove = aiUtils.nextMoveChessboard(chess, newX, newY, pieceType);
-            Node child = new Node(newX, newY, -1 , nextMove);
+            Node child = new Node(newX, newY, -1, nextMove);
+
+            if (depth == 0) {
+                if (GomokuObserver.isFiveInLine(nextMove, newX, newY)) {
+                    child.setScore(500000);
+                    return child;
+                }
+                int[][] nextMoveBlack = aiUtils.nextMoveChessboard(chess, newX, newY, 1);
+
+                if (GomokuObserver.isFiveInLine(nextMoveBlack, newX, newY)) {
+                    child.setScore(500000);
+                    return child;
+                }
+
+            }
 
             int score = alphaBetaPruning_Maximizer_preSort(child, depth + 1, pieceType * -1, alpha, beta).getScore();
             if (score < bestScore) {
@@ -339,7 +369,7 @@ public class AdvancedAgent {
             //alpha pruning
             if (score <= alpha) {
                 root.setScore(bestScore);
-                return bestChild;
+                return root;
             }
         }
 
@@ -368,15 +398,51 @@ public class AdvancedAgent {
             for (int j = 0; j < GuiConst.TILE_NUM_PER_ROW; j++) {
                 if (chess[i][j] == pieceType) {
                     //scoreAlly += BasicAgent.markPiece(chess, i, j, pieceType);
-                    scoreAlly += EvalAgent.eval(chess, i, j, pieceType);
+                    scoreAlly += HeuristicPieceUtils.eval(chess, i, j, pieceType);
                 }
                 if (chess[i][j] == pieceType * -1) {
                     //scoreOppo += BasicAgent.markPiece(chess, i, j, pieceType * -1);
-                    scoreOppo += EvalAgent.eval(chess, i, j, pieceType * -1);
+                    scoreOppo += HeuristicPieceUtils.eval(chess, i, j, pieceType * -1);
                 }
             }
         }
         return scoreAlly - scoreOppo;
+    }
+
+    /**
+     * @param chess
+     * @param expectScore
+     * @return
+     */
+    public static int[] aspirationSearch(int[][] chess, int expectScore) {
+        int expectedLowerBound = expectScore - AiConst.WINDOW_SIZE_ASPIRATION;
+        int expectedUpperBound = expectScore + AiConst.WINDOW_SIZE_ASPIRATION;
+        Node root = new Node(-1, -1, -1, chess);
+        Node bestMove = alphaBetaPruning_Maximizer_preSort(root, 0, -1, expectedLowerBound, expectedUpperBound);
+        int resultScore = bestMove.getScore();
+
+        if(resultScore > expectedLowerBound && resultScore < expectedUpperBound){
+            //@Todo expected
+            System.out.println("expected");
+            return bestMove.getCoordinatesAndScore();
+        }
+
+        if(resultScore >= expectedUpperBound){
+            //@Todo fail high
+            System.out.println("fail high");
+            Node failHighNode = alphaBetaPruning_Maximizer_preSort(root, 0, -1, resultScore - 1, Integer.MAX_VALUE);
+            return failHighNode.getCoordinatesAndScore();
+        }
+
+        if(resultScore <= expectedLowerBound){
+            //@Todo fail low
+            System.out.println("fail low");
+            Node failLowNode = alphaBetaPruning_Maximizer_preSort(root, 0, -1, Integer.MIN_VALUE, resultScore + 1);
+
+            return failLowNode.getCoordinatesAndScore();
+        }
+
+        return null;
     }
 }
 
@@ -433,5 +499,21 @@ class Node {
 
     void setScore(int score) {
         this.score = score;
+    }
+
+    /**
+     * Returns x coordinate and y coordinate
+     * @return A new array contains coordinates
+     */
+    int[] getCoordinates(){
+        return new int[]{this.x, this.y};
+    }
+
+    /**
+     * Returns x coordinate, y coordinate and the score
+     * @return A new array contains coordinates
+     */
+    int[] getCoordinatesAndScore(){
+        return new int[]{this.x, this.y, this.score};
     }
 }

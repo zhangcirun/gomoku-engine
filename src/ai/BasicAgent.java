@@ -54,7 +54,7 @@ public class BasicAgent {
      * @param y is the coordinate of the tile in y-axis
      * @return the total score
      */
-    private static int totalmark(int[][] chess, int x, int y){
+    public static int totalmark(int[][] chess, int x, int y){
         return markPiece(chess, x, y, -1) + markPiece(chess, x, y, 1);
     }
 

@@ -1,6 +1,7 @@
 package ai.constant;
 
 /**
+ * This class manages constants in ai package
  * 1 for ally, 0 for empty, 2 for opponent
  *
  * @author Chang ta'z jun
@@ -39,7 +40,7 @@ public class AiConst {
 
     public static final String IMPLICATE_THREE_D = "010110";
 
-    public static final String IMPLICATE_THREE_E = "10101";
+    //public static final String IMPLICATE_THREE_E = "10101";
 
     /**
      * Two pieces cases
@@ -57,4 +58,8 @@ public class AiConst {
 
     public static final String IMPLICATE_ONE_B = "001000";
 
+    /**
+     * Window size for Aspiration search
+     */
+    public static final int WINDOW_SIZE_ASPIRATION = 100;
 }

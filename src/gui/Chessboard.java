@@ -1,7 +1,7 @@
 package gui;
 
 import ai.AdvancedAgent;
-import ai.HeuristicAgent;
+import ai.HeuristicChessboardUtils;
 import observer.GomokuObserver;
 import gui.constant.GuiConst;
 import ai.BasicAgent;
@@ -26,7 +26,7 @@ import java.io.File;
  * condition {@see GomokuObserver}
  *
  * @author Chang ta'z jun
- * @version Version 1.1
+ * @version Version 1.2
  */
 public class Chessboard extends JPanel {
     /**
@@ -57,6 +57,8 @@ public class Chessboard extends JPanel {
      * Shows game result
      */
     private GameResultPane resultPane;
+
+    private int lastScoreAspiration = 0;
 
     Chessboard(Background background) throws Exception {
         init();
@@ -109,14 +111,16 @@ public class Chessboard extends JPanel {
                         //Check is game end
                         checkFiveInLine(chess, xArrayIndex, yArrayIndex);
 
-                        //Repaints the chessboard and outer layer gui
 
+                        //calculate computer move in a new thread
                         new Thread(new Runnable() {
                             public void run() {
                                 abMove(chess);
+                                //aspirationMove(chess);
                             }
                         }).start();
 
+                        //Repaints the chessboard and outer layer gui
                         repaint();
                         background.repaint();
                         /*
@@ -268,30 +272,31 @@ public class Chessboard extends JPanel {
 
     }
 
-    private void testMove(int[][] chess){
-        //Reverses the flag
-        Background.blackTurn = !Background.blackTurn;
-
-        //Check is game end
-        int[] result = HeuristicAgent.nextMove(chess);
-        int x = result[0];
-        int y = result[1];
-        chess[x][y] = -1;
-        checkFiveInLine(chess, x, y);
-
-
-        //Repaints the chessboard and outer layer gui
-
-        repaint();
-        background.repaint();
-    }
-
     private void abMove(int[][] chess){
         Background.blackTurn = !Background.blackTurn;
 
         int[] result = AdvancedAgent.startAlphaBetaPruning_preSort(chess);
+        //int[] result = AdvancedAgent.startAlphaBetaPruning(chess);
         int x = result[0];
         int y = result[1];
+        this.chess[x][y] = -1;
+        checkFiveInLine(chess, x, y);
+        //Repaints the chessboard and outer layer gui
+        setVisible(true);
+        repaint();
+        background.repaint();
+    }
+
+    private void aspirationMove(int[][] chess){
+        Background.blackTurn = !Background.blackTurn;
+
+        int[] result = AdvancedAgent.aspirationSearch(chess, lastScoreAspiration);
+        int x = result[0];
+        int y = result[1];
+
+        //updates last score
+        lastScoreAspiration = result[2];
+        System.out.println("lastScoreUpdates: " + lastScoreAspiration);
         this.chess[x][y] = -1;
         checkFiveInLine(chess, x, y);
         //Repaints the chessboard and outer layer gui
