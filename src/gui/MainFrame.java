@@ -7,6 +7,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -49,9 +50,10 @@ public class MainFrame extends JFrame{
         //frame menu
         JMenuBar menuBar = new JMenuBar();
 
-        //reset game
+        //menu1
         JMenu menu1 = new JMenu("Menu");
         JMenuItem resetGame = new JMenuItem("Reset Game");
+        JMenuItem clearTextArea = new JMenuItem("Clear Text Field");
 
         resetGame.addActionListener(new ActionListener() {
             @Override public void actionPerformed(ActionEvent e) {
@@ -60,8 +62,17 @@ public class MainFrame extends JFrame{
             }
         });
 
-        menu1.add(resetGame);
+        clearTextArea.addActionListener(new ActionListener() {
+            @Override public void actionPerformed(ActionEvent e) {
+                System.out.println("Text Area Cleared");
+                Background.clearTextArea();
+            }
+        });
 
+        menu1.add(resetGame);
+        menu1.add(clearTextArea);
+
+        //menu2
         JMenu menu2 = new JMenu("Help");
         JMenuItem help = new JMenuItem("MainFrame Rules");
         menu2.add(help);

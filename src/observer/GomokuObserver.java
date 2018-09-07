@@ -9,6 +9,9 @@ package observer;
 import gui.Chessboard;
 
 public class GomokuObserver {
+
+    private GomokuObserver(){};
+
     /**
      * Determines whether five pieces are in one row or not
      *

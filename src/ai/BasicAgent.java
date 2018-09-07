@@ -73,11 +73,11 @@ public class BasicAgent {
      */
     private static int marking(String pieces) {
         if (pieces.contains(AiConst.IMPLICATE_FIVE)) {
-            return 50000;
+            return 500000;
         }
 
         if (pieces.contains(AiConst.IMPLICATE_FOUR_DOUBLE_EMPTY)) {
-            return 4320;
+            return 10000;
         }
 
         if (pieces.contains(AiConst.IMPLICATE_FOUR_SINGLE_EMPTY_A) ||

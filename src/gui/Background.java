@@ -2,10 +2,9 @@ package gui;
 
 import gui.constant.GuiConst;
 import javax.imageio.ImageIO;
-import javax.swing.JPanel;
+import javax.swing.*;
 
-import java.awt.Dimension;
-import java.awt.Graphics;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 
@@ -26,6 +25,16 @@ public class Background extends JPanel {
     private Chessboard chessboard;
 
     /**
+     * Text Area for showing game information
+     */
+    private static JTextArea textArea;
+
+    /**
+     * Scroll pane of the text area
+     */
+    private JScrollPane textAreaScrollPane;
+
+    /**
      * Indicates which player should go in the next turn
      */
     static boolean blackTurn = true;
@@ -41,14 +50,12 @@ public class Background extends JPanel {
 
     private void init() throws Exception {
         this.background = ImageIO.read(new File("src/gui/assets/backgroundAutumn.jpg"));
-        this.blackNext = ImageIO.read(new File("src/gui/assets/blackNext.png"));
-        this.whiteNext = ImageIO.read(new File("src/gui/assets/whiteNext.png"));
+        //this.blackNext = ImageIO.read(new File("src/gui/assets/blackNext.png"));
+        //this.whiteNext = ImageIO.read(new File("src/gui/assets/whiteNext.png"));
         this.setPreferredSize(new Dimension(GuiConst.FRAME_WIDTH, GuiConst.FRAME_HEIGHT));
         this.setLayout(null);
-
-        chessboard = new Chessboard(this);
-        chessboard.setBounds(245, 12, GuiConst.BOARD_WIDTH, GuiConst.BOARD_HEIGHT);
-        this.add(chessboard);
+        addChessboard();
+        addTextArea();
     }
 
     /**
@@ -57,13 +64,40 @@ public class Background extends JPanel {
      * @param g The java.awt.Graphics class is the abstract base class for drawing components.
      */
     @Override public void paintComponent(Graphics g) {
-        g.drawImage(background, 0, 0, null);
+        //g.drawImage(background, 0, 0, null);
+        /*
+        //draw the flag
         if (blackTurn) {
             g.drawImage(blackNext, 1000, 450, null);
         } else if (!blackTurn) {
             g.drawImage(whiteNext, 1000, 450, null);
         }
+        */
 
+    }
+
+    private void addTextArea(){
+        textArea = new JTextArea();
+        textArea.setEditable(false);
+        //textArea.setEditable(false);
+        this.textAreaScrollPane = new JScrollPane(textArea);
+        textAreaScrollPane.setBounds(800, 12, 340, 536);
+        textAreaScrollPane.setVerticalScrollBarPolicy( JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        this.add(textAreaScrollPane);
+    }
+
+    private void addChessboard() throws Exception{
+        chessboard = new Chessboard(this);
+        chessboard.setBounds(100, 12, GuiConst.BOARD_WIDTH, GuiConst.BOARD_HEIGHT);
+        this.add(chessboard);
+    }
+
+    public static void addMessage(String str){
+        textArea.append(str + "\n");
+    }
+
+    static void clearTextArea(){
+        textArea.setText("");
     }
 
     void resetGame() {

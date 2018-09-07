@@ -2,6 +2,7 @@ package gui;
 
 import ai.AdvancedAgent;
 import ai.HeuristicChessboardUtils;
+import observer.GameParameterObserver;
 import observer.GomokuObserver;
 import gui.constant.GuiConst;
 import ai.BasicAgent;
@@ -57,8 +58,6 @@ public class Chessboard extends JPanel {
      * Shows game result
      */
     private GameResultPane resultPane;
-
-    private int lastScoreAspiration = 0;
 
     Chessboard(Background background) throws Exception {
         init();
@@ -290,13 +289,13 @@ public class Chessboard extends JPanel {
     private void aspirationMove(int[][] chess){
         Background.blackTurn = !Background.blackTurn;
 
-        int[] result = AdvancedAgent.aspirationSearch(chess, lastScoreAspiration);
+        int[] result = AdvancedAgent.aspirationSearch(chess, GameParameterObserver.getLastScoreAspiration());
         int x = result[0];
         int y = result[1];
 
         //updates last score
-        lastScoreAspiration = result[2];
-        System.out.println("lastScoreUpdates: " + lastScoreAspiration);
+        GameParameterObserver.updateLastScoreAspiration(result[2]);
+        System.out.println("lastScoreUpdates: " + GameParameterObserver.getLastScoreAspiration());
         this.chess[x][y] = -1;
         checkFiveInLine(chess, x, y);
         //Repaints the chessboard and outer layer gui

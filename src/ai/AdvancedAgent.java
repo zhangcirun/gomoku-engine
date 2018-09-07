@@ -1,6 +1,7 @@
 package ai;
 
 import ai.constant.AiConst;
+import gui.Background;
 import gui.constant.GuiConst;
 import observer.GomokuObserver;
 
@@ -231,7 +232,7 @@ public class AdvancedAgent {
         Node root = new Node(-1, -1, -1, chess);
         Node bestMove = alphaBetaPruning_Maximizer_preSort(root, 0, -1, Integer.MIN_VALUE, Integer.MAX_VALUE);
         int[] result = bestMove.getCoordinates();
-        System.out.println("x " + result[0] + " y " + result[1] + " score " + bestMove.getScore());
+        Background.addMessage( "Computer move : (x, " + result[0] + ") (y, " + result[1] + ") score " + bestMove.getScore());
 
         return result;
     }
@@ -239,8 +240,8 @@ public class AdvancedAgent {
     /**
      * This methods is the maximizer of alpha beta pruning, it prunes the current node
      * when the alpha value of current node is greater than or equal to the beta value
-     * of its ancient node. Every possible moves are sorted by their manhattan distance
-     * to the last move to improve pruning
+     * of its ancient node. Every possible moves are sorted by a heuristic function
+     * to improve pruning
      *
      * @param root      Current tree node
      * @param depth     Current depth of the node
@@ -266,25 +267,20 @@ public class AdvancedAgent {
         //List<int[]> moves = aiUtils.moveGeneratorWithDistanceSort(chess, lastX, lastY);
         List<int[]> moves = aiUtils.moveGeneratorWithHeuristicSort(chess);
 
+        //detect five in row
+        // @Todo Bad way
+        if (depth == 0) {
+            Node n = detectFiveInRow(chess, moves, pieceType);
+            if (n != null) {
+                return n;
+            }
+        }
+
         for (int[] move : moves) {
             int newX = move[0];
             int newY = move[1];
             int[][] nextMove = aiUtils.nextMoveChessboard(chess, newX, newY, pieceType);
             Node child = new Node(newX, newY, -1, nextMove);
-
-            if (depth == 0) {
-                if (GomokuObserver.isFiveInLine(nextMove, newX, newY)) {
-                    child.setScore(500000);
-                    return child;
-                }
-                int[][] nextMoveBlack = aiUtils.nextMoveChessboard(chess, newX, newY, 1);
-
-                if (GomokuObserver.isFiveInLine(nextMoveBlack, newX, newY)) {
-                    child.setScore(500000);
-                    return child;
-                }
-
-            }
 
             int score = alphaBetaPruning_Minimizer_preSort(child, depth + 1, pieceType * -1, alpha, beta).getScore();
             if (score > bestScore) {
@@ -303,6 +299,7 @@ public class AdvancedAgent {
 
         if (depth == 0) {
             System.out.println("total nodes: " + count);
+            Background.addMessage("Total nodes: " + count);
             count = 0;
             return bestChild;
         }
@@ -313,8 +310,8 @@ public class AdvancedAgent {
     /**
      * This methods is the minimizer of alpha beta pruning, it prunes the current node
      * when the beta value of current node is less than or equal to the alpha value
-     * of its ancient node. Every possible moves are sorted by their manhattan distance
-     * to the last move to improve pruning
+     * of its ancient node. Every possible moves are sorted by a heuristic function
+     * to improve pruning
      *
      * @param root      Current tree node
      * @param depth     Current depth of the node
@@ -340,25 +337,19 @@ public class AdvancedAgent {
         //List<int[]> moves = aiUtils.moveGeneratorWithDistanceSort(chess, lastX, lastY);
         List<int[]> moves = aiUtils.moveGeneratorWithHeuristicSort(chess);
 
+        // @Todo Bad way
+        if (depth == 0) {
+            Node n = detectFiveInRow(chess, moves, pieceType);
+            if (n != null) {
+                return n;
+            }
+        }
+
         for (int[] move : moves) {
             int newX = move[0];
             int newY = move[1];
             int[][] nextMove = aiUtils.nextMoveChessboard(chess, newX, newY, pieceType);
             Node child = new Node(newX, newY, -1, nextMove);
-
-            if (depth == 0) {
-                if (GomokuObserver.isFiveInLine(nextMove, newX, newY)) {
-                    child.setScore(500000);
-                    return child;
-                }
-                int[][] nextMoveBlack = aiUtils.nextMoveChessboard(chess, newX, newY, 1);
-
-                if (GomokuObserver.isFiveInLine(nextMoveBlack, newX, newY)) {
-                    child.setScore(500000);
-                    return child;
-                }
-
-            }
 
             int score = alphaBetaPruning_Maximizer_preSort(child, depth + 1, pieceType * -1, alpha, beta).getScore();
             if (score < bestScore) {
@@ -421,25 +412,59 @@ public class AdvancedAgent {
         Node bestMove = alphaBetaPruning_Maximizer_preSort(root, 0, -1, expectedLowerBound, expectedUpperBound);
         int resultScore = bestMove.getScore();
 
-        if(resultScore > expectedLowerBound && resultScore < expectedUpperBound){
+        if (resultScore > expectedLowerBound && resultScore < expectedUpperBound) {
             //@Todo expected
             System.out.println("expected");
             return bestMove.getCoordinatesAndScore();
         }
 
-        if(resultScore >= expectedUpperBound){
+        if (resultScore >= expectedUpperBound) {
             //@Todo fail high
             System.out.println("fail high");
             Node failHighNode = alphaBetaPruning_Maximizer_preSort(root, 0, -1, resultScore - 1, Integer.MAX_VALUE);
             return failHighNode.getCoordinatesAndScore();
         }
 
-        if(resultScore <= expectedLowerBound){
+        if (resultScore <= expectedLowerBound) {
             //@Todo fail low
             System.out.println("fail low");
             Node failLowNode = alphaBetaPruning_Maximizer_preSort(root, 0, -1, Integer.MIN_VALUE, resultScore + 1);
 
             return failLowNode.getCoordinatesAndScore();
+        }
+
+        return null;
+    }
+
+    /**
+     * Detects whether next move can win the game or not, if next move wins then
+     * return this node, otherwise defence if the component can win the game in
+     * next move
+     *
+     * @param chess     2-dimensional array represents the chessboard
+     * @param moves     List contains all possible move represents as an array [x, y, score]
+     * @param pieceType Identification of black(1) and white(-1)
+     * @return Node leeds to win or null if no matched situation
+     */
+    private static Node detectFiveInRow(int[][] chess, List<int[]> moves, int pieceType) {
+        //detects if next move can win directly
+        for (int[] move : moves) {
+            int newX = move[0];
+            int newY = move[1];
+            int[][] nextMove = aiUtils.nextMoveChessboard(chess, newX, newY, pieceType);
+            if (GomokuObserver.isFiveInLine(nextMove, newX, newY)) {
+                return new Node(move[0], move[1], 500000, nextMove);
+            }
+        }
+
+        //prevents opponent wins
+        for (int[] move : moves) {
+            int newX = move[0];
+            int newY = move[1];
+            int[][] nextMove = aiUtils.nextMoveChessboard(chess, newX, newY, pieceType * -1);
+            if (GomokuObserver.isFiveInLine(nextMove, newX, newY)) {
+                return new Node(move[0], move[1], 500000, nextMove);
+            }
         }
 
         return null;
@@ -503,17 +528,19 @@ class Node {
 
     /**
      * Returns x coordinate and y coordinate
+     *
      * @return A new array contains coordinates
      */
-    int[] getCoordinates(){
-        return new int[]{this.x, this.y};
+    int[] getCoordinates() {
+        return new int[] {this.x, this.y};
     }
 
     /**
      * Returns x coordinate, y coordinate and the score
+     *
      * @return A new array contains coordinates
      */
-    int[] getCoordinatesAndScore(){
-        return new int[]{this.x, this.y, this.score};
+    int[] getCoordinatesAndScore() {
+        return new int[] {this.x, this.y, this.score};
     }
 }
