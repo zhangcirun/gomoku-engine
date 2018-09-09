@@ -104,8 +104,8 @@ public class aiUtils {
 
         moves.sort(moveComparator_desc);
 
-        if(moves.size() > 24){
-            return moves.subList(0, 24);
+        if(moves.size() > 10){
+            return moves.subList(0, 10);
         }else{
             return moves;
         }

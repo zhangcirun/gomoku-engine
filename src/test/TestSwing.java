@@ -1,16 +1,20 @@
 package test;
 
 import gui.Chessboard;
+import gui.SettingPane;
 import gui.constant.GuiConst;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 
 public class TestSwing extends JFrame {
     private BufferedImage background, blackNext, whiteNext, boardImage;
+    private JFrame setting;
 
     public TestSwing() throws Exception{
 
@@ -37,8 +41,9 @@ public class TestSwing extends JFrame {
         scrollPane.setVerticalScrollBarPolicy( JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
 
         this.add(chessboard);
-        //this.add(textArea);
         this.add(scrollPane);
+        addButton();
+        setting();
         this.setSize(GuiConst.FRAME_WIDTH, GuiConst.FRAME_HEIGHT);
         this.setResizable(false);
         this.setLocationRelativeTo(null);
@@ -47,6 +52,27 @@ public class TestSwing extends JFrame {
 
     }
 
+    private void setting(){
+        setting = new SettingPane();
+        setting.setLocationRelativeTo(this);
+        //setting.setBounds(300,200,200,150);
+        //this.getLayeredPane().add(setting,new Integer(Integer.MAX_VALUE));
+
+    }
+
+    private void addButton(){
+        JButton jb2=new JButton();//实例化一个没有文字与图片的按钮
+        jb2.setBounds(20,20,50,50);
+
+        jb2.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                setting.setVisible(!setting.isVisible());
+            }
+        });
+        this.add(jb2);
+    }
     public static void main(String[] args) throws Exception {
         new TestSwing();
     }

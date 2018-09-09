@@ -3,7 +3,7 @@ package ai;
 import ai.constant.AiConst;
 import gui.Background;
 import gui.constant.GuiConst;
-import observer.GomokuObserver;
+import observer.GameStatuChecker;
 
 import java.util.List;
 
@@ -15,6 +15,7 @@ import java.util.List;
  */
 public class AdvancedAgent {
     private static int count = 0;
+    private static int maximumSearchDepth = 7;
 
     private AdvancedAgent() {
     }
@@ -27,7 +28,7 @@ public class AdvancedAgent {
      */
     public static int[] startMiniMax(int[][] chess) {
         Node root = new Node(-1, -1, -1, chess);
-        Node result = miniMax(root, 0, -1, true);
+        Node result = miniMax(root, 1, -1, true);
         System.out.println("x " + result.getX() + "y " + result.getY() + "score " + result.getScore());
         return new int[] {result.getX(), result.getY()};
     }
@@ -44,7 +45,7 @@ public class AdvancedAgent {
      */
     private static Node miniMax(Node root, int depth, int pieceType, boolean isMax) {
         count++;
-        if (depth >= 2) {
+        if (depth >= maximumSearchDepth) {
             //@Todo
             root.setScore(HeuristicChessboardUtils.heuristic(root.getChess()));
             return root;
@@ -82,7 +83,7 @@ public class AdvancedAgent {
         }
         root.setScore(bestScore);
 
-        if (depth == 0) {
+        if (depth == 1) {
             System.out.println("Minimax total nodes: " + count);
             count = 0;
             return bestChild;
@@ -99,7 +100,7 @@ public class AdvancedAgent {
      */
     public static int[] startAlphaBetaPruning(int[][] chess) {
         Node root = new Node(-1, -1, -1, chess);
-        Node bestMove = alphaBetaPruning_Maximizer(root, 0, -1, Integer.MIN_VALUE, Integer.MAX_VALUE);
+        Node bestMove = alphaBetaPruning_Maximizer(root, 1, -1, Integer.MIN_VALUE, Integer.MAX_VALUE);
         int[] result = new int[2];
         result[0] = bestMove.getX();
         result[1] = bestMove.getY();
@@ -123,7 +124,7 @@ public class AdvancedAgent {
     private static Node alphaBetaPruning_Maximizer(Node root, int depth, int pieceType, int alpha, int beta) {
         count++;
         //base case
-        if (depth >= 2) {
+        if (depth >= maximumSearchDepth) {
             root.setScore(HeuristicChessboardUtils.heuristic(root.getChess()));
             return root;
         }
@@ -156,7 +157,7 @@ public class AdvancedAgent {
 
         root.setScore(bestScore);
 
-        if (depth == 0) {
+        if (depth == 1) {
             System.out.println("total nodes: " + count);
             count = 0;
             return bestChild;
@@ -180,7 +181,7 @@ public class AdvancedAgent {
     private static Node alphaBetaPruning_Minimizer(Node root, int depth, int pieceType, int alpha, int beta) {
         count++;
         //base case
-        if (depth >= 2) {
+        if (depth >= maximumSearchDepth) {
             root.setScore(HeuristicChessboardUtils.heuristic(root.getChess()));
             return root;
         }
@@ -213,7 +214,7 @@ public class AdvancedAgent {
 
         root.setScore(bestScore);
 
-        if (depth == 0) {
+        if (depth == 1) {
             return bestChild;
         }
 
@@ -230,9 +231,10 @@ public class AdvancedAgent {
     public static int[] startAlphaBetaPruning_preSort(int[][] chess) {
         //instantiate root node with preset x and y to the center of the chessboard(good for pruning)
         Node root = new Node(-1, -1, -1, chess);
-        Node bestMove = alphaBetaPruning_Maximizer_preSort(root, 0, -1, Integer.MIN_VALUE, Integer.MAX_VALUE);
+        Node bestMove = alphaBetaPruning_Maximizer_preSort(root, 1, -1, Integer.MIN_VALUE, Integer.MAX_VALUE);
         int[] result = bestMove.getCoordinates();
-        Background.addMessage( "Computer move : (x, " + result[0] + ") (y, " + result[1] + ") score " + bestMove.getScore());
+        Background
+            .addMessage("Computer move : (x, " + result[0] + ") (y, " + result[1] + ") score " + bestMove.getScore());
 
         return result;
     }
@@ -253,7 +255,7 @@ public class AdvancedAgent {
     private static Node alphaBetaPruning_Maximizer_preSort(Node root, int depth, int pieceType, int alpha, int beta) {
         count++;
         //base case
-        if (depth >= 4) {
+        if (depth >= maximumSearchDepth) {
             root.setScore(HeuristicChessboardUtils.heuristic(root.getChess()));
             return root;
         }
@@ -269,7 +271,7 @@ public class AdvancedAgent {
 
         //detect five in row
         // @Todo Bad way
-        if (depth == 0) {
+        if (depth == 1) {
             Node n = detectFiveInRow(chess, moves, pieceType);
             if (n != null) {
                 return n;
@@ -297,7 +299,7 @@ public class AdvancedAgent {
 
         root.setScore(bestScore);
 
-        if (depth == 0) {
+        if (depth == 1) {
             System.out.println("total nodes: " + count);
             Background.addMessage("Total nodes: " + count);
             count = 0;
@@ -323,7 +325,7 @@ public class AdvancedAgent {
     private static Node alphaBetaPruning_Minimizer_preSort(Node root, int depth, int pieceType, int alpha, int beta) {
         count++;
         //base case
-        if (depth >= 4) {
+        if (depth >= maximumSearchDepth) {
             root.setScore(HeuristicChessboardUtils.heuristic(root.getChess()));
             return root;
         }
@@ -336,9 +338,8 @@ public class AdvancedAgent {
 
         //List<int[]> moves = aiUtils.moveGeneratorWithDistanceSort(chess, lastX, lastY);
         List<int[]> moves = aiUtils.moveGeneratorWithHeuristicSort(chess);
-
         // @Todo Bad way
-        if (depth == 0) {
+        if (depth == 1) {
             Node n = detectFiveInRow(chess, moves, pieceType);
             if (n != null) {
                 return n;
@@ -366,7 +367,7 @@ public class AdvancedAgent {
 
         root.setScore(bestScore);
 
-        if (depth == 0) {
+        if (depth == 1) {
             System.out.println("total nodes: " + count);
             count = 0;
             return bestChild;
@@ -452,7 +453,7 @@ public class AdvancedAgent {
             int newX = move[0];
             int newY = move[1];
             int[][] nextMove = aiUtils.nextMoveChessboard(chess, newX, newY, pieceType);
-            if (GomokuObserver.isFiveInLine(nextMove, newX, newY)) {
+            if (GameStatuChecker.isFiveInLine(nextMove, newX, newY)) {
                 return new Node(move[0], move[1], 500000, nextMove);
             }
         }
@@ -462,12 +463,21 @@ public class AdvancedAgent {
             int newX = move[0];
             int newY = move[1];
             int[][] nextMove = aiUtils.nextMoveChessboard(chess, newX, newY, pieceType * -1);
-            if (GomokuObserver.isFiveInLine(nextMove, newX, newY)) {
+            if (GameStatuChecker.isFiveInLine(nextMove, newX, newY)) {
                 return new Node(move[0], move[1], 500000, nextMove);
             }
         }
 
         return null;
+    }
+
+    /**
+     * Reset maximum search depth
+     *
+     * @param depth maximum depth of the search tree
+     */
+    public static void setMaximumSearchDepth(int depth) {
+        maximumSearchDepth = depth;
     }
 }
 

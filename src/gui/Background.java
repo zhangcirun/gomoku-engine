@@ -1,6 +1,7 @@
 package gui;
 
 import gui.constant.GuiConst;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
@@ -76,31 +77,36 @@ public class Background extends JPanel {
 
     }
 
-    private void addTextArea(){
+    private void addTextArea() {
         textArea = new JTextArea();
         textArea.setEditable(false);
         //textArea.setEditable(false);
+        textArea.setText("JGomoku 1.0.1 @2018 copyright :-)\n\n");
         this.textAreaScrollPane = new JScrollPane(textArea);
         textAreaScrollPane.setBounds(800, 12, 340, 536);
-        textAreaScrollPane.setVerticalScrollBarPolicy( JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
+        textAreaScrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_ALWAYS);
         this.add(textAreaScrollPane);
     }
 
-    private void addChessboard() throws Exception{
+    private void addChessboard() throws Exception {
         chessboard = new Chessboard(this);
         chessboard.setBounds(100, 12, GuiConst.BOARD_WIDTH, GuiConst.BOARD_HEIGHT);
         this.add(chessboard);
     }
 
-    public static void addMessage(String str){
+    public static void addMessage(String str) {
         textArea.append(str + "\n");
     }
 
-    static void clearTextArea(){
+    static void clearTextArea() {
         textArea.setText("");
     }
 
     void resetGame() {
         this.chessboard.resetGame();
+    }
+
+    void revertHistory(){
+        this.chessboard.revertHistory();
     }
 }

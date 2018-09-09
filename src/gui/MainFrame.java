@@ -1,11 +1,8 @@
 package gui;
 
 import gui.constant.GuiConst;
-import javax.swing.WindowConstants;
-import javax.swing.JFrame;
-import javax.swing.JMenuBar;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
+
+import javax.swing.*;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -25,11 +22,13 @@ import java.awt.event.ActionListener;
  */
 public class MainFrame extends JFrame{
     private Background background;
+    private SettingPane settingPane;
 
     public MainFrame() throws Exception {
         this.background = new Background();
         init();
         addMenu();
+        addSettingPane();
         this.add(background);
         this.setVisible(true);
     }
@@ -54,6 +53,7 @@ public class MainFrame extends JFrame{
         JMenu menu1 = new JMenu("Menu");
         JMenuItem resetGame = new JMenuItem("Reset Game");
         JMenuItem clearTextArea = new JMenuItem("Clear Text Field");
+        JMenuItem revert = new JMenuItem("Revert");
 
         resetGame.addActionListener(new ActionListener() {
             @Override public void actionPerformed(ActionEvent e) {
@@ -69,16 +69,41 @@ public class MainFrame extends JFrame{
             }
         });
 
+        revert.addActionListener(new ActionListener() {
+            @Override public void actionPerformed(ActionEvent e) {
+                background.revertHistory();
+            }
+        });
+
         menu1.add(resetGame);
         menu1.add(clearTextArea);
+        menu1.add(revert);
 
         //menu2
-        JMenu menu2 = new JMenu("Help");
-        JMenuItem help = new JMenuItem("MainFrame Rules");
-        menu2.add(help);
+        JMenu menu2 = new JMenu("Setting");
+        JMenuItem gameSetting = new JMenuItem("Game Setting");
+
+        gameSetting.addActionListener(new ActionListener() {
+            @Override public void actionPerformed(ActionEvent e) {
+                settingPane.setVisible(true);
+            }
+        });
+
+        menu2.add(gameSetting);
+
+        //menu3
+        JMenu menu3 = new JMenu("Help");
+        JMenuItem help = new JMenuItem("Rules");
+        menu3.add(help);
 
         menuBar.add(menu1);
         menuBar.add(menu2);
+        menuBar.add(menu3);
         this.setJMenuBar(menuBar);
+    }
+
+    private void addSettingPane(){
+        settingPane = new SettingPane();
+        settingPane.setLocationRelativeTo(this);
     }
 }
