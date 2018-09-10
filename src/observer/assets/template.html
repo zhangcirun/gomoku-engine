@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <script>
+        var count = 0;
+
+        var chess = [{x:0,y:0,t:1}, {x:1,y:1,t:-1}, {x:2,y:2,t:-1}, {x:3,y:3,t:-1},
+            {x:4,y:4,t:-1}, {x:5,y:5,t:-1}, {x:6,y:6,t:-1}, {x:7,y:7,t:-1},
+            {x:8,y:8,t:-1}, {x:9,y:9,t:-1}, {x:10,y:10,t:1}, {x:13,y:11,t:-1},
+            {x:12,y:12,t:-1}, {x:13,y:13,t:-1}, {x:14,y:14,t:-1},];
+
+            function countTest(){
+                alert(count);
+                count = count + 1;
+            }
+
+            function deleteLastNode(){
+                var images = document.getElementById("images");
+                var child = images.lastChild;
+                if(child != null){
+                    images.removeChild(child);
+                    count = count - 1;
+                }
+            }
+
+            function drawPieces(){
+                var coords = getCoords();
+                var offset_x = coords[0];
+                var offset_y = coords[1];
+                //alert("kcoein");
+                if(count < chess.length){
+                    for(var i = 0; i < chess.length; i++) {
+                        //alert(chess[i].t);
+                        if(i == count){
+                            draw(chess[i].x * 35 + offset_x + 5, chess[i].y * 35.8 + offset_y, chess[i].t);
+                            count = count + 1;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            function draw(x, y, type){
+                var images = document.getElementById("images");
+                var piece = new Image();
+                if(type == 1){
+                    piece.src = "black.png";
+                }else{
+                    piece.src = "white.png";
+                }
+                piece.style.position = "absolute";
+                piece.style.left = x + "px";
+                piece.style.top =  y + "px";
+                images.appendChild(piece);
+            }
+
+            function getCoords(){
+                var innerYValue = 0;
+                var innerXValue = 0;
+                var elem = document.getElementById("chessboard");
+
+                while( elem != null ) {
+                    innerYValue += elem.offsetTop;
+                    innerXValue += elem.offsetLeft;
+                    elem = elem.offsetParent;
+                }
+                return new Array(innerXValue, innerYValue);
+            }
+
+            </script>
+        </head>
+    <body>
+
+        <h1 style="text-align:center;">JGomoku Game Report</h1>
+        <input type="button" onclick="countTest()" value="cev" />
+        <input type="button" onclick="myFunction()" value="222" />
+        <div id="images"></div>
+        <p style="text-align:center;">
+            <input type="image" onclick="deleteLastNode()" value="backward " src="backward.png" style="outline:none;"/>
+            <img src="chessboard.jpg" alt="chessboard" id = "chessboard" align="center" />
+            <input type="image" onclick="drawPieces()" value="forward " src="forward.png" style="outline:none;"/>
+        </p>
+        <div style="text-align:center;">
+            <p> Method used: <b>alpha-beta prunning</b></p>
+            <p> Average node cuts: <b>8939</b></p>
+            <p> XXxxxxxxxxxxxx</p>
+            <p> xpwcowcnowncowno</p>
+        </div>
+    </body>
+</html>

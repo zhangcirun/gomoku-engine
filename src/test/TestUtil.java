@@ -1,6 +1,7 @@
 package test;
 
 import ai.aiUtils;
+import observer.ReportGenerator;
 
 import java.util.List;
 
@@ -24,9 +25,6 @@ public class TestUtil {
             {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
         };
     public static void main(String[] args){
-        List<int[]> list = aiUtils.moveGeneratorWithDistanceSort(dummyChess, 7, 7);
-        for(int[] a : list){
-            System.out.println(a[0] + " " + a[1] + "dis: " + a[2]);
-        }
+        ReportGenerator.createReport("/Users/cirun/Desktop");
     }
 }
