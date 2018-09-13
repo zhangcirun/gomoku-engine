@@ -9,6 +9,10 @@ import gui.MainFrame;
  */
 public class Tester {
     public static void main(String[] args) throws Exception{
+        System.out.println("test");
+        //new MainFrame();
         new MainFrame();
+        System.out.println("done");
+
     }
 }

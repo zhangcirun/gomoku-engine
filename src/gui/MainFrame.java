@@ -4,7 +4,6 @@ import gui.constant.GuiConst;
 
 import javax.swing.*;
 
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -18,22 +17,38 @@ import java.awt.event.ActionListener;
  *                                    |ResultPane
  *
  * @author Chang ta'z jun
- * @version Version 1.1
+ * @version Version 1.2
  */
-public class MainFrame extends JFrame{
+public class MainFrame extends JFrame {
+    /**
+     * Child gui component
+     */
     private Background background;
+
+    /**
+     * Uses or game setting
+     */
     private SettingPane settingPane;
+
+    /**
+     * Uses for saving report
+     */
+    private JFileChooser fileChooser;
 
     public MainFrame() throws Exception {
         this.background = new Background();
-        init();
+        initMainFrame();
         addMenu();
-        addSettingPane();
+        initSettingPane();
+        initFileChooser();
         this.add(background);
         this.setVisible(true);
     }
 
-    private void init(){
+    /**
+     * Initializes the main game frame
+     */
+    private void initMainFrame() {
         this.setTitle("Gomoku");
         this.setSize(GuiConst.FRAME_WIDTH, GuiConst.FRAME_HEIGHT);
         this.setResizable(false);
@@ -45,7 +60,7 @@ public class MainFrame extends JFrame{
     /**
      * Add menu bar and menu items to the main frame
      */
-    private void addMenu(){
+    private void addMenu() {
         //frame menu
         JMenuBar menuBar = new JMenuBar();
 
@@ -94,6 +109,18 @@ public class MainFrame extends JFrame{
         //menu3
         JMenu menu3 = new JMenu("Help");
         JMenuItem help = new JMenuItem("Rules");
+        JMenuItem generateReport = new JMenuItem("Generate Report");
+
+        generateReport.addActionListener(new ActionListener() {
+            @Override public void actionPerformed(ActionEvent e) {
+                int val = fileChooser.showOpenDialog(null);
+                if (val == JFileChooser.APPROVE_OPTION) {
+                    Background.addMessage("Report saved in " + fileChooser.getSelectedFile().getPath());
+                }
+            }
+        });
+
+        menu3.add(generateReport);
         menu3.add(help);
 
         menuBar.add(menu1);
@@ -102,8 +129,20 @@ public class MainFrame extends JFrame{
         this.setJMenuBar(menuBar);
     }
 
-    private void addSettingPane(){
+    /**
+     * Initializes the setting pane
+     */
+    private void initSettingPane() {
         settingPane = new SettingPane();
         settingPane.setLocationRelativeTo(this);
     }
+
+    /**
+     * Initializes the file chooser
+     */
+    private void initFileChooser() {
+        fileChooser = new JFileChooser();
+        fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+    }
+
 }

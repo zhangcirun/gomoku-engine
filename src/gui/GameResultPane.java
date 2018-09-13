@@ -1,12 +1,13 @@
 package gui;
 
+import java.awt.Image;
 import java.io.IOException;
 import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 
 import java.awt.Dimension;
 import java.awt.Graphics;
-import java.awt.image.BufferedImage;
 import java.io.File;
 
 /**
@@ -18,7 +19,7 @@ import java.io.File;
  */
 public class GameResultPane extends JPanel {
 
-    private BufferedImage win;
+    private Image win;
 
     GameResultPane() throws Exception {
         init();
@@ -26,7 +27,7 @@ public class GameResultPane extends JPanel {
     }
 
     private void init() throws IOException {
-        this.win = ImageIO.read(new File("src/gui/assets/win.png"));
+        this.win = new ImageIcon(this.getClass().getResource("/assets/win.png")).getImage();
         this.setPreferredSize(new Dimension(247, 87));
     }
 

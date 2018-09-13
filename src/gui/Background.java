@@ -1,13 +1,8 @@
 package gui;
 
 import gui.constant.GuiConst;
-
-import javax.imageio.ImageIO;
 import javax.swing.*;
-
 import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.File;
 
 /**
  * This class is the the outer layer above Chessboard which
@@ -18,7 +13,7 @@ import java.io.File;
  * @version Version 1.1
  */
 public class Background extends JPanel {
-    private BufferedImage background, blackNext, whiteNext;
+    private Image background, blackNext, whiteNext;
 
     /**
      * Chessboard is the component of this class
@@ -45,12 +40,13 @@ public class Background extends JPanel {
      */
     static boolean gameOnProgress = true;
 
-    Background() throws Exception {
+    public Background() throws Exception {
         init();
     }
 
     private void init() throws Exception {
-        this.background = ImageIO.read(new File("src/gui/assets/backgroundAutumn.jpg"));
+        //this.background = ImageIO.read(new File("src/gui/assets/backgroundAutumn.jpg"));
+        this.background = new ImageIcon(this.getClass().getResource("/assets/backgroundAutumn.jpg")).getImage();
         //this.blackNext = ImageIO.read(new File("src/gui/assets/blackNext.png"));
         //this.whiteNext = ImageIO.read(new File("src/gui/assets/whiteNext.png"));
         this.setPreferredSize(new Dimension(GuiConst.FRAME_WIDTH, GuiConst.FRAME_HEIGHT));

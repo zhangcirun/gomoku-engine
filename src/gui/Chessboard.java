@@ -6,8 +6,8 @@ import observer.GameStatuChecker;
 import gui.constant.GuiConst;
 import ai.BasicAgent;
 
+import java.awt.Image;
 import java.io.IOException;
-import javax.imageio.ImageIO;
 import javax.swing.*;
 
 import java.awt.Dimension;
@@ -15,8 +15,7 @@ import java.awt.Graphics;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
-import java.awt.image.BufferedImage;
-import java.io.File;
+
 
 
 /**
@@ -51,8 +50,8 @@ public class Chessboard extends JPanel {
      */
     private int winner = 0;
 
-    private BufferedImage boardImage, blackImage, whiteImage, crossSightImage;
-
+    private Image boardImage, blackImage, whiteImage, crossSightImage;
+    private ImageIcon i1;
     /**
      * Shows game result
      */
@@ -71,10 +70,21 @@ public class Chessboard extends JPanel {
      * @throws IOException if loading images fails
      */
     private void init() throws IOException {
+
+        this.boardImage = new ImageIcon(this.getClass().getResource("/assets/chessboard.jpg")).getImage();
+        this.blackImage = new ImageIcon(this.getClass().getResource("/assets/black.png")).getImage();
+        this.whiteImage = new ImageIcon(this.getClass().getResource("/assets/white.png")).getImage();
+        this.crossSightImage = new ImageIcon(this.getClass().getResource("/assets/target.png")).getImage();
+        /*
+        // cannot load in jar file
         this.boardImage = ImageIO.read(new File("src/gui/assets/chessboard.jpg"));
         this.blackImage = ImageIO.read(new File("src/gui/assets/black.png"));
         this.whiteImage = ImageIO.read(new File("src/gui/assets/white.png"));
         this.crossSightImage = ImageIO.read(new File("src/gui/assets/target.png"));
+
+        //alternative choice
+        //BufferedImage i1 = ImageIO.read(new File(this.getClass().getResource("").getFile()));
+        */
 
         this.setPreferredSize(new Dimension(GuiConst.BOARD_WIDTH, GuiConst.BOARD_HEIGHT));
         chess = new int[GuiConst.TILE_NUM_PER_ROW][GuiConst.TILE_NUM_PER_ROW];
