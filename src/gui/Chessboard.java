@@ -1,7 +1,7 @@
 package gui;
 
 import ai.AdvancedAgent;
-import observer.GameObserver;
+import observer.HistoryObserver;
 import observer.GameStatuChecker;
 import gui.constant.GuiConst;
 import ai.BasicAgent;
@@ -15,8 +15,6 @@ import java.awt.Graphics;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
-
-
 
 /**
  * Chessboard class is the gui class for chessboard
@@ -51,7 +49,7 @@ public class Chessboard extends JPanel {
     private int winner = 0;
 
     private Image boardImage, blackImage, whiteImage, crossSightImage;
-    private ImageIcon i1;
+
     /**
      * Shows game result
      */
@@ -99,8 +97,7 @@ public class Chessboard extends JPanel {
         this.addMouseListener(new MouseAdapter() {
 
             //Add new piece to the chessboard
-            @Override
-            public void mouseClicked(MouseEvent e) {
+            @Override public void mouseClicked(MouseEvent e) {
                 if (Background.gameOnProgress) {
                     //Calculates indexes of the new piece in the 2-dimensional array
                     int xArrayIndex = (int)Math.round((e.getX() - GuiConst.X_AXIS_OFFSET) / GuiConst.TILE_WIDTH);
@@ -114,7 +111,7 @@ public class Chessboard extends JPanel {
                         System.out.println("placing");
 
                         //Add history
-                        GameObserver.addHistory(new int[]{xArrayIndex, yArrayIndex});
+                        HistoryObserver.addHistory(new int[] {xArrayIndex, yArrayIndex,1});
 
                         //Reverses the flag
                         Background.blackTurn = !Background.blackTurn;
@@ -122,26 +119,16 @@ public class Chessboard extends JPanel {
                         //Check is game end
                         checkFiveInLine(chess, xArrayIndex, yArrayIndex);
 
-
                         //calculate computer move in a new thread
                         new Thread(new Runnable() {
                             public void run() {
                                 abMove(chess);
-                                //aspirationMove(chess);
                             }
                         }).start();
 
                         //Repaints the chessboard and outer layer gui
                         repaint();
                         background.repaint();
-                        /*
-                        Runnable aiMove = new Runnable() {
-                            public void run() {
-                                demoComputerMove(chess);
-                            }
-                        };
-                        SwingUtilities.invokeLater(aiMove);
-                        */
                     }
                 }
             }
@@ -156,8 +143,7 @@ public class Chessboard extends JPanel {
 
         this.addMouseMotionListener(new MouseMotionAdapter() {
             //Changes cross sight location when cursor moves
-            @Override
-            public void mouseMoved(MouseEvent e) {
+            @Override public void mouseMoved(MouseEvent e) {
                 //Gets relative location in the chessboard
                 int crossSightRelativeX = (int)Math.round((e.getX() - GuiConst.X_AXIS_OFFSET) / GuiConst.TILE_WIDTH);
                 int crossSightRelativeY = (int)Math.round((e.getY() - GuiConst.Y_AXIS_OFFSET) / GuiConst.TILE_WIDTH);
@@ -184,8 +170,7 @@ public class Chessboard extends JPanel {
      *
      * @param g The java.awt.Graphics class is the abstract base class for drawing components.
      */
-    @Override
-    public void paintComponent(Graphics g) {
+    @Override public void paintComponent(Graphics g) {
         g.drawImage(boardImage, 0, 0, null);
         g.drawImage(crossSightImage, crossSightXCoordinate + 4, crossSightYCoordinate + 3, null);
 
@@ -203,8 +188,7 @@ public class Chessboard extends JPanel {
         }
     }
 
-    @Override
-    public String toString() {
+    @Override public String toString() {
         return super.toString();
     }
 
@@ -224,11 +208,12 @@ public class Chessboard extends JPanel {
     void resetGame() {
         System.out.println("reset");
         chess = new int[15][15];
-        if(resultPane != null) {
+        if (resultPane != null) {
             this.remove(resultPane);
         }
         Background.blackTurn = true;
         Background.gameOnProgress = true;
+        HistoryObserver.cleanHistory();
         //validate();
         repaint();
         background.repaint();
@@ -237,13 +222,13 @@ public class Chessboard extends JPanel {
     /**
      * Revert the last move
      */
-     void revertHistory(){
-        if(GameObserver.getHistorySize() >= 2) {
-            int[] lastMove1 = GameObserver.popHistory();
-            int[] lastMove2 = GameObserver.popHistory();
+    void revertHistory() {
+        if (HistoryObserver.getHistorySize() >= 2) {
+            int[] lastMove1 = HistoryObserver.popHistory();
+            int[] lastMove2 = HistoryObserver.popHistory();
             chess[lastMove1[0]][lastMove1[1]] = 0;
             chess[lastMove2[0]][lastMove2[1]] = 0;
-            if(resultPane != null){
+            if (resultPane != null) {
                 this.remove(resultPane);
             }
             Background.gameOnProgress = true;
@@ -254,11 +239,12 @@ public class Chessboard extends JPanel {
 
     /**
      * Checks whether wining condition is reached
-     * @param chess is the 2-dimension array represents the chessboard
+     *
+     * @param chess       is the 2-dimension array represents the chessboard
      * @param xArrayIndex x-coordinate of the piece
      * @param yArrayIndex y-coordinate of the piece
      */
-    private void checkFiveInLine(int[][] chess, int xArrayIndex, int yArrayIndex){
+    private void checkFiveInLine(int[][] chess, int xArrayIndex, int yArrayIndex) {
         if (GameStatuChecker.isFiveInLine(chess, xArrayIndex, yArrayIndex)) {
             winner = !Background.blackTurn ? 1 : -1;
             System.out.println("WIN!!");
@@ -269,7 +255,7 @@ public class Chessboard extends JPanel {
         }
     }
 
-    private void computerMove(int[][] chess){
+    private void computerMove(int[][] chess) {
         //Reverses the flag
         Background.blackTurn = !Background.blackTurn;
 
@@ -280,14 +266,13 @@ public class Chessboard extends JPanel {
         chess[x][y] = -1;
         checkFiveInLine(chess, x, y);
 
-
         //Repaints the chessboard and outer layer gui
 
         repaint();
         background.repaint();
     }
 
-    private void demoComputerMove(int[][] chess){
+    private void demoComputerMove(int[][] chess) {
         //Reverses the flag
         Background.blackTurn = !Background.blackTurn;
 
@@ -303,17 +288,18 @@ public class Chessboard extends JPanel {
 
     }
 
-    private void abMove(int[][] chess){
+    private void abMove(int[][] chess) {
         Background.blackTurn = !Background.blackTurn;
 
         int[] result = AdvancedAgent.startAlphaBetaPruning_preSort(chess);
         //int[] result = AdvancedAgent.startAlphaBetaPruning(chess);
         int x = result[0];
         int y = result[1];
-        chess[x][y] = -1;
+        int pieceType = result[2];
+        chess[x][y] = pieceType;
 
         //
-        GameObserver.addHistory(result);
+        HistoryObserver.addHistory(result);
         //
 
         checkFiveInLine(chess, x, y);
@@ -324,16 +310,16 @@ public class Chessboard extends JPanel {
         background.repaint();
     }
 
-    private void aspirationMove(int[][] chess){
+    private void aspirationMove(int[][] chess) {
         Background.blackTurn = !Background.blackTurn;
 
-        int[] result = AdvancedAgent.aspirationSearch(chess, GameObserver.getLastScoreAspiration());
+        int[] result = AdvancedAgent.aspirationSearch(chess, HistoryObserver.getLastScoreAspiration());
         int x = result[0];
         int y = result[1];
 
         //updates last score
-        GameObserver.updateLastScoreAspiration(result[2]);
-        System.out.println("lastScoreUpdates: " + GameObserver.getLastScoreAspiration());
+        HistoryObserver.updateLastScoreAspiration(result[2]);
+        System.out.println("lastScoreUpdates: " + HistoryObserver.getLastScoreAspiration());
         chess[x][y] = -1;
         checkFiveInLine(chess, x, y);
         //Repaints the chessboard and outer layer gui

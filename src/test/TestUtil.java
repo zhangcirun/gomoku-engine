@@ -25,6 +25,6 @@ public class TestUtil {
             {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
         };
     public static void main(String[] args){
-        ReportGenerator.createReport("/Users/cirun/Desktop");
+        new ReportGenerator().createReport("/Users/cirun/Desktop");
     }
 }

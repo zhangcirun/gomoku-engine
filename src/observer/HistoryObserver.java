@@ -2,12 +2,20 @@ package observer;
 
 import java.util.Stack;
 
-public class GameObserver {
-    private GameObserver() {
+/**
+ * This class stores the moving histories of the game into a stack
+ *
+ * @author chang ta'z jun
+ */
+public class HistoryObserver {
+    private HistoryObserver() {
     }
 
     private static int lastScoreAspiration = 0;
 
+    /**
+     * Each move is store in an array []
+     */
     private static Stack<int[]> history = new Stack<>();
 
     public static void addHistory(int[] move){
@@ -28,5 +36,13 @@ public class GameObserver {
 
     public static void updateLastScoreAspiration(int newScore) {
         lastScoreAspiration = newScore;
+    }
+
+    public static void cleanHistory(){
+        history = new Stack<>();
+    }
+
+    public static Stack<int[]> getHistory(){
+        return history;
     }
 }

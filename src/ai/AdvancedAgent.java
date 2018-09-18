@@ -15,7 +15,8 @@ import java.util.List;
  */
 public class AdvancedAgent {
     private static int count = 0;
-    private static int maximumSearchDepth = 7;
+    private static int maximumSearchDepth = 5;
+    private static int aiPieceType = -1;
 
     private AdvancedAgent() {
     }
@@ -100,7 +101,7 @@ public class AdvancedAgent {
      */
     public static int[] startAlphaBetaPruning(int[][] chess) {
         Node root = new Node(-1, -1, -1, chess);
-        Node bestMove = alphaBetaPruning_Maximizer(root, 1, -1, Integer.MIN_VALUE, Integer.MAX_VALUE);
+        Node bestMove = alphaBetaPruning_Maximizer(root, 1, aiPieceType, Integer.MIN_VALUE, Integer.MAX_VALUE);
         int[] result = new int[2];
         result[0] = bestMove.getX();
         result[1] = bestMove.getY();
@@ -236,7 +237,7 @@ public class AdvancedAgent {
         Background
             .addMessage("Computer move : (x, " + result[0] + ") (y, " + result[1] + ") score " + bestMove.getScore());
 
-        return result;
+        return new int[]{result[0], result[1], aiPieceType};
     }
 
     /**
@@ -247,7 +248,7 @@ public class AdvancedAgent {
      *
      * @param root      Current tree node
      * @param depth     Current depth of the node
-     * @param pieceType Identification of players, 1 for black piece and -1 white piece
+     * @param pieceType Initializes to the piece type of AI
      * @param alpha     alpha value for Max node
      * @param beta      beta value for Min node
      * @return The most valuable node

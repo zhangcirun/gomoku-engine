@@ -1,6 +1,7 @@
 package gui;
 
 import gui.constant.GuiConst;
+import observer.ReportGenerator;
 
 import javax.swing.*;
 
@@ -115,7 +116,8 @@ public class MainFrame extends JFrame {
             @Override public void actionPerformed(ActionEvent e) {
                 int val = fileChooser.showOpenDialog(null);
                 if (val == JFileChooser.APPROVE_OPTION) {
-                    Background.addMessage("Report saved in " + fileChooser.getSelectedFile().getPath());
+                    Background.addMessage("Report saved in fake " + fileChooser.getSelectedFile().getPath());
+                    new ReportGenerator().createReport(fileChooser.getSelectedFile().getPath());
                 }
             }
         });
