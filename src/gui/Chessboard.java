@@ -1,6 +1,7 @@
 package gui;
 
 import ai.AdvancedAgent;
+import game.GameController;
 import observer.HistoryObserver;
 import observer.GameStatuChecker;
 import gui.constant.GuiConst;
@@ -36,12 +37,6 @@ public class Chessboard extends JPanel {
      */
     private int crossSightXCoordinate = 0;
     private int crossSightYCoordinate = 0;
-
-    /**
-     * 2-dimension array for storage the positions of each pieces,
-     * 0 for empty, 1 for black and -1 for white
-     */
-    private static int[][] chess;
 
     /**
      * 1 for black win and -1 for white win
@@ -85,7 +80,8 @@ public class Chessboard extends JPanel {
         */
 
         this.setPreferredSize(new Dimension(GuiConst.BOARD_WIDTH, GuiConst.BOARD_HEIGHT));
-        chess = new int[GuiConst.TILE_NUM_PER_ROW][GuiConst.TILE_NUM_PER_ROW];
+        //chess = new int[GuiConst.TILE_NUM_PER_ROW][GuiConst.TILE_NUM_PER_ROW];
+        GameController.resetChessboard();
         this.addActionListener();
     }
 
@@ -104,10 +100,11 @@ public class Chessboard extends JPanel {
                     int yArrayIndex = (int)Math.round((e.getY() - GuiConst.Y_AXIS_OFFSET) / GuiConst.TILE_WIDTH);
 
                     //If the indexes are valid and the tile is empty, add the new piece to the array
-                    if (validateArrayIndex(xArrayIndex) && validateArrayIndex(yArrayIndex)
-                        && chess[xArrayIndex][yArrayIndex] == 0) {
+                    if (validateArrayIndex(xArrayIndex)
+                        && validateArrayIndex(yArrayIndex)
+                        && GameController.chess[xArrayIndex][yArrayIndex] == 0) {
 
-                        chess[xArrayIndex][yArrayIndex] = Background.blackTurn ? 1 : -1;
+                        GameController.chess[xArrayIndex][yArrayIndex] = Background.blackTurn ? 1 : -1;
                         System.out.println("placing");
 
                         //Add history
@@ -117,12 +114,12 @@ public class Chessboard extends JPanel {
                         Background.blackTurn = !Background.blackTurn;
 
                         //Check is game end
-                        checkFiveInLine(chess, xArrayIndex, yArrayIndex);
+                        checkFiveInLine(GameController.chess, xArrayIndex, yArrayIndex);
 
                         //calculate computer move in a new thread
                         new Thread(new Runnable() {
                             public void run() {
-                                abMove(chess);
+                                abMove(GameController.chess);
                             }
                         }).start();
 
@@ -177,10 +174,10 @@ public class Chessboard extends JPanel {
         //Transverses the array and paint all pieces
         for (int i = 0; i < GuiConst.TILE_NUM_PER_ROW; i++) {
             for (int j = 0; j < GuiConst.TILE_NUM_PER_ROW; j++) {
-                if (chess[i][j] == 1) {
+                if (GameController.chess[i][j] == 1) {
                     g.drawImage(blackImage, (int)((i * GuiConst.TILE_WIDTH) + 5), (int)((j * GuiConst.TILE_WIDTH) + 5),
                         null);
-                } else if (chess[i][j] == -1) {
+                } else if (GameController.chess[i][j] == -1) {
                     g.drawImage(whiteImage, (int)((i * GuiConst.TILE_WIDTH) + 6), (int)((j * GuiConst.TILE_WIDTH) + 6),
                         null);
                 }
@@ -207,7 +204,7 @@ public class Chessboard extends JPanel {
      */
     void resetGame() {
         System.out.println("reset");
-        chess = new int[15][15];
+        GameController.resetChessboard();
         if (resultPane != null) {
             this.remove(resultPane);
         }
@@ -226,8 +223,8 @@ public class Chessboard extends JPanel {
         if (HistoryObserver.getHistorySize() >= 2) {
             int[] lastMove1 = HistoryObserver.popHistory();
             int[] lastMove2 = HistoryObserver.popHistory();
-            chess[lastMove1[0]][lastMove1[1]] = 0;
-            chess[lastMove2[0]][lastMove2[1]] = 0;
+            GameController.chess[lastMove1[0]][lastMove1[1]] = 0;
+            GameController.chess[lastMove2[0]][lastMove2[1]] = 0;
             if (resultPane != null) {
                 this.remove(resultPane);
             }
