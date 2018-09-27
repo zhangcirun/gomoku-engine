@@ -293,8 +293,7 @@ public class AdvancedAgent {
             }
             //beta pruning
             if (score >= beta) {
-                root.setScore(bestScore);
-                return root;
+                break;
             }
         }
 
@@ -361,8 +360,7 @@ public class AdvancedAgent {
             }
             //alpha pruning
             if (score <= alpha) {
-                root.setScore(bestScore);
-                return root;
+                break;
             }
         }
 
@@ -448,7 +446,7 @@ public class AdvancedAgent {
      * @param pieceType Identification of black(1) and white(-1)
      * @return Node leeds to win or null if no matched situation
      */
-    private static Node detectFiveInRow(int[][] chess, List<int[]> moves, int pieceType) {
+    public static Node detectFiveInRow(int[][] chess, List<int[]> moves, int pieceType) {
         //detects if next move can win directly
         for (int[] move : moves) {
             int newX = move[0];

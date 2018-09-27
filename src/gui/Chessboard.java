@@ -1,6 +1,7 @@
 package gui;
 
 import ai.AdvancedAgent;
+import ai.UltraAgent;
 import game.GameController;
 import observer.HistoryObserver;
 import observer.GameStatuChecker;
@@ -81,7 +82,7 @@ public class Chessboard extends JPanel {
 
         this.setPreferredSize(new Dimension(GuiConst.BOARD_WIDTH, GuiConst.BOARD_HEIGHT));
         //chess = new int[GuiConst.TILE_NUM_PER_ROW][GuiConst.TILE_NUM_PER_ROW];
-        GameController.resetChessboard();
+        GameController.initGame();
         this.addActionListener();
     }
 
@@ -119,7 +120,8 @@ public class Chessboard extends JPanel {
                         //calculate computer move in a new thread
                         new Thread(new Runnable() {
                             public void run() {
-                                abMove(GameController.chess);
+                                //abMove(GameController.chess);
+                                ultraMove(GameController.chess);
                             }
                         }).start();
 
@@ -289,6 +291,28 @@ public class Chessboard extends JPanel {
         Background.blackTurn = !Background.blackTurn;
 
         int[] result = AdvancedAgent.startAlphaBetaPruning_preSort(chess);
+        //int[] result = AdvancedAgent.startAlphaBetaPruning(chess);
+        int x = result[0];
+        int y = result[1];
+        int pieceType = result[2];
+        chess[x][y] = pieceType;
+
+        //
+        HistoryObserver.addHistory(result);
+        //
+
+        checkFiveInLine(chess, x, y);
+
+        //Repaints the chessboard and outer layer gui
+        setVisible(true);
+        repaint();
+        background.repaint();
+    }
+
+    private void ultraMove(int[][] chess) {
+        Background.blackTurn = !Background.blackTurn;
+
+        int[] result = UltraAgent.startTranspositionSearch(chess);
         //int[] result = AdvancedAgent.startAlphaBetaPruning(chess);
         int x = result[0];
         int y = result[1];

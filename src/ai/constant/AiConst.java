@@ -10,6 +10,11 @@ package ai.constant;
 public class AiConst {
     private AiConst(){}
 
+    public static final int EMPTY_STONE = 0;
+
+    public static final int BLACK_STONE = 1;
+
+    public static final int WHITE_STONE = -1;
 
     public static final String IMPLICATE_FIVE  = "11111";
 
