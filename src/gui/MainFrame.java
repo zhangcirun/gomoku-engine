@@ -24,7 +24,7 @@ public class MainFrame extends JFrame {
     /**
      * Child gui component
      */
-    private Background background;
+    private static Background background;
 
     /**
      * Uses or game setting
@@ -37,7 +37,7 @@ public class MainFrame extends JFrame {
     private JFileChooser fileChooser;
 
     public MainFrame() throws Exception {
-        this.background = new Background();
+        background = new Background();
         initMainFrame();
         addMenu();
         initSettingPane();
@@ -50,7 +50,7 @@ public class MainFrame extends JFrame {
      * Initializes the main game frame
      */
     private void initMainFrame() {
-        this.setTitle("Gomoku");
+        this.setTitle("Deep Gomoku");
         this.setSize(GuiConst.FRAME_WIDTH, GuiConst.FRAME_HEIGHT);
         this.setResizable(false);
         this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
@@ -67,14 +67,15 @@ public class MainFrame extends JFrame {
 
         //menu1
         JMenu menu1 = new JMenu("Menu");
-        JMenuItem resetGame = new JMenuItem("Reset Game");
+        JMenuItem resetGame = new JMenuItem("New Game");
         JMenuItem clearTextArea = new JMenuItem("Clear Text Field");
-        JMenuItem revert = new JMenuItem("Revert");
+        JMenuItem revert = new JMenuItem("Undo Last Move");
 
         resetGame.addActionListener(new ActionListener() {
             @Override public void actionPerformed(ActionEvent e) {
-                System.out.println("Reset Game");
-                background.resetGame();
+                System.out.println("New Game");
+                settingPane.setVisible(true);
+                //resetGame();
             }
         });
 
@@ -116,7 +117,7 @@ public class MainFrame extends JFrame {
             @Override public void actionPerformed(ActionEvent e) {
                 int val = fileChooser.showOpenDialog(null);
                 if (val == JFileChooser.APPROVE_OPTION) {
-                    Background.addMessage("Report saved in fake " + fileChooser.getSelectedFile().getPath());
+                    Background.addMessage("Report saved in " + fileChooser.getSelectedFile().getPath());
                     new ReportGenerator().createReport(fileChooser.getSelectedFile().getPath());
                 }
             }
@@ -145,6 +146,10 @@ public class MainFrame extends JFrame {
     private void initFileChooser() {
         fileChooser = new JFileChooser();
         fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+    }
+
+    public static void resetGame(){
+        background.resetGame();
     }
 
 }

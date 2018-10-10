@@ -15,6 +15,9 @@ import java.io.InputStream;
 
 public class TestSwing extends JFrame {
     private BufferedImage image1;
+    public static void main(String[] args) throws Exception{
+        new TestSwing();
+    }
     public TestSwing() throws Exception{
 
         image1 = ImageIO.read(new File(this.getClass().getResource("/assets/black.png").getFile()));

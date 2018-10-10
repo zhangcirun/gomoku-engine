@@ -10,14 +10,10 @@ import java.util.List;
 /**
  * This class is an AI agent using miniMax search with alpha beta pruning
  *
- * @author Chang ta'z jun
+ * @author Chang tz'u jun
  * @version Version 1.1
  */
-public class AdvancedAgent {
-    private static int count = 0;
-    private static int maximumSearchDepth = 5;
-    private static int aiPieceType = -1;
-
+public class AdvancedAgent extends Agent{
     private AdvancedAgent() {
     }
 
@@ -29,9 +25,9 @@ public class AdvancedAgent {
      */
     public static int[] startMiniMax(int[][] chess) {
         Node root = new Node(-1, -1, -1, chess);
-        Node result = miniMax(root, 1, -1, true);
+        Node result = miniMax(root, 1, aiPieceType, isFirstLayerMax);
         System.out.println("x " + result.getX() + "y " + result.getY() + "score " + result.getScore());
-        return new int[] {result.getX(), result.getY()};
+        return new int[] {result.getX(), result.getY(), aiPieceType};
     }
 
     /**
@@ -111,7 +107,7 @@ public class AdvancedAgent {
     }
 
     /**
-     * This methods is the maximizer of alpha beta pruning, it prunes the current node
+     * Maximizer of alpha beta pruning, it prunes the current node
      * when the alpha value of current node is greater than or equal to the beta value
      * of its ancient node
      *
@@ -168,7 +164,7 @@ public class AdvancedAgent {
     }
 
     /**
-     * This methods is the minimizer of alpha beta pruning, it prunes the current node
+     * Minimizer of alpha beta pruning, it prunes the current node
      * when the beta value of current node is less than or equal to the alpha value
      * of its ancient node
      *

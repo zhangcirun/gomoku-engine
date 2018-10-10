@@ -38,7 +38,7 @@ public class Background extends JPanel {
     /**
      * Indicates whether the game is over or not
      */
-    static boolean gameOnProgress = true;
+    //static boolean gameOnProgress = true;
 
     public Background() throws Exception {
         init();

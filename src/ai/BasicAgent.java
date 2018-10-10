@@ -14,8 +14,7 @@ import gui.constant.GuiConst;
  */
 public class BasicAgent {
     //@Todo agent cannot plays correctly sometimes when both computer and human have a potential 5
-    private BasicAgent() {
-    }
+    private BasicAgent() {}
 
     /**
      * Evaluate each empty tiles and return the best tile
@@ -43,7 +42,7 @@ public class BasicAgent {
             }
         }
         System.out.println("currentMax: " + currentMaxScore + " " + x + " " + y);
-        return new int[]{x, y};
+        return new int[]{x, y, -1};
     }
 
     /**

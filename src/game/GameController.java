@@ -1,11 +1,17 @@
 package game;
 
-import gui.Background;
+import ai.Agent;
+import ai.constant.AiConst;
+import game.constant.GameConst;
 import gui.constant.GuiConst;
-
-import java.util.HashMap;
 import java.util.concurrent.ThreadLocalRandom;
 
+/**
+ * This class is used for game controlling, it controls
+ * and preserve the important data and parameters of the game
+ *
+ * @author Chang tz'u jun
+ */
 public class GameController {
     private GameController(){}
 
@@ -20,16 +26,14 @@ public class GameController {
      */
     public static int[][][] zobrist;
 
-    /**
-     * HashMap as the transposition table
-     */
-    //public Map<K, V> transpositionTable = new HashMap<>();
+    private static int aiIndex;
 
     public static int moveCounter = 0;
 
-    public static boolean humanVsComputer = true;
+    private static boolean gameInProgress = false;
+    //public static boolean humanVsComputer = true;
 
-    public static int humanPieceType = 1;
+    private static boolean humanFirst = false;
 
     public static void resetChessboard(){
         chess = new int[GuiConst.TILE_NUM_PER_ROW][GuiConst.TILE_NUM_PER_ROW];
@@ -50,5 +54,31 @@ public class GameController {
     public static void initGame(){
         resetChessboard();
         resetZobrist();
+    }
+
+    public static int getAiIndex(){
+        return aiIndex;
+    }
+
+    public static void setAiIndex(int index){
+        aiIndex = index;
+    }
+
+    public static boolean isGameInProgress(){
+        return gameInProgress;
+    }
+
+    public static void setGameInProgress(boolean status){
+        gameInProgress = status;
+    }
+
+    public static boolean isHumanFirst(){
+        return humanFirst;
+    }
+
+    public static void setHumanFirst(boolean isHumanFirst){
+        humanFirst = isHumanFirst;
+        Agent.aiPieceType = isHumanFirst ? AiConst.WHITE_STONE : AiConst.BLACK_STONE;
+        Agent.isFirstLayerMax = isHumanFirst;
     }
 }
