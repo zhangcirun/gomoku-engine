@@ -97,7 +97,12 @@ public class AdvancedAgent extends Agent{
      */
     public static int[] startAlphaBetaPruning(int[][] chess) {
         Node root = new Node(-1, -1, -1, chess);
-        Node bestMove = alphaBetaPruning_Maximizer(root, 1, aiPieceType, Integer.MIN_VALUE, Integer.MAX_VALUE);
+        Node bestMove;
+        if(isFirstLayerMax){
+            bestMove = alphaBetaPruning_Maximizer(root, 1, aiPieceType, Integer.MIN_VALUE, Integer.MAX_VALUE);
+        }else {
+            bestMove = alphaBetaPruning_Minimizer(root, 1, aiPieceType, Integer.MIN_VALUE, Integer.MAX_VALUE);
+        }
         int[] result = new int[2];
         result[0] = bestMove.getX();
         result[1] = bestMove.getY();
@@ -228,7 +233,12 @@ public class AdvancedAgent extends Agent{
     public static int[] startAlphaBetaPruning_preSort(int[][] chess) {
         //instantiate root node with preset x and y to the center of the chessboard(good for pruning)
         Node root = new Node(-1, -1, -1, chess);
-        Node bestMove = alphaBetaPruning_Maximizer_preSort(root, 1, -1, Integer.MIN_VALUE, Integer.MAX_VALUE);
+        Node bestMove;
+        if(isFirstLayerMax){
+            bestMove = alphaBetaPruning_Maximizer_preSort(root, 1, aiPieceType, Integer.MIN_VALUE, Integer.MAX_VALUE);
+        }else {
+            bestMove = alphaBetaPruning_Minimizer_preSort(root, 1, aiPieceType, Integer.MIN_VALUE, Integer.MAX_VALUE);
+        }
         int[] result = bestMove.getCoordinates();
         Background
             .addMessage("Computer move : (x, " + result[0] + ") (y, " + result[1] + ") score " + bestMove.getScore());

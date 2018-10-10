@@ -1,6 +1,7 @@
 package gui;
 
 import ai.AdvancedAgent;
+import ai.Agent;
 import ai.UltraAgent;
 import game.GameController;
 import game.constant.GameConst;
@@ -109,7 +110,7 @@ public class Chessboard extends JPanel {
                         System.out.println("placing");
 
                         //Add history
-                        HistoryObserver.addHistory(new int[] {xArrayIndex, yArrayIndex, 1});
+                        HistoryObserver.addHistory(new int[] {xArrayIndex, yArrayIndex, Agent.aiPieceType * -1});
 
                         //Reverses the flag
                         Background.blackTurn = !Background.blackTurn;

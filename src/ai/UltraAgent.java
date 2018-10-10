@@ -28,7 +28,12 @@ public class UltraAgent extends Agent{
     public static int[] startTranspositionSearch(int[][] chess) {
         //instantiate root node with preset x and y to the center of the chessboard(good for pruning)
         Node root = new Node(-1, -1, -1, chess);
-        Node bestMove = transpositionSearch_abpMaximizer(root, 1, -1, Integer.MIN_VALUE, Integer.MAX_VALUE);
+        Node bestMove;
+        if(isFirstLayerMax){
+            bestMove = transpositionSearch_abpMaximizer(root, 1, aiPieceType, Integer.MIN_VALUE, Integer.MAX_VALUE);
+        }else{
+            bestMove = transpositionSearch_abpMinimizer(root, 1, aiPieceType, Integer.MIN_VALUE, Integer.MAX_VALUE);
+        }
         int[] result = bestMove.getCoordinates();
         Background
             .addMessage("Computer move : (x, " + result[0] + ") (y, " + result[1] + ") score " + bestMove.getScore());

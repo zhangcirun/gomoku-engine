@@ -12,7 +12,7 @@ import gui.constant.GuiConst;
  * @author Chang ta'z jun
  * @version Version 1.0
  */
-public class BasicAgent {
+public class BasicAgent extends Agent{
     //@Todo agent cannot plays correctly sometimes when both computer and human have a potential 5
     private BasicAgent() {}
 
@@ -42,7 +42,7 @@ public class BasicAgent {
             }
         }
         System.out.println("currentMax: " + currentMaxScore + " " + x + " " + y);
-        return new int[]{x, y, -1};
+        return new int[]{x, y, aiPieceType};
     }
 
     /**

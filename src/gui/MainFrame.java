@@ -96,18 +96,6 @@ public class MainFrame extends JFrame {
         menu1.add(clearTextArea);
         menu1.add(revert);
 
-        //menu2
-        JMenu menu2 = new JMenu("Setting");
-        JMenuItem gameSetting = new JMenuItem("Game Setting");
-
-        gameSetting.addActionListener(new ActionListener() {
-            @Override public void actionPerformed(ActionEvent e) {
-                settingPane.setVisible(true);
-            }
-        });
-
-        menu2.add(gameSetting);
-
         //menu3
         JMenu menu3 = new JMenu("Help");
         JMenuItem help = new JMenuItem("Rules");
@@ -127,7 +115,7 @@ public class MainFrame extends JFrame {
         menu3.add(help);
 
         menuBar.add(menu1);
-        menuBar.add(menu2);
+        //menuBar.add(menu2);
         menuBar.add(menu3);
         this.setJMenuBar(menuBar);
     }
