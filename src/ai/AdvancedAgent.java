@@ -58,7 +58,7 @@ public class AdvancedAgent extends Agent{
                 //if the tile is empty
                 if (chess[i][j] == 0) {
                     //create child node and search it
-                    int[][] dummy = aiUtils.copyArray(chess);
+                    int[][] dummy = AiUtils.copyArray(chess);
                     dummy[i][j] = pieceType;
                     Node child = new Node(i, j, 0, dummy);
 
@@ -139,7 +139,7 @@ public class AdvancedAgent extends Agent{
             for (int j = 0; j < GuiConst.TILE_NUM_PER_ROW; j++) {
                 // for each possible moves, do depth first search
                 if (chess[i][j] == 0) {
-                    int[][] nextMove = aiUtils.nextMoveChessboard(chess, i, j, pieceType);
+                    int[][] nextMove = AiUtils.nextMoveChessboard(chess, i, j, pieceType);
                     Node child = new Node(i, j, -1, nextMove);
 
                     int score = alphaBetaPruning_Minimizer(child, depth + 1, pieceType * -1, alpha, beta).getScore();
@@ -196,7 +196,7 @@ public class AdvancedAgent extends Agent{
             for (int j = 0; j < GuiConst.TILE_NUM_PER_ROW; j++) {
                 // for each possible moves, do depth first search
                 if (chess[i][j] == 0) {
-                    int[][] nextMove = aiUtils.nextMoveChessboard(chess, i, j, pieceType);
+                    int[][] nextMove = AiUtils.nextMoveChessboard(chess, i, j, pieceType);
                     Node child = new Node(i, j, -1, nextMove);
 
                     int score = alphaBetaPruning_Maximizer(child, depth + 1, pieceType * -1, alpha, beta).getScore();
@@ -273,8 +273,8 @@ public class AdvancedAgent extends Agent{
         int bestScore = Integer.MIN_VALUE;
         Node bestChild = null;
 
-        //List<int[]> moves = aiUtils.moveGeneratorWithDistanceSort(chess, lastX, lastY);
-        List<int[]> moves = aiUtils.moveGeneratorWithHeuristicSort(chess);
+        //List<int[]> moves = AiUtils.moveGeneratorWithDistanceSort(chess, lastX, lastY);
+        List<int[]> moves = AiUtils.moveGeneratorWithHeuristicSort(chess);
 
         //detect five in row
         // @Todo Bad way
@@ -288,7 +288,7 @@ public class AdvancedAgent extends Agent{
         for (int[] move : moves) {
             int newX = move[0];
             int newY = move[1];
-            int[][] nextMove = aiUtils.nextMoveChessboard(chess, newX, newY, pieceType);
+            int[][] nextMove = AiUtils.nextMoveChessboard(chess, newX, newY, pieceType);
             Node child = new Node(newX, newY, -1, nextMove);
 
             int score = alphaBetaPruning_Minimizer_preSort(child, depth + 1, pieceType * -1, alpha, beta).getScore();
@@ -342,8 +342,8 @@ public class AdvancedAgent extends Agent{
         int bestScore = Integer.MAX_VALUE;
         Node bestChild = null;
 
-        //List<int[]> moves = aiUtils.moveGeneratorWithDistanceSort(chess, lastX, lastY);
-        List<int[]> moves = aiUtils.moveGeneratorWithHeuristicSort(chess);
+        //List<int[]> moves = AiUtils.moveGeneratorWithDistanceSort(chess, lastX, lastY);
+        List<int[]> moves = AiUtils.moveGeneratorWithHeuristicSort(chess);
         // @Todo Bad way
         if (depth == 1) {
             Node n = detectFiveInRow(chess, moves, pieceType);
@@ -355,7 +355,7 @@ public class AdvancedAgent extends Agent{
         for (int[] move : moves) {
             int newX = move[0];
             int newY = move[1];
-            int[][] nextMove = aiUtils.nextMoveChessboard(chess, newX, newY, pieceType);
+            int[][] nextMove = AiUtils.nextMoveChessboard(chess, newX, newY, pieceType);
             Node child = new Node(newX, newY, -1, nextMove);
 
             int score = alphaBetaPruning_Maximizer_preSort(child, depth + 1, pieceType * -1, alpha, beta).getScore();
@@ -374,6 +374,7 @@ public class AdvancedAgent extends Agent{
 
         if (depth == 1) {
             System.out.println("total nodes: " + count);
+            Background.addMessage("Total nodes: " + count);
             count = 0;
             return bestChild;
         }
@@ -388,6 +389,7 @@ public class AdvancedAgent extends Agent{
      * @param pieceType 1 for black piece and -1 white piece
      * @return Score of the chessboard
      */
+    @Deprecated
     public static int evaluation(int[][] chess, int pieceType) {
         int scoreAlly = 0;
         int scoreOppo = 0;
@@ -457,7 +459,7 @@ public class AdvancedAgent extends Agent{
         for (int[] move : moves) {
             int newX = move[0];
             int newY = move[1];
-            int[][] nextMove = aiUtils.nextMoveChessboard(chess, newX, newY, pieceType);
+            int[][] nextMove = AiUtils.nextMoveChessboard(chess, newX, newY, pieceType);
             if (GameStatuChecker.isFiveInLine(nextMove, newX, newY)) {
                 return new Node(move[0], move[1], 500000, nextMove);
             }
@@ -467,7 +469,7 @@ public class AdvancedAgent extends Agent{
         for (int[] move : moves) {
             int newX = move[0];
             int newY = move[1];
-            int[][] nextMove = aiUtils.nextMoveChessboard(chess, newX, newY, pieceType * -1);
+            int[][] nextMove = AiUtils.nextMoveChessboard(chess, newX, newY, pieceType * -1);
             if (GameStatuChecker.isFiveInLine(nextMove, newX, newY)) {
                 return new Node(move[0], move[1], 500000, nextMove);
             }

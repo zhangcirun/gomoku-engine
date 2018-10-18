@@ -67,4 +67,9 @@ public class AiConst {
      * Window size for Aspiration search
      */
     public static final int WINDOW_SIZE_ASPIRATION = 100;
+
+    /**
+     * Gomoku Openings HUAYUE [diff, x change, y change]
+     */
+    //public static final int[] KAGETSU = {1, 0};
 }

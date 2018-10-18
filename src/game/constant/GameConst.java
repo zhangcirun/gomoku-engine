@@ -27,6 +27,11 @@ public class GameConst {
      */
     public static final int TRANSPOSITION_SEARCH = 3;
 
+    /**
+     * Code for minimax applies alpha beta pruning with killer heuristic
+     */
+    public static final int KILLER_HEURISTIC = 4;
+
     public static final int HUMAN_MOVE_FIRST = 0;
 
     public static final int COMPUTER_MOVE_FIRST = 1;

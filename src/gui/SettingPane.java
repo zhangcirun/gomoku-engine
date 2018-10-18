@@ -36,6 +36,7 @@ public class SettingPane extends JFrame {
         comboBox.addItem("Minimax Search");
         comboBox.addItem("Alpha beta pruning");
         comboBox.addItem("Transposition search");
+        comboBox.addItem("Killer heuristic");
         comboBox.setSelectedIndex(2);
         tmp2.add(tip2);
         tmp2.add(comboBox);

@@ -68,7 +68,7 @@ public class UltraAgent extends Agent{
         int bestScore = Integer.MIN_VALUE;
         Node bestChild = null;
 
-        List<int[]> moves = aiUtils.moveGeneratorWithHeuristicSort(chess);
+        List<int[]> moves = AiUtils.moveGeneratorWithHeuristicSort(chess);
 
         //detect five in row
         // @Todo Bad way
@@ -91,7 +91,7 @@ public class UltraAgent extends Agent{
             for (int[] move : moves) {
                 int newX = move[0];
                 int newY = move[1];
-                int[][] nextMove = aiUtils.nextMoveChessboard(chess, newX, newY, pieceType);
+                int[][] nextMove = AiUtils.nextMoveChessboard(chess, newX, newY, pieceType);
                 Node child = new Node(newX, newY, -1, nextMove);
 
                 int score = transpositionSearch_abpMinimizer(child, depth + 1, pieceType * -1, alpha, beta).getScore();
@@ -149,7 +149,7 @@ public class UltraAgent extends Agent{
         int bestScore = Integer.MAX_VALUE;
         Node bestChild = null;
 
-        List<int[]> moves = aiUtils.moveGeneratorWithHeuristicSort(chess);
+        List<int[]> moves = AiUtils.moveGeneratorWithHeuristicSort(chess);
         // @Todo Bad way
         if (depth == 1) {
             Node n = AdvancedAgent.detectFiveInRow(chess, moves, pieceType);
@@ -170,7 +170,7 @@ public class UltraAgent extends Agent{
             for (int[] move : moves) {
                 int newX = move[0];
                 int newY = move[1];
-                int[][] nextMove = aiUtils.nextMoveChessboard(chess, newX, newY, pieceType);
+                int[][] nextMove = AiUtils.nextMoveChessboard(chess, newX, newY, pieceType);
                 Node child = new Node(newX, newY, -1, nextMove);
 
                 int score = transpositionSearch_abpMaximizer(child, depth + 1, pieceType * -1, alpha, beta).getScore();

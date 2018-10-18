@@ -1,14 +1,11 @@
 package gui;
 
-import ai.AdvancedAgent;
-import ai.Agent;
-import ai.UltraAgent;
+import ai.*;
 import game.GameController;
 import game.constant.GameConst;
 import observer.HistoryObserver;
 import observer.GameStatuChecker;
 import gui.constant.GuiConst;
-import ai.BasicAgent;
 
 import java.awt.Image;
 import java.io.IOException;
@@ -106,8 +103,9 @@ public class Chessboard extends JPanel {
                     if (validateArrayIndex(xArrayIndex) && validateArrayIndex(yArrayIndex)
                         && GameController.chess[xArrayIndex][yArrayIndex] == 0) {
 
-                        GameController.chess[xArrayIndex][yArrayIndex] = Background.blackTurn ? 1 : -1;
-                        System.out.println("placing");
+                        GameController.chess[xArrayIndex][yArrayIndex] = Agent.aiPieceType * -1;
+
+                        Background.addMessage("Human Move: (x," + xArrayIndex + "), (y," + yArrayIndex + ")");
 
                         //Add history
                         HistoryObserver.addHistory(new int[] {xArrayIndex, yArrayIndex, Agent.aiPieceType * -1});
@@ -215,11 +213,14 @@ public class Chessboard extends JPanel {
         HistoryObserver.cleanHistory();
         if(!GameController.isHumanFirst()){
             System.out.println("ai move first");
+            GameController.chess[7][7] = Agent.aiPieceType;
+            /*
             new Thread(new Runnable() {
                 public void run() {
                     computerMove(GameController.chess);
                 }
             }).start();
+            */
         }
         //validate();
         repaint();
@@ -279,6 +280,9 @@ public class Chessboard extends JPanel {
                 break;
             case GameConst.TRANSPOSITION_SEARCH:
                 result = UltraAgent.startTranspositionSearch(chess);
+                break;
+            case  GameConst.KILLER_HEURISTIC:
+                result = KillerAgent.startAlphaBetaPruning_killer(chess);
                 break;
             default:
                 System.err.println("Invalid Ai Index");

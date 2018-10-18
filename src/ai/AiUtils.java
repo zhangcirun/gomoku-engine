@@ -15,8 +15,8 @@ import java.util.List;
  * @author Chang ta'z jun
  * @version Version 1.0
  */
-public class aiUtils {
-    private aiUtils() {
+public class AiUtils {
+    private AiUtils() {
     }
 
     private static Comparator<int[]> moveComparator_asc = new Comparator<int[]>() {

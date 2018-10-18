@@ -1,11 +1,7 @@
 package test;
 
 import ai.UltraAgent;
-import ai.aiUtils;
 import game.GameController;
-import observer.ReportGenerator;
-
-import java.util.List;
 
 public class TestUtil {
     private static int[][] dummyChess = new int[][]
