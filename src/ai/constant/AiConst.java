@@ -69,7 +69,149 @@ public class AiConst {
     public static final int WINDOW_SIZE_ASPIRATION = 100;
 
     /**
-     * Gomoku Openings HUAYUE [diff, x change, y change]
+     * Threat Direction
      */
-    //public static final int[] KAGETSU = {1, 0};
+    public static final int NO_THREAT = 0;
+
+    public static final int HORIZONTAL_THREAT = 1;
+
+    public static final int VERTICAL_THREAT = 2;
+
+    public static final int DIAGONAL_THREAT = 3;
+
+    public static final int ANTIDOAGONAL_THREAT = 4;
+
+    /**
+     *
+     * Potential Threats
+     * 1 for ally, 2 for enemy, t for gain square, 0 for empty
+     */
+    public static final String POTENTIAL_THREAT_A = "2111t0";
+
+    public static final String POTENTIAL_THREAT_B = "0t1112";
+
+    public static final String POTENTIAL_THREAT_C = "21110t";
+
+    public static final String POTENTIAL_THREAT_D = "t01112";
+
+    public static final String POTENTIAL_THREAT_E = "011t0";
+
+    public static final String POTENTIAL_THREAT_F = "0t110";
+
+    public static final String POTENTIAL_THREAT_G = "01t10";
+
+    public static final String POTENTIAL_THREAT_H = "0110t0";
+
+    public static final String POTENTIAL_THREAT_I = "0t0110";
+
+    /**
+     * Dependent Threats
+     */
+    //The three
+    public static final String DEPENDENT_THREAT_A = "0t1t0";
+
+    public static final String DEPENDENT_THREAT_B = "0tt10";
+
+    public static final String DEPENDENT_THREAT_C = "01tt0";
+
+    public static final String DEPENDENT_THREAT_D = "0tt010";
+
+    public static final String DEPENDENT_THREAT_E = "010tt0";
+
+    public static final String DEPENDENT_THREAT_F = "0t10t0";
+
+    public static final String DEPENDENT_THREAT_G = "0t01t0";
+
+    public static final String DEPENDENT_THREAT_H = "01t0t0";
+
+    public static final String DEPENDENT_THREAT_I = "0t0t10";
+
+
+    //The fours
+    public static final String DEPENDENT_THREAT_J = "0tt11";
+
+    public static final String DEPENDENT_THREAT_K = "11tt0";
+
+    public static final String DEPENDENT_THREAT_L = "tt110";
+
+    public static final String DEPENDENT_THREAT_M = "011tt";
+
+    public static final String DEPENDENT_THREAT_O = "t1t10";
+
+    public static final String DEPENDENT_THREAT_P = "01t1t";
+
+    public static final String DEPENDENT_THREAT_Q = "0t1t1";
+
+    public static final String DEPENDENT_THREAT_R = "1t1t0";
+
+    public static final String DEPENDENT_THREAT_S = "t11t0";
+
+    public static final String DEPENDENT_THREAT_T = "0t11t";
+
+    public static final String DEPENDENT_THREAT_U = "t11t0";
+
+    public static final String DEPENDENT_THREAT_V = "01tt1";
+
+    public static final String DEPENDENT_THREAT_W = "1tt10";
+
+    //The three plus one
+    public static final String DEPENDENT_THREAT_X = "tt101";
+
+    public static final String DEPENDENT_THREAT_Y = "101tt";
+
+    public static final String DEPENDENT_THREAT_Z = "t1t01";
+
+    public static final String DEPENDENT_THREAT_AA = "10t1t";
+
+    public static final String DEPENDENT_THREAT_AB = "t110t";
+
+    public static final String DEPENDENT_THREAT_AC = "t011t";
+
+    public static final String DEPENDENT_THREAT_AD = "1tt01";
+
+    public static final String DEPENDENT_THREAT_AE = "10tt1";
+
+    public static final String DEPENDENT_THREAT_AF = "1t10t";
+
+    public static final String DEPENDENT_THREAT_AG = "t01t1";
+
+    public static final String DEPENDENT_THREAT_AH = "11t0t";
+
+    public static final String DEPENDENT_THREAT_AI = "t0t11";
+
+    //@Todo add more
+
+    /**
+     * Defensive move positions
+     */
+    public static final String DEFENSE_THREAT_A1 = "t11112";
+
+    public static final String DEFENSE_THREAT_A2 = "21111t";
+
+
+    public static final String DEFENSE_THREAT_B1 = "111t1";
+
+    public static final String DEFENSE_THREAT_B2 = "1t111";
+
+
+    public static final String DEFENSE_THREAT_C1 = "01t110";
+
+    public static final String DEFENSE_THREAT_C2 = "011t10";
+
+    public static final String DEFENSE_THREAT_C3 = "t10110";
+
+    public static final String DEFENSE_THREAT_C4 = "01101t";
+
+    public static final String DEFENSE_THREAT_C5 = "01011t";
+
+    public static final String DEFENSE_THREAT_C6 = "t11010";
+
+
+
+    //Three
+    public static final String DEFENSE_THREAT_D1= "t1110";
+
+    public static final String DEFENSE_THREAT_D2 = "0111t";
+
+
 }

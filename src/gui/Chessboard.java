@@ -6,6 +6,7 @@ import game.constant.GameConst;
 import observer.HistoryObserver;
 import observer.GameStatuChecker;
 import gui.constant.GuiConst;
+import test.TestUtil;
 
 import java.awt.Image;
 import java.io.IOException;
@@ -206,6 +207,7 @@ public class Chessboard extends JPanel {
     void resetGame() {
         System.out.println("reset");
         GameController.resetChessboard();
+        //GameController.chess = TestUtil.dummyChess3;
         if (resultPane != null) {
             this.remove(resultPane);
         }
@@ -214,6 +216,7 @@ public class Chessboard extends JPanel {
         if(!GameController.isHumanFirst()){
             System.out.println("ai move first");
             GameController.chess[7][7] = Agent.aiPieceType;
+            HistoryObserver.addHistory(new int[]{7, 7, Agent.aiPieceType});
             /*
             new Thread(new Runnable() {
                 public void run() {
@@ -283,6 +286,9 @@ public class Chessboard extends JPanel {
                 break;
             case  GameConst.KILLER_HEURISTIC:
                 result = KillerAgent.startAlphaBetaPruning_killer(chess);
+                break;
+            case GameConst.THREAT_SPACE_SEARCH:
+                result = ThreatAgent.startThreatSpaceSearch(chess);
                 break;
             default:
                 System.err.println("Invalid Ai Index");

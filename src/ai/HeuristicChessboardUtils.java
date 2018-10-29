@@ -194,4 +194,5 @@ public class HeuristicChessboardUtils {
         return 0;
     }
 
+
 }
