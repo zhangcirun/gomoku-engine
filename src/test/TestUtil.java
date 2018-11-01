@@ -108,9 +108,9 @@ public class TestUtil {
         //System.out.println(ThreatAgent.scanDiagonal(dummyChess3,8,6,7,7, -1));
         //System.out.println(ThreatAgent.scanAntiDiagonal(dummyChess4, 0, 3, -1, -1, -1));
         //System.out.println(ThreatAgent.numOfNearbyThreats(2, 4, dummyChess5, 1));
-        //ThreatAgent.defenseVertical(dummyChess5, 2, 5, -1);
+        //ThreatAgent.defenseVerticalThreat(dummyChess5, 2, 5, -1);
         //System.out.println(dummyChess5[1][0]);
-        //ThreatAgent.defenseDiagonal(dummyChess5, 5, 3, 1);
+        //ThreatAgent.defenseDiagonalThreat(dummyChess5, 5, 3, 1);
         //System.out.println(dummyChess5[7][5]);
         System.out.println(ThreatAgent.detectPotentialThreatWithDirection(2,5,dummyChess5) + " threat dire");
         int[][] nextChess = AiUtils.nextMoveChessboard(dummyChess5, 2, 5, -1);
