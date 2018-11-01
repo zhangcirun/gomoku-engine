@@ -1,4 +1,4 @@
-package ai;
+package ai.utility;
 
 import ai.constant.AiConst;
 import gui.constant.GuiConst;
@@ -20,7 +20,7 @@ public class HeuristicChessboardUtils {
      * @param chess is the 2 dimension array represents the chessboard
      * @return score of the chessboard
      */
-    static int heuristic(int[][] chess) {
+    public static int heuristic(int[][] chess) {
         int allyScore =
             scanVertical(chess, -1) + scanHorizontal(chess, -1) + scanDiagonal(chess, -1) + scanAntiDiagonal(chess, -1);
 
@@ -29,7 +29,7 @@ public class HeuristicChessboardUtils {
         return allyScore - opponentScore;
     }
 
-    @Deprecated static int heuristic_megaMax(int[][] chess, int pieceType) {
+    @Deprecated public static int heuristic_megaMax(int[][] chess, int pieceType) {
         int allyScore =
             scanVertical(chess, pieceType) + scanHorizontal(chess, pieceType) + scanDiagonal(chess, pieceType)
                 + scanAntiDiagonal(chess, pieceType);

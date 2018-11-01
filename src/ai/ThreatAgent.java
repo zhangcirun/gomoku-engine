@@ -1,6 +1,8 @@
 package ai;
 
 import ai.constant.AiConst;
+import ai.utility.AiUtils;
+import ai.utility.ChessboardScanUtils;
 import gui.Background;
 import gui.Chessboard;
 import gui.constant.GuiConst;
@@ -87,8 +89,11 @@ public class ThreatAgent extends Agent {
                         //NOTE: | or || do effect the recursion!
                         //lazy Operator(||) would stop the recursion after the first wining sequence is found.
                         //Todo 模拟对手防御堵子
-                        success = success || threatSpaceSearch(AiUtils.nextMoveChessboard(chess, i, j, aiPieceType),
-                            depth + 1, i, j);
+                        int[][] nextChess = AiUtils.nextMoveChessboard(chess, i, j, aiPieceType);
+                        //Defense the threat.
+                        defenseSimulation(nextChess , i, j, aiPieceType ,threatDirection);
+
+                        success = success || threatSpaceSearch(nextChess, depth + 1, i, j);
                     }
                 }
             }
@@ -111,11 +116,10 @@ public class ThreatAgent extends Agent {
     }
 
     public static boolean detectWiningThreatSequence(int x, int y, int lastX, int lastY, int[][] chess) {
-        int numOfThreat = 0;
         if (x == lastX) {
             //同一个数组 在同一行 scanHorizontal
             String pieces = scanHorizontal(chess, x, y, lastX, lastY, aiPieceType);
-            if (isDependentThreat(pieces) && detectNearbyThreats(x, y, chess, aiPieceType) >= 2) {
+            if (isDependentThreat(pieces) && numOfNearbyThreats(x, y, chess, aiPieceType) >= 2) {
                 //@Todo (x, y) has nearby threats >= 2
                 return true;
             }
@@ -123,7 +127,7 @@ public class ThreatAgent extends Agent {
         } else if (y == lastY) {
             //在同一列，不同数组的相同位置
             String pieces = scanVertical(chess, x, y, lastX, lastY, aiPieceType);
-            if (isDependentThreat(pieces) && detectNearbyThreats(x, y, chess, aiPieceType) >= 2) {
+            if (isDependentThreat(pieces) && numOfNearbyThreats(x, y, chess, aiPieceType) >= 2) {
 
                 return true;
             }
@@ -131,7 +135,7 @@ public class ThreatAgent extends Agent {
         } else if (x - lastX == -(y - lastY)) {
             //diagonal
             String pieces = scanDiagonal(chess, x, y, lastX, lastY, aiPieceType);
-            if (isDependentThreat(pieces) && detectNearbyThreats(x, y, chess, aiPieceType) >= 2) {
+            if (isDependentThreat(pieces) && numOfNearbyThreats(x, y, chess, aiPieceType) >= 2) {
 
                 return true;
             }
@@ -139,7 +143,7 @@ public class ThreatAgent extends Agent {
         } else if (x - lastX == y - lastY) {
             //anti-diagonal
             String pieces = scanAntiDiagonal(chess, x, y, lastX, lastY, aiPieceType);
-            if (isDependentThreat(pieces) && detectNearbyThreats(x, y, chess, aiPieceType) >= 2) {
+            if (isDependentThreat(pieces) && numOfNearbyThreats(x, y, chess, aiPieceType) >= 2) {
                 return true;
             }
             //System.out.println(pieces + " AAA");
@@ -148,10 +152,10 @@ public class ThreatAgent extends Agent {
     }
 
     public static boolean detectPotentialThreat(int x, int y, int[][] chess) {
-        String horizontal = verticalPieces(chess, x, y, aiPieceType, 't');
-        String vertical = horizontalPieces(chess, x, y, aiPieceType, 't');
-        String diagonal = diagonalPieces(chess, x, y, aiPieceType, 't');
-        String antiDiagonal = antiDiagonalPieces(chess, x, y, aiPieceType, 't');
+        String horizontal = ChessboardScanUtils.verticalAdjacentPieces(chess, x, y, aiPieceType, 't');
+        String vertical = ChessboardScanUtils.horizontalAdjacentPieces(chess, x, y, aiPieceType, 't');
+        String diagonal = ChessboardScanUtils.diagonalAdjacentPieces(chess, x, y, aiPieceType, 't');
+        String antiDiagonal = ChessboardScanUtils.antiDiagonalAdjacentPieces(chess, x, y, aiPieceType, 't');
 
         if (horizontal.contains(AiConst.POTENTIAL_THREAT_A) || horizontal.contains(AiConst.POTENTIAL_THREAT_B)
             || horizontal.contains(AiConst.POTENTIAL_THREAT_C) || horizontal.contains(AiConst.POTENTIAL_THREAT_D)
@@ -180,12 +184,12 @@ public class ThreatAgent extends Agent {
         }
         return false;
     }
-
+    //Determine whether or not a position is a gain square, if yes, return the direction of the threat
     public static int detectPotentialThreatWithDirection(int x, int y, int[][] chess) {
-        String horizontal = verticalPieces(chess, x, y, aiPieceType, 't');
-        String vertical = horizontalPieces(chess, x, y, aiPieceType, 't');
-        String diagonal = diagonalPieces(chess, x, y, aiPieceType, 't');
-        String antiDiagonal = antiDiagonalPieces(chess, x, y, aiPieceType, 't');
+        String vertical = ChessboardScanUtils.verticalAdjacentPieces(chess, x, y, aiPieceType, 't');
+        String horizontal = ChessboardScanUtils.horizontalAdjacentPieces(chess, x, y, aiPieceType, 't');
+        String diagonal = ChessboardScanUtils.diagonalAdjacentPieces(chess, x, y, aiPieceType, 't');
+        String antiDiagonal = ChessboardScanUtils.antiDiagonalAdjacentPieces(chess, x, y, aiPieceType, 't');
 
         if (horizontal.contains(AiConst.POTENTIAL_THREAT_A) || horizontal.contains(AiConst.POTENTIAL_THREAT_B)
             || horizontal.contains(AiConst.POTENTIAL_THREAT_C) || horizontal.contains(AiConst.POTENTIAL_THREAT_D)
@@ -210,108 +214,9 @@ public class ThreatAgent extends Agent {
             .contains(AiConst.POTENTIAL_THREAT_D) || antiDiagonal.contains(AiConst.POTENTIAL_THREAT_E) || antiDiagonal
             .contains(AiConst.POTENTIAL_THREAT_F) || antiDiagonal.contains(AiConst.POTENTIAL_THREAT_G) || antiDiagonal
             .contains(AiConst.POTENTIAL_THREAT_H) || antiDiagonal.contains(AiConst.POTENTIAL_THREAT_I)) {
-            return AiConst.ANTIDOAGONAL_THREAT;
+            return AiConst.ANTIDIAGONAL_THREAT;
         }
         return AiConst.NO_THREAT;
-    }
-
-    private static String verticalPieces(int[][] chess, int xArrayPosition, int yArrayPosition, int pieceType, char c) {
-        StringBuilder builder = new StringBuilder();
-        //check from left to target
-        for (int i = xArrayPosition - 5; i < xArrayPosition; i++) {
-            if (Chessboard.validateArrayIndex(i)) {
-                int piece = chess[i][yArrayPosition];
-                //0 for empty, 1 for ally, 2 for opponent
-                builder.append(piece == 0 ? "0" : piece == pieceType ? "1" : "2");
-            }
-        }
-
-        builder.append(c);
-
-        //check from target to right
-        for (int i = xArrayPosition + 1; i < xArrayPosition + 6; i++) {
-            if (Chessboard.validateArrayIndex(i)) {
-                int piece = chess[i][yArrayPosition];
-                builder.append(piece == 0 ? "0" : piece == pieceType ? "1" : "2");
-            }
-        }
-
-        return builder.toString();
-    }
-
-    private static String horizontalPieces(int[][] chess, int xArrayPosition, int yArrayPosition, int pieceType,
-        char c) {
-        StringBuilder builder = new StringBuilder();
-        //check from top to target
-        for (int i = yArrayPosition - 5; i < yArrayPosition; i++) {
-            if (Chessboard.validateArrayIndex(i)) {
-                int piece = chess[xArrayPosition][i];
-                builder.append(piece == 0 ? "0" : piece == pieceType ? "1" : "2");
-            }
-        }
-
-        builder.append(c);
-
-        //check from target to bottom
-        for (int i = yArrayPosition + 1; i < yArrayPosition + 6; i++) {
-            if (Chessboard.validateArrayIndex(i)) {
-                int piece = chess[xArrayPosition][i];
-                builder.append(piece == 0 ? "0" : piece == pieceType ? "1" : "2");
-            }
-        }
-
-        return builder.toString();
-    }
-
-    private static String diagonalPieces(int[][] chess, int xArrayPosition, int yArrayPosition, int pieceType, char c) {
-        StringBuilder builder = new StringBuilder();
-        //check from left top to target
-        for (int i = 5; i > 0; i--) {
-            if (Chessboard.validateArrayIndex(xArrayPosition - i) && Chessboard
-                .validateArrayIndex(yArrayPosition - i)) {
-                int piece = chess[xArrayPosition - i][yArrayPosition - i];
-                builder.append(piece == 0 ? "0" : piece == pieceType ? "1" : "2");
-            }
-        }
-
-        builder.append(c);
-
-        //check from target to right bottom
-        for (int i = 1; i < 6; i++) {
-            if (Chessboard.validateArrayIndex(xArrayPosition + i) && Chessboard
-                .validateArrayIndex(yArrayPosition + i)) {
-                int piece = chess[xArrayPosition + i][yArrayPosition + i];
-                builder.append(piece == 0 ? "0" : piece == pieceType ? "1" : "2");
-            }
-        }
-
-        return builder.toString();
-    }
-
-    private static String antiDiagonalPieces(int[][] chess, int xArrayPosition, int yArrayPosition, int pieceType,
-        char c) {
-        StringBuilder builder = new StringBuilder();
-        //check from right top to target
-        for (int i = 5; i > 0; i--) {
-            if (Chessboard.validateArrayIndex(xArrayPosition + i) && Chessboard
-                .validateArrayIndex(yArrayPosition - i)) {
-                int piece = chess[xArrayPosition + i][yArrayPosition - i];
-                builder.append(piece == 0 ? "0" : piece == pieceType ? "1" : "2");
-            }
-        }
-
-        builder.append(c);
-
-        //check from target to left bottom
-        for (int i = 1; i < 6; i++) {
-            if (Chessboard.validateArrayIndex(xArrayPosition - i) && Chessboard
-                .validateArrayIndex(yArrayPosition + i)) {
-                int piece = chess[xArrayPosition - i][yArrayPosition + i];
-                builder.append(piece == 0 ? "0" : piece == pieceType ? "1" : "2");
-            }
-        }
-
-        return builder.toString();
     }
 
     //Scan the whole row
@@ -418,53 +323,17 @@ public class ThreatAgent extends Agent {
         return false;
     }
 
-    public static int detectNearbyThreats(int x, int y, int[][] chess, int pieceType) {
-        String horizontal = verticalPieces(chess, x, y, pieceType, '1');
-        String vertical = horizontalPieces(chess, x, y, pieceType, '1');
-        String diagonal = diagonalPieces(chess, x, y, pieceType, '1');
-        String antiDiagonal = antiDiagonalPieces(chess, x, y, pieceType, '1');
+    public static int numOfNearbyThreats(int x, int y, int[][] chess, int pieceType) {
+        String horizontal = ChessboardScanUtils.verticalAdjacentPieces(chess, x, y, pieceType, '1');
+        String vertical = ChessboardScanUtils.horizontalAdjacentPieces(chess, x, y, pieceType, '1');
+        String diagonal = ChessboardScanUtils.diagonalAdjacentPieces(chess, x, y, pieceType, '1');
+        String antiDiagonal = ChessboardScanUtils.antiDiagonalAdjacentPieces(chess, x, y, pieceType, '1');
 
-        return detectOneRowThreatsTest(horizontal, chess) + detectOneRowThreatsTest(vertical, chess)
-            + detectOneRowThreatsTest(diagonal, chess) + detectOneRowThreatsTest(antiDiagonal, chess);
+        return detectOneRowThreats(horizontal, chess) + detectOneRowThreats(vertical, chess)
+            + detectOneRowThreats(diagonal, chess) + detectOneRowThreats(antiDiagonal, chess);
     }
 
     public static int detectOneRowThreats(String pieces, int[][] chess) {
-        int threatCount = 0;
-        if (pieces.contains(AiConst.IMPLICATE_FOUR_SINGLE_EMPTY_A)) {
-            threatCount++;
-        } else if (pieces.contains(AiConst.IMPLICATE_FOUR_SINGLE_EMPTY_B)) {
-            threatCount++;
-        }
-
-        if (pieces.contains(AiConst.IMPLICATE_FOUR_SINGLE_EMPTY_C)) {
-            threatCount++;
-        }
-        if (pieces.contains(AiConst.IMPLICATE_FOUR_SINGLE_EMPTY_D)) {
-            threatCount++;
-        }
-        if (pieces.contains(AiConst.IMPLICATE_FOUR_SINGLE_EMPTY_E)) {
-            threatCount++;
-        }
-
-        if (threatCount < 1) {
-            if (pieces.contains(AiConst.IMPLICATE_THREE_A)) {
-                threatCount++;
-            } else if (pieces.contains(AiConst.IMPLICATE_THREE_B)) {
-                threatCount++;
-            }
-
-            if (pieces.contains(AiConst.IMPLICATE_THREE_C)) {
-                threatCount++;
-            }
-            if (pieces.contains(AiConst.IMPLICATE_THREE_D)) {
-                threatCount++;
-            }
-        }
-
-        return threatCount;
-    }
-
-    public static int detectOneRowThreatsTest(String pieces, int[][] chess) {
         if (pieces.contains(AiConst.IMPLICATE_FOUR_SINGLE_EMPTY_A) || pieces
             .contains(AiConst.IMPLICATE_FOUR_SINGLE_EMPTY_B) || pieces.contains(AiConst.IMPLICATE_FOUR_SINGLE_EMPTY_C)
             || pieces.contains(AiConst.IMPLICATE_FOUR_SINGLE_EMPTY_D) || pieces
@@ -480,10 +349,21 @@ public class ThreatAgent extends Agent {
         return chess[threatMove[0]][threatMove[1]] == AiConst.EMPTY_STONE;
     }
 
-    private static void defenseSimulation(int[][] chess, int x, int y, int enemyPieceType, int threatDirection) {
+    public static void defenseSimulation(int[][] chess, int x, int y, int pieceType, int threatDirection) {
         switch (threatDirection) {
             case AiConst.HORIZONTAL_THREAT:
-                //
+                defenseHorizontal(chess, x, y, pieceType);
+                break;
+            case AiConst.VERTICAL_THREAT:
+                defenseVertical(chess, x, y, pieceType);
+                break;
+            case AiConst.DIAGONAL_THREAT:
+                defenseDiagonal(chess, x, y, pieceType);
+                break;
+            case AiConst.ANTIDIAGONAL_THREAT:
+                defenseAntiDiagonal(chess, x, y, pieceType);
+                default:
+                    System.out.println("this should never happen");
         }
     }
 
@@ -493,14 +373,14 @@ public class ThreatAgent extends Agent {
 
         for (int i = x - 4; i < x; i++) {
             if (Chessboard.validateArrayIndex(i) && chess[i][y] == AiConst.EMPTY_STONE) {
-                String pieces = verticalPieces(chess, i, y, pieceType, 't');
+                String pieces = ChessboardScanUtils.verticalAdjacentPieces(chess, i, y, pieceType, 't');
                 possibleMoves.add(new DefensiveMove(i, y, pieces));
             }
         }
 
         for (int i = x + 1; i < x + 5; i++) {
             if (Chessboard.validateArrayIndex(i) && chess[i][y] == AiConst.EMPTY_STONE) {
-                String pieces = verticalPieces(chess, i, y, pieceType, 't');
+                String pieces = ChessboardScanUtils.verticalAdjacentPieces(chess, i, y, pieceType, 't');
                 possibleMoves.add(new DefensiveMove(i, y, pieces));
             }
         }
@@ -508,7 +388,6 @@ public class ThreatAgent extends Agent {
         generateDefensiveMoves(defensiveMoves, possibleMoves);
 
         for (DefensiveMove move : defensiveMoves) {
-            System.out.println("defense: " + move.x + " " + move.y);
             chess[move.x][move.y] = pieceType * -1;
         }
 
@@ -520,14 +399,14 @@ public class ThreatAgent extends Agent {
 
         for (int i = y - 4; i < y; i++) {
             if (Chessboard.validateArrayIndex(i) && chess[x][i] == AiConst.EMPTY_STONE) {
-                String pieces = horizontalPieces(chess, x, i, pieceType, 't');
+                String pieces = ChessboardScanUtils.horizontalAdjacentPieces(chess, x, i, pieceType, 't');
                 possibleMoves.add(new DefensiveMove(x, i, pieces));
             }
         }
 
         for (int i = y + 1; i < y + 5; i++) {
             if (Chessboard.validateArrayIndex(i) && chess[x][i] == AiConst.EMPTY_STONE) {
-                String pieces = horizontalPieces(chess, x, i, pieceType, 't');
+                String pieces = ChessboardScanUtils.horizontalAdjacentPieces(chess, x, i, pieceType, 't');
                 possibleMoves.add(new DefensiveMove(x, i, pieces));
             }
         }
@@ -535,7 +414,6 @@ public class ThreatAgent extends Agent {
         generateDefensiveMoves(defensiveMoves, possibleMoves);
 
         for (DefensiveMove move : defensiveMoves) {
-            System.out.println("defense: " + move.x + " " + move.y);
             chess[move.x][move.y] = pieceType * -1;
         }
     }
@@ -547,7 +425,7 @@ public class ThreatAgent extends Agent {
         for (int i = 4; i > 0; i--) {
             if (Chessboard.validateArrayIndex(x - i) && Chessboard.validateArrayIndex(y - i)
                 && chess[x - i][y - i] == AiConst.EMPTY_STONE) {
-                String pieces = diagonalPieces(chess, x - i, y - i, pieceType, 't');
+                String pieces = ChessboardScanUtils.diagonalAdjacentPieces(chess, x - i, y - i, pieceType, 't');
                 possibleMoves.add(new DefensiveMove(x - i, y - i, pieces));
             }
         }
@@ -555,7 +433,7 @@ public class ThreatAgent extends Agent {
         for (int i = 1; i < 5; i++) {
             if (Chessboard.validateArrayIndex(x + i) && Chessboard.validateArrayIndex(y + i)
                 && chess[x + i][y + i] == AiConst.EMPTY_STONE) {
-                String pieces = diagonalPieces(chess, x + i, y + i, pieceType, 't');
+                String pieces = ChessboardScanUtils.diagonalAdjacentPieces(chess, x + i, y + i, pieceType, 't');
                 possibleMoves.add(new DefensiveMove(x + i, y + i, pieces));
             }
         }
@@ -563,7 +441,6 @@ public class ThreatAgent extends Agent {
         generateDefensiveMoves(defensiveMoves, possibleMoves);
 
         for (DefensiveMove move : defensiveMoves) {
-            System.out.println("defense: " + move.x + " " + move.y);
             chess[move.x][move.y] = pieceType * -1;
         }
     }
@@ -576,7 +453,7 @@ public class ThreatAgent extends Agent {
             if (Chessboard.validateArrayIndex(x + i) && Chessboard.validateArrayIndex(y - i)
                 && chess[x + i][y - i] == AiConst.EMPTY_STONE) {
 
-                String pieces = antiDiagonalPieces(chess, x + i, y - i, pieceType, 't');
+                String pieces = ChessboardScanUtils.antiDiagonalAdjacentPieces(chess, x + i, y - i, pieceType, 't');
                 possibleMoves.add(new DefensiveMove(x + i, y - i, pieces));
             }
         }
@@ -586,7 +463,7 @@ public class ThreatAgent extends Agent {
             if (Chessboard.validateArrayIndex(x - i) && Chessboard.validateArrayIndex(y + i)
                 && chess[x - i][y + i] == AiConst.EMPTY_STONE) {
 
-                String pieces = antiDiagonalPieces(chess, x - i, y + i, pieceType, 't');
+                String pieces = ChessboardScanUtils.antiDiagonalAdjacentPieces(chess, x - i, y + i, pieceType, 't');
                 possibleMoves.add(new DefensiveMove(x - i, y + i, pieces));
             }
         }
@@ -594,7 +471,6 @@ public class ThreatAgent extends Agent {
         generateDefensiveMoves(defensiveMoves, possibleMoves);
 
         for (DefensiveMove move : defensiveMoves) {
-            System.out.println("defense: " + move.x + " " + move.y);
             chess[move.x][move.y] = pieceType * -1;
         }
     }

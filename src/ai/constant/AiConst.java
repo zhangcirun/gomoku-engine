@@ -79,7 +79,7 @@ public class AiConst {
 
     public static final int DIAGONAL_THREAT = 3;
 
-    public static final int ANTIDOAGONAL_THREAT = 4;
+    public static final int ANTIDIAGONAL_THREAT = 4;
 
     /**
      *

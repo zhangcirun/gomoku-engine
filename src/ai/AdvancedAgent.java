@@ -1,6 +1,9 @@
 package ai;
 
 import ai.constant.AiConst;
+import ai.utility.AiUtils;
+import ai.utility.HeuristicChessboardUtils;
+import ai.utility.HeuristicPieceUtils;
 import gui.Background;
 import gui.constant.GuiConst;
 import observer.GameStatuChecker;

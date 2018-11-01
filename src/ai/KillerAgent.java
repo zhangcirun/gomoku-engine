@@ -1,6 +1,8 @@
 package ai;
 
 import ai.constant.AiConst;
+import ai.utility.AiUtils;
+import ai.utility.HeuristicChessboardUtils;
 import gui.Background;
 
 import java.util.List;

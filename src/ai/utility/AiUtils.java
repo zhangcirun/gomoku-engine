@@ -1,5 +1,6 @@
-package ai;
+package ai.utility;
 
+import ai.BasicAgent;
 import gui.constant.GuiConst;
 import observer.GomokuUtils;
 
@@ -37,7 +38,7 @@ public class AiUtils {
      * @param array Original 2-dimension array
      * @return Copy of the array
      */
-    static int[][] copyArray(int[][] array) {
+    public static int[][] copyArray(int[][] array) {
         int[][] a = new int[array.length][array[0].length];
 
         for (int i = 0; i < array.length; i++) {
@@ -55,7 +56,7 @@ public class AiUtils {
      * @param pieceType Type of piece, 1 for black and -1 for white
      * @return new array after next move
      */
-    static int[][] nextMoveChessboard(int[][] chess, int x, int y, int pieceType) {
+    public static int[][] nextMoveChessboard(int[][] chess, int x, int y, int pieceType) {
         int[][] a = copyArray(chess);
         a[x][y] = pieceType;
         return a;

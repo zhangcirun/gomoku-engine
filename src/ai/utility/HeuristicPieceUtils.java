@@ -1,4 +1,4 @@
-package ai;
+package ai.utility;
 
 import ai.constant.DemoConst;
 import gui.Chessboard;
@@ -12,11 +12,11 @@ import gui.Chessboard;
 public class HeuristicPieceUtils {
     private HeuristicPieceUtils(){}
 
-    static int evalAll(int[][] chess, int x, int y){
+    public static int evalAll(int[][] chess, int x, int y){
         return eval(chess, x, y, -1) + eval(chess, x, y, 1);
     }
 
-    static int eval(int[][] chess, int x, int y, int pieceType){
+    public static int eval(int[][] chess, int x, int y, int pieceType){
         int score = 0;
         int[] strategy = new int[7];
 
