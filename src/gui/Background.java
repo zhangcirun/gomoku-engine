@@ -2,6 +2,7 @@ package gui;
 
 import gui.constant.GuiConst;
 import javax.swing.*;
+import javax.swing.text.DefaultCaret;
 import java.awt.*;
 
 /**
@@ -13,12 +14,12 @@ import java.awt.*;
  * @version Version 1.1
  */
 public class Background extends JPanel {
-    private Image background, blackNext, whiteNext;
+    //private Image background, blackNext, whiteNext;
 
     /**
      * Chessboard is the component of this class
      */
-    private Chessboard chessboard;
+    public Chessboard chessboard;
 
     /**
      * Text Area for showing game information
@@ -46,13 +47,14 @@ public class Background extends JPanel {
 
     private void init() throws Exception {
         //this.background = ImageIO.read(new File("src/gui/assets/backgroundAutumn.jpg"));
-        this.background = new ImageIcon(this.getClass().getResource("/assets/backgroundAutumn.jpg")).getImage();
+        //this.background = new ImageIcon(this.getClass().getResource("/assets/backgroundAutumn.jpg")).getImage();
         //this.blackNext = ImageIO.read(new File("src/gui/assets/blackNext.png"));
         //this.whiteNext = ImageIO.read(new File("src/gui/assets/whiteNext.png"));
         this.setPreferredSize(new Dimension(GuiConst.FRAME_WIDTH, GuiConst.FRAME_HEIGHT));
         this.setLayout(null);
         addChessboard();
         addTextArea();
+        //this.setBackground(Color.YELLOW);
     }
 
     /**
@@ -91,7 +93,14 @@ public class Background extends JPanel {
     }
 
     public static void addMessage(String str) {
-        textArea.append(str + "\n");
+        if(textArea != null){
+            textArea.append(str + "\n");
+            scrollDown();
+        }
+    }
+
+    private static void scrollDown(){
+        textArea.setCaretPosition(textArea.getText().length());
     }
 
     static void clearTextArea() {

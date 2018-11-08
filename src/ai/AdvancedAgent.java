@@ -27,10 +27,14 @@ public class AdvancedAgent extends Agent{
      * @return Coordinates of the best next move for the computer
      */
     public static int[] startMiniMax(int[][] chess) {
-        Node root = new Node(-1, -1, -1, chess);
-        Node result = miniMax(root, 1, aiPieceType, isFirstLayerMax);
-        System.out.println("x " + result.getX() + "y " + result.getY() + "score " + result.getScore());
-        return new int[] {result.getX(), result.getY(), aiPieceType};
+        if(isOpenning(chess)){
+            return new int[] {7, 7, aiPieceType};
+        }else {
+            Node root = new Node(-1, -1, -1, chess);
+            Node result = miniMax(root, 1, aiPieceType, true);
+            System.out.println("x " + result.getX() + "y " + result.getY() + "score " + result.getScore());
+            return new int[] {result.getX(), result.getY(), aiPieceType};
+        }
     }
 
     /**
@@ -99,19 +103,21 @@ public class AdvancedAgent extends Agent{
      * @return Coordinates of the best next move for the computer
      */
     public static int[] startAlphaBetaPruning(int[][] chess) {
-        Node root = new Node(-1, -1, -1, chess);
-        Node bestMove;
-        if(isFirstLayerMax){
-            bestMove = alphaBetaPruning_Maximizer(root, 1, aiPieceType, Integer.MIN_VALUE, Integer.MAX_VALUE);
-        }else {
-            bestMove = alphaBetaPruning_Minimizer(root, 1, aiPieceType, Integer.MIN_VALUE, Integer.MAX_VALUE);
-        }
-        int[] result = new int[2];
-        result[0] = bestMove.getX();
-        result[1] = bestMove.getY();
-        System.out.println("x " + bestMove.getX() + "y " + bestMove.getY() + "score " + bestMove.getScore());
+        if(isOpenning(chess)){
+            return new int[] {7, 7, aiPieceType};
+        }else{
+            Node root = new Node(-1, -1, -1, chess);
+            Node bestMove;
 
-        return result;
+            bestMove = alphaBetaPruning_Maximizer(root, 1, aiPieceType, Integer.MIN_VALUE, Integer.MAX_VALUE);
+
+            int[] result = new int[2];
+            result[0] = bestMove.getX();
+            result[1] = bestMove.getY();
+            System.out.println("x " + bestMove.getX() + "y " + bestMove.getY() + "score " + bestMove.getScore());
+
+            return result;
+        }
     }
 
     /**
@@ -234,19 +240,21 @@ public class AdvancedAgent extends Agent{
      * @return most valuable node
      */
     public static int[] startAlphaBetaPruning_preSort(int[][] chess) {
-        //instantiate root node with preset x and y to the center of the chessboard(good for pruning)
-        Node root = new Node(-1, -1, -1, chess);
-        Node bestMove;
-        if(isFirstLayerMax){
-            bestMove = alphaBetaPruning_Maximizer_preSort(root, 1, aiPieceType, Integer.MIN_VALUE, Integer.MAX_VALUE);
+        if(isOpenning(chess)){
+            return new int[] {7, 7, aiPieceType};
         }else {
-            bestMove = alphaBetaPruning_Minimizer_preSort(root, 1, aiPieceType, Integer.MIN_VALUE, Integer.MAX_VALUE);
-        }
-        int[] result = bestMove.getCoordinates();
-        Background
-            .addMessage("Computer move : (x, " + result[0] + ") (y, " + result[1] + ") score " + bestMove.getScore());
+            //instantiate root node with preset x and y to the center of the chessboard(good for pruning)
+            Node root = new Node(-1, -1, -1, chess);
+            Node bestMove;
 
-        return new int[]{result[0], result[1], aiPieceType};
+            bestMove = alphaBetaPruning_Maximizer_preSort(root, 1, aiPieceType, Integer.MIN_VALUE, Integer.MAX_VALUE);
+
+            int[] result = bestMove.getCoordinates();
+            Background
+                .addMessage("Computer move : (x, " + result[0] + ") (y, " + result[1] + ") score " + bestMove.getScore());
+
+            return new int[]{result[0], result[1], aiPieceType};
+        }
     }
 
     /**
@@ -271,8 +279,6 @@ public class AdvancedAgent extends Agent{
         }
 
         int[][] chess = root.getChess();
-        int lastX = root.getX();
-        int lastY = root.getY();
         int bestScore = Integer.MIN_VALUE;
         Node bestChild = null;
 
@@ -340,8 +346,6 @@ public class AdvancedAgent extends Agent{
         }
 
         int[][] chess = root.getChess();
-        int lastX = root.getX();
-        int lastY = root.getY();
         int bestScore = Integer.MAX_VALUE;
         Node bestChild = null;
 
@@ -411,11 +415,6 @@ public class AdvancedAgent extends Agent{
         return scoreAlly - scoreOppo;
     }
 
-    /**
-     * @param chess
-     * @param expectScore
-     * @return
-     */
     public static int[] aspirationSearch(int[][] chess, int expectScore) {
         int expectedLowerBound = expectScore - AiConst.WINDOW_SIZE_ASPIRATION;
         int expectedUpperBound = expectScore + AiConst.WINDOW_SIZE_ASPIRATION;

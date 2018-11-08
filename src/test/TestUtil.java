@@ -116,7 +116,6 @@ public class TestUtil {
         int[][] nextChess = AiUtils.nextMoveChessboard(dummyChess5, 2, 5, -1);
         //Defense the threat.
         ThreatAgent.defenseSimulation(nextChess , 2, 5, -1 ,1);
-
         System.out.println(nextChess[2][5]);
         System.out.println(nextChess[2][6]);
     }

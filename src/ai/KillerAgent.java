@@ -20,20 +20,22 @@ public class KillerAgent extends Agent {
     private static int[][][] killerMoves = new int[maximumSearchDepth][2][];
 
     public static int[] startAlphaBetaPruning_killer(int[][] chess) {
-        //instantiate root node with preset x and y to the center of the chessboard(good for pruning)
-        resetKillerMoves();
-        Node root = new Node(-1, -1, -1, chess);
-        Node bestMove;
-        if(isFirstLayerMax){
-            bestMove = alphaBetaPruning_Maximizer_preSort(root, 1, aiPieceType, Integer.MIN_VALUE, Integer.MAX_VALUE);
+        if(isOpenning(chess)){
+            return new int[] {7, 7, aiPieceType};
         }else {
-            bestMove = alphaBetaPruning_Minimizer_preSort(root, 1, aiPieceType, Integer.MIN_VALUE, Integer.MAX_VALUE);
-        }
-        int[] result = bestMove.getCoordinates();
-        Background
-            .addMessage("Computer move : (x, " + result[0] + ") (y, " + result[1] + ") score " + bestMove.getScore());
+            //instantiate root node with preset x and y to the center of the chessboard(good for pruning)
+            resetKillerMoves();
+            Node root = new Node(-1, -1, -1, chess);
+            Node bestMove;
 
-        return new int[]{result[0], result[1], aiPieceType};
+            bestMove = alphaBetaPruning_Maximizer_preSort(root, 1, aiPieceType, Integer.MIN_VALUE, Integer.MAX_VALUE);
+
+            int[] result = bestMove.getCoordinates();
+            Background
+                .addMessage("Computer move : (x, " + result[0] + ") (y, " + result[1] + ") score " + bestMove.getScore());
+
+            return new int[]{result[0], result[1], aiPieceType};
+        }
     }
 
     /**

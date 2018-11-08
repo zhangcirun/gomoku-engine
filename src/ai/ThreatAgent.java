@@ -30,28 +30,30 @@ public class ThreatAgent extends Agent {
      * @return Coordinates of the best next AI move
      */
     public static int[] startThreatSpaceSearch(int[][] chess) {
-        if (BasicAgent.detectThreats(chess, aiPieceType)) {
-            Background.addMessage("Detected emergent threat, abp");
+        if (detectThreats(chess, aiPieceType)) {
+            //Background.addMessage("emergent");
             return AdvancedAgent.startAlphaBetaPruning_preSort(chess);
         }
         if (!threatSequence.isEmpty()) {
             if (isMoveValid(threatSequence.get(0), chess)) {
                 System.out.println("Wining sequence found, second move");
                 Background.addMessage("Wining sequence found, second move");
+                Background.addMessage("---------------------------------");
                 return threatSequence.remove(0);
             } else {
                 threatSequence.clear();
-                Background.addMessage("threat move is blocked");
+                //Background.addMessage("threat move is blocked");
                 return AdvancedAgent.startAlphaBetaPruning_preSort(chess);
             }
 
         } else if (threatSpaceSearch(chess, 0, -1, -1)) {
+            Background.addMessage("---------------------------------");
             Background.addMessage("Wining sequence found, first move");
             System.out.println("Wining sequence found, first move");
             return threatSequence.remove(0);
         } else {
-            Background.addMessage("No threat sequence found, abp");
-            System.out.println("No threat sequence found, abp");
+            //Background.addMessage("No threat sequence found, abp");
+            //System.out.println("No threat sequence found, abp");
             return AdvancedAgent.startAlphaBetaPruning_preSort(chess);
         }
     }
@@ -83,7 +85,7 @@ public class ThreatAgent extends Agent {
 
                 if (chess[i][j] == 0 && ((threatDirection = detectPotentialThreatWithDirection(i, j, chess))
                     != AiConst.NO_THREAT)) {
-                    System.out.println("X " + i + "Y " + j + " depth" + depth);
+                    //System.out.println("X " + i + "Y " + j + " depth" + depth);
                     if (detectWiningThreatSequence(i, j, lastThreatX, lastThreatY, chess)) {
                         //System.out.println("first move: " + lastThreatX + " - " + lastThreatY);
                         //System.out.println("Next move: " + i + " - " + j);
@@ -282,8 +284,10 @@ public class ThreatAgent extends Agent {
                 break;
             case AiConst.ANTIDIAGONAL_THREAT:
                 defenseAntiDiagonalThreat(chess, x, y, pieceType);
+                break;
             default:
                 System.out.println("this should never happen");
+                System.out.println("threatDirection " + threatDirection);
         }
     }
 
@@ -472,6 +476,14 @@ public class ThreatAgent extends Agent {
             }
         }
     }
+
+    //Todo need to replace it, bad way
+    public static boolean detectThreats(int[][] chess, int pieceType) {
+        return ChessboardScanUtils.scanVerticalThreat(chess, pieceType) || ChessboardScanUtils.scanHorizontalThreat(chess, pieceType) || ChessboardScanUtils.scanDiagonalThreat(
+            chess, pieceType) || ChessboardScanUtils.scanAntiDiagonalThreat(chess, pieceType) || ChessboardScanUtils.scanVerticalThreat(chess, pieceType * -1)
+            || ChessboardScanUtils.scanHorizontalThreat(chess, pieceType * -1) || ChessboardScanUtils.scanDiagonalThreat(chess, pieceType * -1)
+            || ChessboardScanUtils.scanAntiDiagonalThreat(chess, pieceType * -1);
+    }
 }
 
 /**
@@ -484,7 +496,7 @@ class Move {
     int y;
     String pieces;
 
-    public Move(int x, int y, String pieces) {
+    Move(int x, int y, String pieces) {
         this.x = x;
         this.y = y;
         this.pieces = pieces;

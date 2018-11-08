@@ -1,6 +1,7 @@
 package ai;
 
 import ai.constant.AiConst;
+import ai.utility.ChessboardScanUtils;
 import gui.Chessboard;
 import gui.constant.GuiConst;
 
@@ -25,25 +26,29 @@ public class BasicAgent extends Agent {
      * @return An array contains the coordinates of the tile
      */
     public static int[] nextMove(int[][] chess) {
-        int currentMaxScore = 0;
-        int x = 0;
-        int y = 0;
-        for (int i = 0; i < GuiConst.TILE_NUM_PER_ROW; i++) {
-            for (int j = 0; j < GuiConst.TILE_NUM_PER_ROW; j++) {
-                //for each empty tiles, calculates their marks
-                if (chess[i][j] == 0) {
-                    //-1 for white piece
-                    int score = totalmark(chess, i, j);
-                    if (score > currentMaxScore) {
-                        currentMaxScore = score;
-                        x = i;
-                        y = j;
+        if(isOpenning(chess)){
+            return new int[] {7, 7, aiPieceType};
+        }else{
+            int currentMaxScore = 0;
+            int x = 0;
+            int y = 0;
+            for (int i = 0; i < GuiConst.TILE_NUM_PER_ROW; i++) {
+                for (int j = 0; j < GuiConst.TILE_NUM_PER_ROW; j++) {
+                    //for each empty tiles, calculates their marks
+                    if (chess[i][j] == 0) {
+                        //-1 for white piece
+                        int score = totalMark(chess, i, j);
+                        if (score > currentMaxScore) {
+                            currentMaxScore = score;
+                            x = i;
+                            y = j;
+                        }
                     }
                 }
             }
+            System.out.println("currentMax: " + currentMaxScore + " " + x + " " + y);
+            return new int[] {x, y, aiPieceType};
         }
-        System.out.println("currentMax: " + currentMaxScore + " " + x + " " + y);
-        return new int[] {x, y, aiPieceType};
     }
 
     /**
@@ -52,12 +57,20 @@ public class BasicAgent extends Agent {
      * @param chess is the 2-dimension array represents the chessboard
      * @param x     is the coordinate of the tile in x-axis
      * @param y     is the coordinate of the tile in y-axis
-     * @return the total score
+     * @return The total score
      */
-    public static int totalmark(int[][] chess, int x, int y) {
+    public static int totalMark(int[][] chess, int x, int y) {
         return markPiece(chess, x, y, -1) + markPiece(chess, x, y, 1);
     }
 
+    /**
+     * Calculate the score of one tile with one piece type
+     * @param chess The chess board
+     * @param x is the coordinate of the tile in x-axis
+     * @param y is the coordinate of the tile in y-axis
+     * @param pieceType Piece type for scoring
+     * @return Score
+     */
     public static int markPiece(int[][] chess, int x, int y, int pieceType) {
         return marking(horizontalPieces(chess, x, y, pieceType)) + marking(verticalPieces(chess, x, y, pieceType))
             + marking(diagonalPieces(chess, x, y, pieceType)) + marking(antiDiagonalPieces(chess, x, y, pieceType));
@@ -237,159 +250,5 @@ public class BasicAgent extends Agent {
         return builder.toString();
     }
 
-    /**
-     * Detects whether exists a threat in the current chessboard
-     *
-     * @param chess     the 2-dimension array represents the chessboard
-     * @param pieceType represents the piece type of the computer
-     * @return Existing a threat or not
-     */
-    public static boolean detectThreats(int[][] chess, int pieceType) {
 
-        return scanVerticalThreat(chess, pieceType) || scanHorizontalThreat(chess, pieceType) || scanDiagonalThreat(
-            chess, pieceType) || scanAntiDiagonalThreat(chess, pieceType) || scanVerticalThreat(chess, pieceType * -1)
-            || scanHorizontalThreat(chess, pieceType * -1) || scanDiagonalThreat(chess, pieceType * -1)
-            || scanAntiDiagonalThreat(chess, pieceType * -1);
-    }
-
-    private static boolean detectThreat(String pieces) {
-        if (pieces.contains(AiConst.IMPLICATE_FOUR_DOUBLE_EMPTY)) {
-            return true;
-        }
-
-        if (pieces.contains(AiConst.IMPLICATE_FOUR_SINGLE_EMPTY_A) || pieces
-            .contains(AiConst.IMPLICATE_FOUR_SINGLE_EMPTY_B) || pieces.contains(AiConst.IMPLICATE_FOUR_SINGLE_EMPTY_C)
-            || pieces.contains(AiConst.IMPLICATE_FOUR_SINGLE_EMPTY_D) || pieces
-            .contains(AiConst.IMPLICATE_FOUR_SINGLE_EMPTY_E)) {
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * Scans the chessboard from top to bottom vertically
-     * Returns true if existing a threat
-     *
-     * @param chess     2-dimension array represents the chessboard
-     * @param pieceType Indicates which player moved, 1 for black -1 for white
-     * @return Existing a threat or not
-     */
-    private static boolean scanVerticalThreat(int[][] chess, int pieceType) {
-        StringBuilder builder = new StringBuilder();
-        for (int i = 0; i < GuiConst.TILE_NUM_PER_ROW; i++) {
-            for (int j = 0; j < GuiConst.TILE_NUM_PER_ROW; j++) {
-                int piece = chess[i][j];
-                builder.append(piece == 0 ? "0" : piece == pieceType ? "1" : "2");
-            }
-            if (detectThreat(builder.toString())) {
-                return true;
-            }
-            builder.delete(0, builder.length());
-        }
-        return false;
-    }
-
-    /**
-     * Scans the chessboard from left to right horizontally
-     * Returns true if existing a threat
-     *
-     * @param chess     2-dimension array represents the chessboard
-     * @param pieceType Indicates which player moved, 1 for black -1 for white
-     * @return Existing a threat or not
-     */
-    private static boolean scanHorizontalThreat(int[][] chess, int pieceType) {
-        StringBuilder builder = new StringBuilder();
-
-        for (int i = 0; i < GuiConst.TILE_NUM_PER_ROW; i++) {
-            for (int j = 0; j < GuiConst.TILE_NUM_PER_ROW; j++) {
-                int piece = chess[j][i];
-                builder.append(piece == 0 ? "0" : piece == pieceType ? "1" : "2");
-            }
-            if (detectThreat(builder.toString())) {
-                return true;
-            }
-            builder.delete(0, builder.length());
-        }
-        return false;
-    }
-
-    /**
-     * Scans the chessboard from right top to left bottom diagonally
-     * Returns true if existing a threat
-     *
-     * @param chess     2-dimension array represents the chessboard
-     * @param pieceType Indicates which player moved, 1 for black -1 for white
-     * @return Existing a threat or not
-     */
-    private static boolean scanDiagonalThreat(int[][] chess, int pieceType) {
-        StringBuilder builder = new StringBuilder();
-
-        //upper half chessboard
-        for (int i = 10; i >= 0; i--) {
-            int count = 0;
-            for (int j = i; j <= 14; j++) {
-                int piece = chess[j][count++];
-                builder.append(piece == 0 ? "0" : piece == pieceType ? "1" : "2");
-            }
-            if (detectThreat(builder.toString())) {
-                return true;
-            }
-            builder.delete(0, builder.length());
-        }
-
-        //lower half chessboard
-        for (int i = 1; i <= 10; i++) {
-            int count = 0;
-            for (int j = i; j <= 14; j++) {
-                int piece = chess[count++][j];
-                builder.append(piece == 0 ? "0" : piece == pieceType ? "1" : "2");
-            }
-            if (detectThreat(builder.toString())) {
-                return true;
-            }
-            builder.delete(0, builder.length());
-        }
-        return false;
-    }
-
-    /**
-     * Scans the chessboard from left top to right bottom anti-diagonally.
-     * Returns true if existing a threat
-     *
-     * @param chess     2-dimension array represents the chessboard
-     * @param pieceType Indicates which player moved, 1 for black -1 for white
-     * @return Existing a threat or not
-     */
-    private static boolean scanAntiDiagonalThreat(int[][] chess, int pieceType) {
-        StringBuilder builder = new StringBuilder();
-        int score = 0;
-
-        //upper half chessboard
-        for (int i = 4; i <= 14; i++) {
-            int count = 0;
-            for (int j = i; j >= 0; j--) {
-                int piece = chess[count++][j];
-                builder.append(piece == 0 ? "0" : piece == pieceType ? "1" : "2");
-            }
-            if (detectThreat(builder.toString())) {
-                return true;
-            }
-            ;
-            builder.delete(0, builder.length());
-        }
-
-        //lower half chessboard
-        for (int i = 0; i <= 10; i++) {
-            int count = 14;
-            for (int j = i; j <= 14; j++) {
-                int piece = chess[j][count--];
-                builder.append(piece == 0 ? "0" : piece == pieceType ? "1" : "2");
-            }
-            if (detectThreat(builder.toString())) {
-                return true;
-            }
-            builder.delete(0, builder.length());
-        }
-        return false;
-    }
 }

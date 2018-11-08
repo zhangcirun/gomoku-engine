@@ -213,18 +213,12 @@ public class Chessboard extends JPanel {
         }
         Background.blackTurn = true;
         HistoryObserver.cleanHistory();
+
         if(!GameController.isHumanFirst()){
             System.out.println("ai move first");
-            GameController.chess[7][7] = Agent.aiPieceType;
-            HistoryObserver.addHistory(new int[]{7, 7, Agent.aiPieceType});
-            /*
-            new Thread(new Runnable() {
-                public void run() {
-                    computerMove(GameController.chess);
-                }
-            }).start();
-            */
+            computerMove(GameController.chess);
         }
+
         //validate();
         repaint();
         background.repaint();

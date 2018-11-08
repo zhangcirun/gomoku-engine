@@ -79,6 +79,5 @@ public class GameController {
     public static void setHumanFirst(boolean isHumanFirst){
         humanFirst = isHumanFirst;
         Agent.aiPieceType = isHumanFirst ? AiConst.WHITE_STONE : AiConst.BLACK_STONE;
-        Agent.isFirstLayerMax = isHumanFirst;
     }
 }

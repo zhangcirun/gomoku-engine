@@ -1,10 +1,13 @@
 package gui;
 
+import game.constant.GameConst;
 import gui.constant.GuiConst;
+import observer.AiAnalyser;
 import observer.ReportGenerator;
 
 import javax.swing.*;
 
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -114,9 +117,21 @@ public class MainFrame extends JFrame {
         menu3.add(generateReport);
         menu3.add(help);
 
+        //menu4
+        JMenu menu4 = new JMenu("Battle");
+        JMenuItem battle = new JMenuItem("battle");
+        battle.addActionListener(new ActionListener() {
+            @Override public void actionPerformed(ActionEvent e) {
+                System.out.println("battle on screen");
+                AiAnalyser.battleOnScreen(GameConst.ALPHA_BETA_PRUNING, GameConst.PURE_HEURISTIC, background.chessboard);
+            }
+        });
+        menu4.add(battle);
+
         menuBar.add(menu1);
         //menuBar.add(menu2);
         menuBar.add(menu3);
+        menuBar.add(menu4);
         this.setJMenuBar(menuBar);
     }
 

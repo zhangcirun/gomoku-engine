@@ -1,5 +1,6 @@
 package ai.utility;
 
+import ai.Agent;
 import ai.constant.AiConst;
 import gui.constant.GuiConst;
 
@@ -22,10 +23,10 @@ public class HeuristicChessboardUtils {
      */
     public static int heuristic(int[][] chess) {
         int allyScore =
-            scanVertical(chess, -1) + scanHorizontal(chess, -1) + scanDiagonal(chess, -1) + scanAntiDiagonal(chess, -1);
+            scanVertical(chess, Agent.aiPieceType) + scanHorizontal(chess, Agent.aiPieceType) + scanDiagonal(chess, Agent.aiPieceType) + scanAntiDiagonal(chess, Agent.aiPieceType);
 
         int opponentScore =
-            scanVertical(chess, 1) + scanHorizontal(chess, 1) + scanDiagonal(chess, 1) + scanAntiDiagonal(chess, 1);
+            scanVertical(chess, Agent.aiPieceType * -1) + scanHorizontal(chess, Agent.aiPieceType * -1) + scanDiagonal(chess, Agent.aiPieceType * -1) + scanAntiDiagonal(chess, Agent.aiPieceType * -1);
         return allyScore - opponentScore;
     }
 

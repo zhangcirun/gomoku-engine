@@ -98,7 +98,7 @@ public class AiUtils {
         for (int i = 0; i < GuiConst.TILE_NUM_PER_ROW; i++) {
             for (int j = 0; j < GuiConst.TILE_NUM_PER_ROW; j++) {
                 if (chess[i][j] == 0) {
-                    moves.add(new int[] {i, j, BasicAgent.totalmark(chess, i, j)});
+                    moves.add(new int[] {i, j, BasicAgent.totalMark(chess, i, j)});
                 }
             }
         }

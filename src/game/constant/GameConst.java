@@ -32,9 +32,13 @@ public class GameConst {
      */
     public static final int KILLER_HEURISTIC = 4;
 
+    /**
+     * Code for threat space search
+     */
     public static final int THREAT_SPACE_SEARCH = 5;
 
+    /**
+     * Code for human move first
+     */
     public static final int HUMAN_MOVE_FIRST = 0;
-
-    public static final int COMPUTER_MOVE_FIRST = 1;
 }
