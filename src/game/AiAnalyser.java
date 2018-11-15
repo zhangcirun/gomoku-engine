@@ -1,12 +1,11 @@
-package observer;
+package game;
 
 import ai.*;
 import ai.constant.AiConst;
-import game.GameController;
 import game.constant.GameConst;
 import gui.Chessboard;
-
-import javax.swing.SwingUtilities;
+import observer.GameStatuChecker;
+import observer.HistoryObserver;
 
 public class AiAnalyser {
     private AiAnalyser() {
@@ -17,8 +16,9 @@ public class AiAnalyser {
      * @param agentA Index of agent A
      * @param agentB Index of agent B
      * @param chess The chessboard of the battle
+     * @return Game moves
      */
-    public static void battle(int agentA, int agentB, int[][] chess) {
+    public static int battle(int agentA, int agentB, int[][] chess) {
         //Agent A move first
         int moveCount = 0;
         while (moveCount < 120) {
@@ -26,16 +26,17 @@ public class AiAnalyser {
             Agent.aiPieceType = AiConst.BLACK_STONE;
             if (aiMove(agentA, chess)) {
                 printBattleInfo(agentA, true);
-                return;
+                return moveCount;
             }
 
             System.out.println("Move " + moveCount++);
             Agent.aiPieceType = AiConst.WHITE_STONE;
             if (aiMove(agentB, chess)) {
                 printBattleInfo(agentB, false);
-                return;
+                return moveCount;
             }
         }
+        return -1;
     }
 
     //Todo need to fix the threading
@@ -74,6 +75,9 @@ public class AiAnalyser {
     private static boolean aiMove(int agent, int[][] chess) {
         int[] result;
         switch (agent) {
+            case GameConst.BENCH_MARKER:
+                result = AiBenchMarker.nextMove(chess);
+                break;
             case GameConst.PURE_HEURISTIC:
                 result = BasicAgent.nextMove(chess);
                 break;
@@ -107,6 +111,10 @@ public class AiAnalyser {
     private static void printBattleInfo(int winingAgent, boolean isMoveFirst){
         System.out.println("==================================");
         switch (winingAgent) {
+            case  GameConst.BENCH_MARKER:
+                System.out.println("BENCH_MARKER wins");
+                System.out.println("First move: " + isMoveFirst);
+                break;
             case GameConst.PURE_HEURISTIC:
                 System.out.println("PURE_HEURISTIC wins");
                 System.out.println("First move: " + isMoveFirst);

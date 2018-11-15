@@ -10,7 +10,7 @@ import gui.constant.GuiConst;
  * @author Chang tz'u jun
  */
 public abstract class Agent{
-    static int maximumSearchDepth = 3;
+    static int maximumSearchDepth = 5;
 
     static int count = 0;
 

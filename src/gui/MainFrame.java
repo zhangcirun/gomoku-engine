@@ -2,12 +2,11 @@ package gui;
 
 import game.constant.GameConst;
 import gui.constant.GuiConst;
-import observer.AiAnalyser;
+import game.AiAnalyser;
 import observer.ReportGenerator;
 
 import javax.swing.*;
 
-import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 

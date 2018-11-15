@@ -1,6 +1,7 @@
 package gui;
 
 import ai.*;
+import game.AiBenchMarker;
 import game.GameController;
 import game.constant.GameConst;
 import observer.HistoryObserver;
@@ -267,7 +268,8 @@ public class Chessboard extends JPanel {
 
         switch (GameController.getAiIndex()) {
             case GameConst.PURE_HEURISTIC:
-                result = BasicAgent.nextMove(chess);
+                //result = BasicAgent.nextMove(chess);
+                result = AiBenchMarker.nextMove(chess);
                 break;
             case GameConst.MINIMAX:
                 result = AdvancedAgent.startMiniMax(chess);

@@ -8,6 +8,11 @@ public class GameConst {
     private GameConst(){}
 
     /**
+     * Code for bench marker
+     */
+    public static final int BENCH_MARKER = -1;
+
+    /**
      * Code for pure heuristic strategy
      */
     public static final int PURE_HEURISTIC = 0;
