@@ -286,6 +286,9 @@ public class Chessboard extends JPanel {
             case GameConst.THREAT_SPACE_SEARCH:
                 result = ThreatAgent.startThreatSpaceSearch(chess);
                 break;
+            case GameConst.MONTE_CARLO_TREE_SEARCH:
+                result = MonteCalro.monteCalroTreeSearch(chess);
+                break;
             default:
                 System.err.println("Invalid Ai Index");
                 return;

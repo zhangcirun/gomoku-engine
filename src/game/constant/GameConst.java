@@ -43,6 +43,11 @@ public class GameConst {
     public static final int THREAT_SPACE_SEARCH = 5;
 
     /**
+     * Code for monte carlo tree search
+     */
+    public static final int MONTE_CARLO_TREE_SEARCH = 6;
+
+    /**
      * Code for human move first
      */
     public static final int HUMAN_MOVE_FIRST = 0;

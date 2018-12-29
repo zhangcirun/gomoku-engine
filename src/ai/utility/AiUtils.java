@@ -112,4 +112,11 @@ public class AiUtils {
         }
     }
 
+    public static double safeDivide(double a, double b){
+        if(b == 0){
+            return Double.POSITIVE_INFINITY;
+        }
+        return a / b;
+    }
+
 }

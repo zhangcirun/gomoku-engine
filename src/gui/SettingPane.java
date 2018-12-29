@@ -38,6 +38,7 @@ public class SettingPane extends JFrame {
         comboBox.addItem("Transposition search");
         comboBox.addItem("Killer heuristic");
         comboBox.addItem("Threat space search");
+        comboBox.addItem("Monte carlo tree search");
         comboBox.setSelectedIndex(2);
         tmp2.add(tip2);
         tmp2.add(comboBox);
