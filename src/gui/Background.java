@@ -52,8 +52,8 @@ public class Background extends JPanel {
         //this.whiteNext = ImageIO.read(new File("src/gui/assets/whiteNext.png"));
         this.setPreferredSize(new Dimension(GuiConst.FRAME_WIDTH, GuiConst.FRAME_HEIGHT));
         this.setLayout(null);
-        addChessboard();
         addTextArea();
+        addChessboard();
         //this.setBackground(Color.YELLOW);
     }
 

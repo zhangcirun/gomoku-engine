@@ -160,7 +160,7 @@ public class AdvancedAgent extends Agent{
                     //beta pruning
                     if (score >= beta) {
                         root.setScore(bestScore);
-                        return bestChild;
+                        return root;
                     }
                 }
             }
@@ -217,7 +217,7 @@ public class AdvancedAgent extends Agent{
                     //alpha pruning
                     if (score <= alpha) {
                         root.setScore(bestScore);
-                        return bestChild;
+                        return root;
                     }
                 }
             }

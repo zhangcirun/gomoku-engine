@@ -112,9 +112,32 @@ public class AiUtils {
         }
     }
 
+    public static List<int[]> moveGeneratorTop10(int[][] chess) {
+        List<int[]> moves = new ArrayList<>(100);
+        for (int i = 0; i < GuiConst.TILE_NUM_PER_ROW; i++) {
+            for (int j = 0; j < GuiConst.TILE_NUM_PER_ROW; j++) {
+                if (chess[i][j] == 0) {
+                    moves.add(new int[] {i, j, BasicAgent.totalMark(chess, i, j)});
+                }
+            }
+        }
+
+        moves.sort(moveComparator_desc);
+
+        if(moves.size() > 9){
+            return moves.subList(0, 9);
+        }else{
+            return moves;
+        }
+    }
+
     public static double safeDivide(double a, double b){
-        if(b == 0){
+        if(b == 0 && a >= 0){
             return Double.POSITIVE_INFINITY;
+        }
+
+        if(b == 0 && a < 0){
+            return Double.NEGATIVE_INFINITY;
         }
         return a / b;
     }

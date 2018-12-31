@@ -12,12 +12,34 @@ import java.util.concurrent.ThreadLocalRandom;
 public class MonteCalro extends Agent{
     private static int iteration;
 
+    public static void tester(int[][] chess){
+        TreeNode root = new TreeNode(true, aiPieceType * -1, -1, -1, chess, null);
+        while(iteration < 2000){
+            selection(root);
+        }
+
+        List<TreeNode> children = root.getChildren();
+        int maxVisits = Integer.MIN_VALUE;
+        int max_x = -1;
+        int max_y = -1;
+        for(TreeNode child : children){
+            if(child.getVisitsCount() > maxVisits){
+                maxVisits = child.getVisitsCount();
+                max_x = child.getX();
+                max_y = child.getY();
+            }
+        }
+
+        System.out.println(max_x + "===" + max_y);
+
+    }
+
     public static int[] monteCalroTreeSearch(int[][] chess){
         iteration  = 0;
 
         TreeNode root = new TreeNode(true, aiPieceType * -1, -1, -1, chess, null);
 
-        while(iteration < 40000){
+        while(iteration < 2000){
             selection(root);
         }
 
@@ -43,7 +65,7 @@ public class MonteCalro extends Agent{
         //System.out.println("selection");
         if(root.isLeaf()){
             if(root.getVisitsCount() == 0){
-                rollout(root);
+                rolloutCheat(root);
             }else{
                 //expansion
                 expansion(root);
@@ -51,18 +73,24 @@ public class MonteCalro extends Agent{
         }else{
             List<TreeNode> children = root.getChildren();
             TreeNode best = ucbSelection(children);
-            selection(best);
+            if(best != null){
+                selection(best);
+            }else{
+                System.out.println("null");
+            }
+
         }
     }
 
     private static void expansion(TreeNode node){
         //System.out.println("expansion");
-        List<TreeNode> children = generatesChildren(node);
+        List<TreeNode> children = generatesChildrenCheat(node);
         node.setChildren(children);
         node.setLeaf(false);
         selection(node);
     }
 
+    /*
     //Todo check the validity of this function.
     private static void rollout(TreeNode node){
         //System.out.println("rollout");
@@ -97,6 +125,37 @@ public class MonteCalro extends Agent{
             backPropagation(node, 0);
         }
     }
+    */
+
+    private static void rolloutCheat(TreeNode node){
+        //System.out.println("rollout");
+        iteration ++;
+        int numOfMoves = 0;
+        int[][] chess = AiUtils.copyArray(node.getChess());
+        int lastTurnPlayer = node.getThisTurnPlayer();
+        PossibleMove randomMove;
+
+        do{
+            lastTurnPlayer *= -1;
+            numOfMoves ++;
+            randomMove = getRandomMoveCheat(chess);
+            if(randomMove == null){
+                System.out.println("randomMove == null");
+                break;
+            }
+            placePiece(chess, randomMove, lastTurnPlayer);
+        } while(!GameStatuChecker.isFiveInLine(chess, randomMove.getX(), randomMove.getY()));
+
+        //back propagation
+        //Todo back prop 1 or 0?
+        if(lastTurnPlayer == aiPieceType){
+            //Winner is the computer
+            backPropagation(node, 1);
+        }else{
+            //Winner is the human
+            backPropagation(node, 0);
+        }
+    }
 
     private static void backPropagation(TreeNode node, int reward){
         //System.out.println("back prop");
@@ -117,10 +176,10 @@ public class MonteCalro extends Agent{
     }
 
     private static TreeNode ucbSelection(List<TreeNode> children){
-        double max = Double.MIN_VALUE;
+        double max = Double.NEGATIVE_INFINITY;
         TreeNode best = null;
 
-        for(TreeNode child : children){
+        for(TreeNode child : children) {
             double ucbVal = ucb1(child);
             if(ucbVal > max){
                 max = ucbVal;
@@ -132,9 +191,13 @@ public class MonteCalro extends Agent{
             }
         }
 
+        if(best == null){
+            System.out.println(ucb1(children.get(0)));
+        }
         return best;
     }
 
+    /*
     private static List<TreeNode> generatesChildren(TreeNode node){
         List<TreeNode> children = new ArrayList<>();
 
@@ -152,7 +215,27 @@ public class MonteCalro extends Agent{
 
         return children;
     }
+    */
 
+    private static List<TreeNode> generatesChildrenCheat(TreeNode node){
+        List<TreeNode> children = new ArrayList<>();
+
+        int nextTurnPlayer = node.getThisTurnPlayer() * -1;
+        int[][] chess = node.getChess();
+
+        List<int[]> moves = AiUtils.moveGeneratorTop10(chess);
+
+        for(int[] move : moves){
+            int x = move[0];
+            int y = move[1];
+            int[][] nextChess = AiUtils.nextMoveChessboard(chess, x, y, nextTurnPlayer);
+            children.add(new TreeNode(true, nextTurnPlayer, x, y, nextChess, node));
+        }
+
+        return children;
+    }
+
+    /*
     private static PossibleMove getRandomMove(int[][] chess){
         List<PossibleMove> possibleMoves = generatesMoves(chess);
         int size = possibleMoves.size();
@@ -164,6 +247,20 @@ public class MonteCalro extends Agent{
 
         int randomIndex = ThreadLocalRandom.current().nextInt(0, size);
         return possibleMoves.get(randomIndex);
+    }*/
+
+    private static PossibleMove getRandomMoveCheat(int[][] chess){
+        List<int[]> possibleMoves = AiUtils.moveGeneratorTop10(chess);
+        int size = possibleMoves.size();
+
+        if(size == 0){
+            System.out.println("Chess board full");
+            return null;
+        }
+
+        int randomIndex = ThreadLocalRandom.current().nextInt(0, size);
+        int[] nextMove = possibleMoves.get(randomIndex);
+        return new PossibleMove(nextMove[0], nextMove[1]);
     }
 
     private static List<PossibleMove> generatesMoves(int[][] chess){
