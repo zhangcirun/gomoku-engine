@@ -13,8 +13,9 @@ public class MonteCalro extends Agent{
     private static int iteration;
 
     public static void tester(int[][] chess){
+        iteration = 0;
         TreeNode root = new TreeNode(true, aiPieceType * -1, -1, -1, chess, null);
-        while(iteration < 2000){
+        while(iteration < 25000){
             selection(root);
         }
 
@@ -39,7 +40,7 @@ public class MonteCalro extends Agent{
 
         TreeNode root = new TreeNode(true, aiPieceType * -1, -1, -1, chess, null);
 
-        while(iteration < 2000){
+        while(iteration < 50000){
             selection(root);
         }
 
@@ -65,7 +66,8 @@ public class MonteCalro extends Agent{
         //System.out.println("selection");
         if(root.isLeaf()){
             if(root.getVisitsCount() == 0){
-                rolloutCheat(root);
+               // rolloutCheat(root);
+                rollout(root);
             }else{
                 //expansion
                 expansion(root);
@@ -90,7 +92,7 @@ public class MonteCalro extends Agent{
         selection(node);
     }
 
-    /*
+
     //Todo check the validity of this function.
     private static void rollout(TreeNode node){
         //System.out.println("rollout");
@@ -117,15 +119,17 @@ public class MonteCalro extends Agent{
 
         //back propagation
         //Todo back prop 1 or 0?
+        backPropagation(node, 1, lastTurnPlayer);
+        /*
         if(lastTurnPlayer == aiPieceType){
             //Winner is the computer
             backPropagation(node, 1);
         }else{
             //Winner is the human
             backPropagation(node, 0);
-        }
+        }*/
     }
-    */
+
 
     private static void rolloutCheat(TreeNode node){
         //System.out.println("rollout");
@@ -148,21 +152,28 @@ public class MonteCalro extends Agent{
 
         //back propagation
         //Todo back prop 1 or 0?
+        backPropagation(node, 1, lastTurnPlayer);
+
+        /*
         if(lastTurnPlayer == aiPieceType){
             //Winner is the computer
             backPropagation(node, 1);
         }else{
             //Winner is the human
             backPropagation(node, 0);
-        }
+        }*/
     }
 
-    private static void backPropagation(TreeNode node, int reward){
+    private static void backPropagation(TreeNode node, int reward, int winningPiece){
         //System.out.println("back prop");
         if(node != null){
-            node.increaseReward(reward);
+            if(node.getThisTurnPlayer() == winningPiece){
+                node.increaseReward(reward);
+            }else{
+                node.increaseReward(-1);
+            }
             node.increaseVisitCount();
-            backPropagation(node.getParent(), reward);
+            backPropagation(node.getParent(), reward, winningPiece);
         }
     }
 
@@ -171,7 +182,7 @@ public class MonteCalro extends Agent{
         int reward = node.getReward();
         int visitCount = node.getVisitsCount();
         int parentVisitCount = node.getParent().getVisitsCount();
-        double c = 0.3;//1.414;
+        double c = 1.1; //0.1;//1.414;
         return AiUtils.safeDivide(reward, visitCount) + c * Math.sqrt(AiUtils.safeDivide(Math.log(parentVisitCount), visitCount));
     }
 
@@ -235,7 +246,7 @@ public class MonteCalro extends Agent{
         return children;
     }
 
-    /*
+
     private static PossibleMove getRandomMove(int[][] chess){
         List<PossibleMove> possibleMoves = generatesMoves(chess);
         int size = possibleMoves.size();
@@ -247,10 +258,10 @@ public class MonteCalro extends Agent{
 
         int randomIndex = ThreadLocalRandom.current().nextInt(0, size);
         return possibleMoves.get(randomIndex);
-    }*/
+    }
 
     private static PossibleMove getRandomMoveCheat(int[][] chess){
-        List<int[]> possibleMoves = AiUtils.moveGeneratorTop10(chess);
+        List<int[]> possibleMoves = AiUtils.moveGeneratorTop30(chess);
         int size = possibleMoves.size();
 
         if(size == 0){
