@@ -131,7 +131,7 @@ public class AiUtils {
         }
     }
 
-    public static List<int[]> moveGeneratorTop30(int[][] chess) {
+    public static List<int[]> moveGeneratorTop100(int[][] chess) {
         List<int[]> moves = new ArrayList<>(100);
         for (int i = 0; i < GuiConst.TILE_NUM_PER_ROW; i++) {
             for (int j = 0; j < GuiConst.TILE_NUM_PER_ROW; j++) {

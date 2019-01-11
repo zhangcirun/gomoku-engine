@@ -1,3 +1,7 @@
+/**
+ * @author Cirun Zhang
+ * @Date 2019.1.8
+ */
 package ai;
 
 import ai.constant.AiConst;
@@ -9,13 +13,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class MonteCalro extends Agent{
+public class MonteCalro extends Agent {
     private static int iteration;
 
-    public static void tester(int[][] chess){
+    public static void tester(int[][] chess) {
         iteration = 0;
         TreeNode root = new TreeNode(true, aiPieceType * -1, -1, -1, chess, null);
-        while(iteration < 25000){
+        while (iteration < 30000) {
             selection(root);
         }
 
@@ -23,8 +27,8 @@ public class MonteCalro extends Agent{
         int maxVisits = Integer.MIN_VALUE;
         int max_x = -1;
         int max_y = -1;
-        for(TreeNode child : children){
-            if(child.getVisitsCount() > maxVisits){
+        for (TreeNode child : children) {
+            if (child.getVisitsCount() > maxVisits) {
                 maxVisits = child.getVisitsCount();
                 max_x = child.getX();
                 max_y = child.getY();
@@ -35,12 +39,18 @@ public class MonteCalro extends Agent{
 
     }
 
-    public static int[] monteCalroTreeSearch(int[][] chess){
-        iteration  = 0;
+    /**
+     * Entrance of MCTS
+     *
+     * @param chess 2-dimensional array represents the chessboard
+     * @return Desired next move
+     */
+    public static int[] monteCalroTreeSearch(int[][] chess) {
+        iteration = 0;
 
         TreeNode root = new TreeNode(true, aiPieceType * -1, -1, -1, chess, null);
 
-        while(iteration < 50000){
+        while (iteration < 50000) {
             selection(root);
         }
 
@@ -48,8 +58,8 @@ public class MonteCalro extends Agent{
         int maxVisits = Integer.MIN_VALUE;
         int max_x = -1;
         int max_y = -1;
-        for(TreeNode child : children){
-            if(child.getVisitsCount() > maxVisits){
+        for (TreeNode child : children) {
+            if (child.getVisitsCount() > maxVisits) {
                 maxVisits = child.getVisitsCount();
                 max_x = child.getX();
                 max_y = child.getY();
@@ -59,117 +69,112 @@ public class MonteCalro extends Agent{
         System.out.println(root.getReward() + "-" + root.getVisitsCount());
         System.out.println(max_x + "===" + max_y);
         System.out.println(maxVisits);
-        return new int[]{max_x, max_y, aiPieceType};
+        return new int[] {max_x, max_y, aiPieceType};
     }
 
-    private static void selection(TreeNode root){
+    /**
+     * Selection process of MCTS
+     *
+     * @param root The node for process selection, initially the node is set to the node
+     */
+    private static void selection(TreeNode root) {
         //System.out.println("selection");
-        if(root.isLeaf()){
-            if(root.getVisitsCount() == 0){
-               // rolloutCheat(root);
+        if (root.isLeaf()) {
+            if (root.getVisitsCount() == 0) {
                 rollout(root);
-            }else{
-                //expansion
+            } else {
                 expansion(root);
             }
-        }else{
+        } else {
             List<TreeNode> children = root.getChildren();
             TreeNode best = ucbSelection(children);
-            if(best != null){
+            if (best != null) {
                 selection(best);
-            }else{
+            } else {
                 System.out.println("null");
             }
 
         }
     }
 
-    private static void expansion(TreeNode node){
+    /**
+     * Expansion process of MCTS
+     *
+     * @param node The leaf node need to be expanded
+     */
+    private static void expansion(TreeNode node) {
         //System.out.println("expansion");
-        List<TreeNode> children = generatesChildrenCheat(node);
+        List<TreeNode> children = generatesChildren(node);
         node.setChildren(children);
         node.setLeaf(false);
         selection(node);
     }
 
-
     //Todo check the validity of this function.
-    private static void rollout(TreeNode node){
-        //System.out.println("rollout");
-        iteration ++;
+
+    /**
+     * Rollout process of MCTS. The rollout only stops when the simulated game is terminated
+     *
+     * @param node The node need to be simulated
+     */
+    private static void rollout(TreeNode node) {
+        iteration++;
         int numOfMoves = 0;
         int[][] chess = AiUtils.copyArray(node.getChess());
         int lastTurnPlayer = node.getThisTurnPlayer();
         PossibleMove randomMove;
 
-        do{
+        do {
             lastTurnPlayer *= -1;
-            numOfMoves ++;
+            numOfMoves++;
             randomMove = getRandomMove(chess);
-            if(randomMove == null){
+            if (randomMove == null) {
                 System.out.println("randomMove == null");
                 break;
             }
             placePiece(chess, randomMove, lastTurnPlayer);
-        } while(!GameStatuChecker.isFiveInLine(chess, randomMove.getX(), randomMove.getY()));
-
-        //System.out.println("num of move for the rollout " + numOfMoves);
-        //System.out.println("last move " + randomMove.getX() + "-" + randomMove.getY());
-        //System.out.println("winner " + nextTurnPlayer * -1);
+        } while (!GameStatuChecker.isFiveInLine(chess, randomMove.getX(), randomMove.getY()));
 
         //back propagation
-        //Todo back prop 1 or 0?
         backPropagation(node, 1, lastTurnPlayer);
-        /*
-        if(lastTurnPlayer == aiPieceType){
-            //Winner is the computer
-            backPropagation(node, 1);
-        }else{
-            //Winner is the human
-            backPropagation(node, 0);
-        }*/
     }
 
-
-    private static void rolloutCheat(TreeNode node){
-        //System.out.println("rollout");
-        iteration ++;
+    @Deprecated private static void rolloutCheat(TreeNode node) {
+        iteration++;
         int numOfMoves = 0;
         int[][] chess = AiUtils.copyArray(node.getChess());
         int lastTurnPlayer = node.getThisTurnPlayer();
         PossibleMove randomMove;
 
-        do{
+        do {
             lastTurnPlayer *= -1;
-            numOfMoves ++;
+            numOfMoves++;
             randomMove = getRandomMoveCheat(chess);
-            if(randomMove == null){
+            if (randomMove == null) {
                 System.out.println("randomMove == null");
                 break;
             }
             placePiece(chess, randomMove, lastTurnPlayer);
-        } while(!GameStatuChecker.isFiveInLine(chess, randomMove.getX(), randomMove.getY()));
+        } while (!GameStatuChecker.isFiveInLine(chess, randomMove.getX(), randomMove.getY()));
 
         //back propagation
-        //Todo back prop 1 or 0?
         backPropagation(node, 1, lastTurnPlayer);
 
-        /*
-        if(lastTurnPlayer == aiPieceType){
-            //Winner is the computer
-            backPropagation(node, 1);
-        }else{
-            //Winner is the human
-            backPropagation(node, 0);
-        }*/
     }
 
-    private static void backPropagation(TreeNode node, int reward, int winningPiece){
+    /**
+     * Back propagation process of MCTS
+     *
+     * @param node         The back propagated node
+     * @param reward       The reward for winning nodes
+     * @param winningPiece Indicates which player wins
+     */
+    private static void backPropagation(TreeNode node, int reward, int winningPiece) {
         //System.out.println("back prop");
-        if(node != null){
-            if(node.getThisTurnPlayer() == winningPiece){
+        if (node != null) {
+            if (node.getThisTurnPlayer() == winningPiece) {
                 node.increaseReward(reward);
-            }else{
+            } else {
                 node.increaseReward(-1);
             }
             node.increaseVisitCount();
@@ -177,81 +182,80 @@ public class MonteCalro extends Agent{
         }
     }
 
-    //Todo testing the constant c
-    private static double ucb1(TreeNode node){
+    /**
+     * UCB-1 function of MCTS
+     *
+     * @param node Calculates the UCB value for this particular node
+     * @return UCB value
+     */
+    private static double ucb1(TreeNode node) {
         int reward = node.getReward();
         int visitCount = node.getVisitsCount();
         int parentVisitCount = node.getParent().getVisitsCount();
         double c = 1.1; //0.1;//1.414;
-        return AiUtils.safeDivide(reward, visitCount) + c * Math.sqrt(AiUtils.safeDivide(Math.log(parentVisitCount), visitCount));
+        return AiUtils.safeDivide(reward, visitCount) + c * Math
+            .sqrt(AiUtils.safeDivide(Math.log(parentVisitCount), visitCount));
     }
 
-    private static TreeNode ucbSelection(List<TreeNode> children){
+    /**
+     * Selects the child node with the highest UCB value
+     *
+     * @param children The child nodes
+     * @return The best node
+     */
+    private static TreeNode ucbSelection(List<TreeNode> children) {
         double max = Double.NEGATIVE_INFINITY;
         TreeNode best = null;
 
-        for(TreeNode child : children) {
+        for (TreeNode child : children) {
             double ucbVal = ucb1(child);
-            if(ucbVal > max){
+            if (ucbVal > max) {
                 max = ucbVal;
                 best = child;
             }
 
-            if(max == Double.POSITIVE_INFINITY){
+            if (max == Double.POSITIVE_INFINITY) {
                 return best;
             }
         }
 
-        if(best == null){
+        if (best == null) {
             System.out.println(ucb1(children.get(0)));
         }
         return best;
     }
 
-    /*
-    private static List<TreeNode> generatesChildren(TreeNode node){
+    private static List<TreeNode> generatesChildren(TreeNode node) {
         List<TreeNode> children = new ArrayList<>();
 
         int nextTurnPlayer = node.getThisTurnPlayer() * -1;
         int[][] chess = node.getChess();
 
-        for(int i = 0; i < GuiConst.TILE_NUM_PER_ROW; i++){
-            for(int j = 0; j < GuiConst.TILE_NUM_PER_ROW; j++){
-                if(chess[i][j] == AiConst.EMPTY_STONE){
-                    int[][] nextChess = AiUtils.nextMoveChessboard(chess, i, j, nextTurnPlayer);
-                    children.add(new TreeNode(true, nextTurnPlayer, i, j, nextChess, node));
-                }
+        //Generates 10 child nodes
+        List<int[]> moves = AiUtils.moveGeneratorTop10(chess);
+
+        for (int[] move : moves) {
+            int x = move[0];
+            int y = move[1];
+            int[][] nextChess = AiUtils.nextMoveChessboard(chess, x, y, nextTurnPlayer);
+            boolean isTerminal = GameStatuChecker.isFiveInLine(nextChess, x, y);
+
+            if(!isTerminal){
+                children.add(new TreeNode(true, nextTurnPlayer, x, y, nextChess, node));
+            }else{
+                //System.out.println("is terminal node");
+                backPropagation(node, 1, nextTurnPlayer);
             }
         }
 
         return children;
     }
-    */
 
-    private static List<TreeNode> generatesChildrenCheat(TreeNode node){
-        List<TreeNode> children = new ArrayList<>();
-
-        int nextTurnPlayer = node.getThisTurnPlayer() * -1;
-        int[][] chess = node.getChess();
-
-        List<int[]> moves = AiUtils.moveGeneratorTop10(chess);
-
-        for(int[] move : moves){
-            int x = move[0];
-            int y = move[1];
-            int[][] nextChess = AiUtils.nextMoveChessboard(chess, x, y, nextTurnPlayer);
-            children.add(new TreeNode(true, nextTurnPlayer, x, y, nextChess, node));
-        }
-
-        return children;
-    }
-
-
-    private static PossibleMove getRandomMove(int[][] chess){
+    private static PossibleMove getRandomMove(int[][] chess) {
         List<PossibleMove> possibleMoves = generatesMoves(chess);
         int size = possibleMoves.size();
 
-        if(size == 0){
+        if (size == 0) {
             System.out.println("Chess board full");
             return null;
         }
@@ -260,11 +264,11 @@ public class MonteCalro extends Agent{
         return possibleMoves.get(randomIndex);
     }
 
-    private static PossibleMove getRandomMoveCheat(int[][] chess){
-        List<int[]> possibleMoves = AiUtils.moveGeneratorTop30(chess);
+    @Deprecated private static PossibleMove getRandomMoveCheat(int[][] chess) {
+        List<int[]> possibleMoves = AiUtils.moveGeneratorTop100(chess);
         int size = possibleMoves.size();
 
-        if(size == 0){
+        if (size == 0) {
             System.out.println("Chess board full");
             return null;
         }
@@ -274,11 +278,11 @@ public class MonteCalro extends Agent{
         return new PossibleMove(nextMove[0], nextMove[1]);
     }
 
-    private static List<PossibleMove> generatesMoves(int[][] chess){
+    private static List<PossibleMove> generatesMoves(int[][] chess) {
         List<PossibleMove> possibleMoves = new ArrayList<>();
-        for(int i = 0; i < GuiConst.TILE_NUM_PER_ROW; i++){
-            for(int j = 0; j < GuiConst.TILE_NUM_PER_ROW; j++){
-                if(chess[i][j] == AiConst.EMPTY_STONE){
+        for (int i = 0; i < GuiConst.TILE_NUM_PER_ROW; i++) {
+            for (int j = 0; j < GuiConst.TILE_NUM_PER_ROW; j++) {
+                if (chess[i][j] == AiConst.EMPTY_STONE) {
                     possibleMoves.add(new PossibleMove(i, j));
                 }
             }
@@ -286,12 +290,13 @@ public class MonteCalro extends Agent{
         return possibleMoves;
     }
 
-    private static void placePiece(int[][] chess, PossibleMove move, int pieceType){
+    private static void placePiece(int[][] chess, PossibleMove move, int pieceType) {
         chess[move.getX()][move.getY()] = pieceType;
     }
 
 }
-class PossibleMove{
+
+class PossibleMove {
     private int x;
     private int y;
 
@@ -317,7 +322,7 @@ class PossibleMove{
     }
 }
 
-class TreeNode{
+class TreeNode {
     private boolean isLeaf;
 
     private boolean isTerminal;
@@ -436,11 +441,11 @@ class TreeNode{
         this.y = y;
     }
 
-    public void increaseReward(int reward){
+    public void increaseReward(int reward) {
         this.reward += reward;
     }
 
-    public void increaseVisitCount(){
+    public void increaseVisitCount() {
         this.visitsCount += 1;
     }
 }

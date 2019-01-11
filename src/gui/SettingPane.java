@@ -3,8 +3,10 @@ package gui;
 import ai.AdvancedAgent;
 import ai.Agent;
 import ai.UltraAgent;
+import ai.constant.AiConst;
 import game.GameController;
 import game.constant.GameConst;
+import gui.constant.GuiConst;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -23,7 +25,7 @@ public class SettingPane extends JFrame {
         //Search tree depth controller
         JLabel tip1 = new JLabel("Search Tree Depth");
 
-        JSpinner depthSpinner = new JSpinner(new SpinnerNumberModel(7, 2, 7, 1));
+        JSpinner depthSpinner = new JSpinner(new SpinnerNumberModel(5, 2, 7, 1));
         JPanel tmp1 = new JPanel();
         tmp1.add(tip1);
         tmp1.add(depthSpinner);
@@ -40,6 +42,17 @@ public class SettingPane extends JFrame {
         comboBox.addItem("Threat space search");
         comboBox.addItem("Monte carlo tree search");
         comboBox.setSelectedIndex(2);
+        comboBox.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int aiIndex = comboBox.getSelectedIndex();
+                if(aiIndex == GameConst.MONTE_CARLO_TREE_SEARCH || aiIndex == GameConst.PURE_HEURISTIC){
+                    depthSpinner.setEnabled(false);
+                }else {
+                    depthSpinner.setEnabled(true);
+                }
+            }
+        });
         tmp2.add(tip2);
         tmp2.add(comboBox);
 
@@ -72,6 +85,7 @@ public class SettingPane extends JFrame {
             }
         });
         tmp4.add(confirmButton);
+
 
         boxLayout.add(tmp1);
         boxLayout.add(tmp2);
