@@ -10,17 +10,18 @@ import gui.constant.GuiConst;
 import java.util.ArrayList;
 
 /**
- * This class is an Ai agent using threat space search.
+ * This class is an Ai agent uses threat space search
  *
- * @aurhor Chang tz'u jun
+ * @author Cirun Zhang
+ * @version 1.1
  */
-public class ThreatAgent extends Agent {
+public class ThreatSpace extends Agent {
     /**
-     * The list contains a valid wining sequence <[lastX, lastY], [x, y]>
+     * The list contains a valid wining sequence with the format of <[lastX, lastY], [x, y]>
      */
     private static ArrayList<int[]> threatSequence = new ArrayList<>(2);
 
-    private ThreatAgent() {
+    private ThreatSpace() {
     }
 
     /**
@@ -32,7 +33,7 @@ public class ThreatAgent extends Agent {
     public static int[] startThreatSpaceSearch(int[][] chess) {
         if (detectThreats(chess, aiPieceType)) {
             //Background.addMessage("emergent");
-            return AdvancedAgent.startAlphaBetaPruning_preSort(chess);
+            return MinimaxAbp.startAlphaBetaPruningWithSort(chess);
         }
         if (!threatSequence.isEmpty()) {
             if (isMoveValid(threatSequence.get(0), chess)) {
@@ -43,7 +44,7 @@ public class ThreatAgent extends Agent {
             } else {
                 threatSequence.clear();
                 //Background.addMessage("threat move is blocked");
-                return AdvancedAgent.startAlphaBetaPruning_preSort(chess);
+                return MinimaxAbp.startAlphaBetaPruningWithSort(chess);
             }
 
         } else if (threatSpaceSearch(chess, 0, -1, -1)) {
@@ -52,9 +53,7 @@ public class ThreatAgent extends Agent {
             System.out.println("Wining sequence found, first move");
             return threatSequence.remove(0);
         } else {
-            //Background.addMessage("No threat sequence found, abp");
-            //System.out.println("No threat sequence found, abp");
-            return AdvancedAgent.startAlphaBetaPruning_preSort(chess);
+            return MinimaxAbp.startAlphaBetaPruningWithSort(chess);
         }
     }
 
@@ -66,8 +65,8 @@ public class ThreatAgent extends Agent {
      *
      * @param chess       The chessboard
      * @param depth       Current depth of the search tree
-     * @param lastThreatX X coordinate of the last threat move
-     * @param lastThreatY Y coordinate of the last threat move
+     * @param lastThreatX X-coordinate of the last threat move
+     * @param lastThreatY Y-coordinate of the last threat move
      * @return Whether the wining sequence is found or not
      */
     public static boolean threatSpaceSearch(int[][] chess, int depth, int lastThreatX, int lastThreatY) {
@@ -85,15 +84,12 @@ public class ThreatAgent extends Agent {
 
                 if (chess[i][j] == 0 && ((threatDirection = detectPotentialThreatWithDirection(i, j, chess))
                     != AiConst.NO_THREAT)) {
-                    //System.out.println("X " + i + "Y " + j + " depth" + depth);
                     if (detectWiningThreatSequence(i, j, lastThreatX, lastThreatY, chess)) {
-                        //System.out.println("first move: " + lastThreatX + " - " + lastThreatY);
-                        //System.out.println("Next move: " + i + " - " + j);
                         threatSequence.add(new int[] {lastThreatX, lastThreatY, aiPieceType});
                         threatSequence.add(new int[] {i, j, aiPieceType});
                         return true;
                     } else {
-                        //NOTE: | or || do effect the recursion!
+                        //NOTE: | or || do effect the recursion
                         //lazy Operator(||) would stop the recursion after the first wining sequence is found.
                         int[][] nextChess = AiUtils.nextMoveChessboard(chess, i, j, aiPieceType);
                         //Defense the threat.
@@ -110,14 +106,14 @@ public class ThreatAgent extends Agent {
     /**
      * Detects whether the given moves form a wining sequence
      *
-     * @param x     X coordinate of the second move
-     * @param y     Y coordinate of the second move
-     * @param lastX X coordinate of the first move
-     * @param lastY Y coordinate of the first move
+     * @param x     X-coordinate of the second move
+     * @param y     Y-coordinate of the second move
+     * @param lastX X-coordinate of the first move
+     * @param lastY Y-coordinate of the first move
      * @param chess The chessboard
      * @return A boolean indicates whether or not the given moves form a wining sequence
      */
-    public static boolean detectWiningThreatSequence(int x, int y, int lastX, int lastY, int[][] chess) {
+    private static boolean detectWiningThreatSequence(int x, int y, int lastX, int lastY, int[][] chess) {
         if (x == lastX) {
             //Same array, in the same row
             String pieces = ChessboardScanUtils.scanHorizontal(chess, x, y, lastX, lastY, aiPieceType);
@@ -148,11 +144,11 @@ public class ThreatAgent extends Agent {
      * @param chess The chessboard
      * @return Direction of the threat
      */
-    public static int detectPotentialThreatWithDirection(int x, int y, int[][] chess) {
-        String vertical = ChessboardScanUtils.verticalAdjacentPieces(chess, x, y, aiPieceType, 't');
-        String horizontal = ChessboardScanUtils.horizontalAdjacentPieces(chess, x, y, aiPieceType, 't');
-        String diagonal = ChessboardScanUtils.diagonalAdjacentPieces(chess, x, y, aiPieceType, 't');
-        String antiDiagonal = ChessboardScanUtils.antiDiagonalAdjacentPieces(chess, x, y, aiPieceType, 't');
+    private static int detectPotentialThreatWithDirection(int x, int y, int[][] chess) {
+        String vertical = ChessboardScanUtils.verticalAdjacentPieces10(chess, x, y, aiPieceType, 't');
+        String horizontal = ChessboardScanUtils.horizontalAdjacentPieces10(chess, x, y, aiPieceType, 't');
+        String diagonal = ChessboardScanUtils.diagonalAdjacentPieces10(chess, x, y, aiPieceType, 't');
+        String antiDiagonal = ChessboardScanUtils.antiDiagonalAdjacentPieces10(chess, x, y, aiPieceType, 't');
 
         if (horizontal.contains(AiConst.POTENTIAL_THREAT_A) || horizontal.contains(AiConst.POTENTIAL_THREAT_B)
             || horizontal.contains(AiConst.POTENTIAL_THREAT_C) || horizontal.contains(AiConst.POTENTIAL_THREAT_D)
@@ -220,13 +216,13 @@ public class ThreatAgent extends Agent {
      * @param y         Y coordinate of the piece
      * @param chess     The chessboard
      * @param pieceType Piece type of AI
-     * @return Number of threats
+     * @return Number of the threats
      */
-    public static int numOfNearbyThreats(int x, int y, int[][] chess, int pieceType) {
-        String horizontal = ChessboardScanUtils.verticalAdjacentPieces(chess, x, y, pieceType, '1');
-        String vertical = ChessboardScanUtils.horizontalAdjacentPieces(chess, x, y, pieceType, '1');
-        String diagonal = ChessboardScanUtils.diagonalAdjacentPieces(chess, x, y, pieceType, '1');
-        String antiDiagonal = ChessboardScanUtils.antiDiagonalAdjacentPieces(chess, x, y, pieceType, '1');
+    private static int numOfNearbyThreats(int x, int y, int[][] chess, int pieceType) {
+        String horizontal = ChessboardScanUtils.verticalAdjacentPieces10(chess, x, y, pieceType, '1');
+        String vertical = ChessboardScanUtils.horizontalAdjacentPieces10(chess, x, y, pieceType, '1');
+        String diagonal = ChessboardScanUtils.diagonalAdjacentPieces10(chess, x, y, pieceType, '1');
+        String antiDiagonal = ChessboardScanUtils.antiDiagonalAdjacentPieces10(chess, x, y, pieceType, '1');
 
         return detectOneRowThreats(horizontal, chess) + detectOneRowThreats(vertical, chess) + detectOneRowThreats(
             diagonal, chess) + detectOneRowThreats(antiDiagonal, chess);
@@ -271,7 +267,7 @@ public class ThreatAgent extends Agent {
      * @param pieceType       Piece type of AI
      * @param threatDirection Direction of the threat
      */
-    public static void defenseSimulation(int[][] chess, int x, int y, int pieceType, int threatDirection) {
+    private static void defenseSimulation(int[][] chess, int x, int y, int pieceType, int threatDirection) {
         switch (threatDirection) {
             case AiConst.HORIZONTAL_THREAT:
                 defenseHorizontalThreat(chess, x, y, pieceType);
@@ -286,7 +282,6 @@ public class ThreatAgent extends Agent {
                 defenseAntiDiagonalThreat(chess, x, y, pieceType);
                 break;
             default:
-                System.out.println("this should never happen");
                 System.out.println("threatDirection " + threatDirection);
         }
     }
@@ -300,27 +295,27 @@ public class ThreatAgent extends Agent {
      * @param pieceType Piece type of AI
      */
     private static void defenseVerticalThreat(int[][] chess, int x, int y, int pieceType) {
-        ArrayList<Move> defensiveMoves = new ArrayList<>();
-        ArrayList<Move> possibleMoves = new ArrayList<>();
+        ArrayList<ThreatMove> defensiveMoves = new ArrayList<>();
+        ArrayList<ThreatMove> possibleMoves = new ArrayList<>();
 
         for (int i = x - 4; i < x; i++) {
             if (Chessboard.validateArrayIndex(i) && chess[i][y] == AiConst.EMPTY_STONE) {
-                String pieces = ChessboardScanUtils.verticalAdjacentPieces(chess, i, y, pieceType, 't');
-                possibleMoves.add(new Move(i, y, pieces));
+                String pieces = ChessboardScanUtils.verticalAdjacentPieces10(chess, i, y, pieceType, 't');
+                possibleMoves.add(new ThreatMove(i, y, pieces));
             }
         }
 
         for (int i = x + 1; i < x + 5; i++) {
             if (Chessboard.validateArrayIndex(i) && chess[i][y] == AiConst.EMPTY_STONE) {
-                String pieces = ChessboardScanUtils.verticalAdjacentPieces(chess, i, y, pieceType, 't');
-                possibleMoves.add(new Move(i, y, pieces));
+                String pieces = ChessboardScanUtils.verticalAdjacentPieces10(chess, i, y, pieceType, 't');
+                possibleMoves.add(new ThreatMove(i, y, pieces));
             }
         }
 
         generateDefensiveMoves(defensiveMoves, possibleMoves);
 
-        for (Move move : defensiveMoves) {
-            chess[move.x][move.y] = pieceType * -1;
+        for (ThreatMove move : defensiveMoves) {
+            chess[move.getX()][move.getY()] = pieceType * -1;
         }
 
     }
@@ -334,27 +329,27 @@ public class ThreatAgent extends Agent {
      * @param pieceType Piece type of AI
      */
     private static void defenseHorizontalThreat(int[][] chess, int x, int y, int pieceType) {
-        ArrayList<Move> defensiveMoves = new ArrayList<>();
-        ArrayList<Move> possibleMoves = new ArrayList<>();
+        ArrayList<ThreatMove> defensiveMoves = new ArrayList<>();
+        ArrayList<ThreatMove> possibleMoves = new ArrayList<>();
 
         for (int i = y - 4; i < y; i++) {
             if (Chessboard.validateArrayIndex(i) && chess[x][i] == AiConst.EMPTY_STONE) {
-                String pieces = ChessboardScanUtils.horizontalAdjacentPieces(chess, x, i, pieceType, 't');
-                possibleMoves.add(new Move(x, i, pieces));
+                String pieces = ChessboardScanUtils.horizontalAdjacentPieces10(chess, x, i, pieceType, 't');
+                possibleMoves.add(new ThreatMove(x, i, pieces));
             }
         }
 
         for (int i = y + 1; i < y + 5; i++) {
             if (Chessboard.validateArrayIndex(i) && chess[x][i] == AiConst.EMPTY_STONE) {
-                String pieces = ChessboardScanUtils.horizontalAdjacentPieces(chess, x, i, pieceType, 't');
-                possibleMoves.add(new Move(x, i, pieces));
+                String pieces = ChessboardScanUtils.horizontalAdjacentPieces10(chess, x, i, pieceType, 't');
+                possibleMoves.add(new ThreatMove(x, i, pieces));
             }
         }
 
         generateDefensiveMoves(defensiveMoves, possibleMoves);
 
-        for (Move move : defensiveMoves) {
-            chess[move.x][move.y] = pieceType * -1;
+        for (ThreatMove move : defensiveMoves) {
+            chess[move.getX()][move.getY()] = pieceType * -1;
         }
     }
 
@@ -367,29 +362,29 @@ public class ThreatAgent extends Agent {
      * @param pieceType Piece type of AI
      */
     private static void defenseDiagonalThreat(int[][] chess, int x, int y, int pieceType) {
-        ArrayList<Move> defensiveMoves = new ArrayList<>();
-        ArrayList<Move> possibleMoves = new ArrayList<>();
+        ArrayList<ThreatMove> defensiveMoves = new ArrayList<>();
+        ArrayList<ThreatMove> possibleMoves = new ArrayList<>();
 
         for (int i = 4; i > 0; i--) {
             if (Chessboard.validateArrayIndex(x - i) && Chessboard.validateArrayIndex(y - i)
                 && chess[x - i][y - i] == AiConst.EMPTY_STONE) {
-                String pieces = ChessboardScanUtils.diagonalAdjacentPieces(chess, x - i, y - i, pieceType, 't');
-                possibleMoves.add(new Move(x - i, y - i, pieces));
+                String pieces = ChessboardScanUtils.diagonalAdjacentPieces10(chess, x - i, y - i, pieceType, 't');
+                possibleMoves.add(new ThreatMove(x - i, y - i, pieces));
             }
         }
         //check from target to right bottom
         for (int i = 1; i < 5; i++) {
             if (Chessboard.validateArrayIndex(x + i) && Chessboard.validateArrayIndex(y + i)
                 && chess[x + i][y + i] == AiConst.EMPTY_STONE) {
-                String pieces = ChessboardScanUtils.diagonalAdjacentPieces(chess, x + i, y + i, pieceType, 't');
-                possibleMoves.add(new Move(x + i, y + i, pieces));
+                String pieces = ChessboardScanUtils.diagonalAdjacentPieces10(chess, x + i, y + i, pieceType, 't');
+                possibleMoves.add(new ThreatMove(x + i, y + i, pieces));
             }
         }
 
         generateDefensiveMoves(defensiveMoves, possibleMoves);
 
-        for (Move move : defensiveMoves) {
-            chess[move.x][move.y] = pieceType * -1;
+        for (ThreatMove move : defensiveMoves) {
+            chess[move.getX()][move.getY()] = pieceType * -1;
         }
     }
 
@@ -402,15 +397,15 @@ public class ThreatAgent extends Agent {
      * @param pieceType Piece type of AI
      */
     private static void defenseAntiDiagonalThreat(int[][] chess, int x, int y, int pieceType) {
-        ArrayList<Move> defensiveMoves = new ArrayList<>();
-        ArrayList<Move> possibleMoves = new ArrayList<>();
+        ArrayList<ThreatMove> defensiveMoves = new ArrayList<>();
+        ArrayList<ThreatMove> possibleMoves = new ArrayList<>();
 
         for (int i = 4; i > 0; i--) {
             if (Chessboard.validateArrayIndex(x + i) && Chessboard.validateArrayIndex(y - i)
                 && chess[x + i][y - i] == AiConst.EMPTY_STONE) {
 
-                String pieces = ChessboardScanUtils.antiDiagonalAdjacentPieces(chess, x + i, y - i, pieceType, 't');
-                possibleMoves.add(new Move(x + i, y - i, pieces));
+                String pieces = ChessboardScanUtils.antiDiagonalAdjacentPieces10(chess, x + i, y - i, pieceType, 't');
+                possibleMoves.add(new ThreatMove(x + i, y - i, pieces));
             }
         }
 
@@ -419,15 +414,15 @@ public class ThreatAgent extends Agent {
             if (Chessboard.validateArrayIndex(x - i) && Chessboard.validateArrayIndex(y + i)
                 && chess[x - i][y + i] == AiConst.EMPTY_STONE) {
 
-                String pieces = ChessboardScanUtils.antiDiagonalAdjacentPieces(chess, x - i, y + i, pieceType, 't');
-                possibleMoves.add(new Move(x - i, y + i, pieces));
+                String pieces = ChessboardScanUtils.antiDiagonalAdjacentPieces10(chess, x - i, y + i, pieceType, 't');
+                possibleMoves.add(new ThreatMove(x - i, y + i, pieces));
             }
         }
 
         generateDefensiveMoves(defensiveMoves, possibleMoves);
 
-        for (Move move : defensiveMoves) {
-            chess[move.x][move.y] = pieceType * -1;
+        for (ThreatMove move : defensiveMoves) {
+            chess[move.getX()][move.getY()] = pieceType * -1;
         }
     }
 
@@ -437,10 +432,11 @@ public class ThreatAgent extends Agent {
      * @param defensiveMoves A list stores all defensive moves
      * @param possibleMoves  A list stores all possible moves
      */
-    private static void generateDefensiveMoves(ArrayList<Move> defensiveMoves, ArrayList<Move> possibleMoves) {
+    private static void generateDefensiveMoves(ArrayList<ThreatMove> defensiveMoves,
+        ArrayList<ThreatMove> possibleMoves) {
         if (defensiveMoves.isEmpty()) {
-            for (Move move : possibleMoves) {
-                if (move.pieces.contains(AiConst.DEFENSE_THREAT_A1) || move.pieces
+            for (ThreatMove move : possibleMoves) {
+                if (move.getPieces().contains(AiConst.DEFENSE_THREAT_A1) || move.getPieces()
                     .contains(AiConst.DEFENSE_THREAT_A2)) {
                     defensiveMoves.add(move);
                 }
@@ -448,8 +444,8 @@ public class ThreatAgent extends Agent {
         }
 
         if (defensiveMoves.isEmpty()) {
-            for (Move move : possibleMoves) {
-                if (move.pieces.contains(AiConst.DEFENSE_THREAT_B1) || move.pieces
+            for (ThreatMove move : possibleMoves) {
+                if (move.getPieces().contains(AiConst.DEFENSE_THREAT_B1) || move.getPieces()
                     .contains(AiConst.DEFENSE_THREAT_B2)) {
                     defensiveMoves.add(move);
                 }
@@ -457,19 +453,19 @@ public class ThreatAgent extends Agent {
         }
 
         if (defensiveMoves.isEmpty()) {
-            for (Move move : possibleMoves) {
-                if (move.pieces.contains(AiConst.DEFENSE_THREAT_C1) || move.pieces.contains(AiConst.DEFENSE_THREAT_C2)
-                    || move.pieces.contains(AiConst.DEFENSE_THREAT_C3) || move.pieces
-                    .contains(AiConst.DEFENSE_THREAT_C4) || move.pieces.contains(AiConst.DEFENSE_THREAT_C5)
-                    || move.pieces.contains(AiConst.DEFENSE_THREAT_C6)) {
+            for (ThreatMove move : possibleMoves) {
+                if (move.getPieces().contains(AiConst.DEFENSE_THREAT_C1) || move.getPieces()
+                    .contains(AiConst.DEFENSE_THREAT_C2) || move.getPieces().contains(AiConst.DEFENSE_THREAT_C3) || move
+                    .getPieces().contains(AiConst.DEFENSE_THREAT_C4) || move.getPieces()
+                    .contains(AiConst.DEFENSE_THREAT_C5) || move.getPieces().contains(AiConst.DEFENSE_THREAT_C6)) {
                     defensiveMoves.add(move);
                 }
             }
         }
 
         if (defensiveMoves.isEmpty()) {
-            for (Move move : possibleMoves) {
-                if (move.pieces.contains(AiConst.DEFENSE_THREAT_D1) || move.pieces
+            for (ThreatMove move : possibleMoves) {
+                if (move.getPieces().contains(AiConst.DEFENSE_THREAT_D1) || move.getPieces()
                     .contains(AiConst.DEFENSE_THREAT_D2)) {
                     defensiveMoves.add(move);
                 }
@@ -477,28 +473,62 @@ public class ThreatAgent extends Agent {
         }
     }
 
-    //Todo need to replace it, bad way
-    public static boolean detectThreats(int[][] chess, int pieceType) {
-        return ChessboardScanUtils.scanVerticalThreat(chess, pieceType) || ChessboardScanUtils.scanHorizontalThreat(chess, pieceType) || ChessboardScanUtils.scanDiagonalThreat(
-            chess, pieceType) || ChessboardScanUtils.scanAntiDiagonalThreat(chess, pieceType) || ChessboardScanUtils.scanVerticalThreat(chess, pieceType * -1)
-            || ChessboardScanUtils.scanHorizontalThreat(chess, pieceType * -1) || ChessboardScanUtils.scanDiagonalThreat(chess, pieceType * -1)
-            || ChessboardScanUtils.scanAntiDiagonalThreat(chess, pieceType * -1);
+    /**
+     * Detect whether a threat exists or not
+     *
+     * @param chess     The chessboard
+     * @param pieceType Type of the piece
+     * @return A boolean indicates the existence of threats
+     */
+    private static boolean detectThreats(int[][] chess, int pieceType) {
+        return ChessboardScanUtils.scanVerticalThreat(chess, pieceType) || ChessboardScanUtils
+            .scanHorizontalThreat(chess, pieceType) || ChessboardScanUtils.scanDiagonalThreat(chess, pieceType)
+            || ChessboardScanUtils.scanAntiDiagonalThreat(chess, pieceType) || ChessboardScanUtils
+            .scanVerticalThreat(chess, pieceType * -1) || ChessboardScanUtils
+            .scanHorizontalThreat(chess, pieceType * -1) || ChessboardScanUtils
+            .scanDiagonalThreat(chess, pieceType * -1) || ChessboardScanUtils
+            .scanAntiDiagonalThreat(chess, pieceType * -1);
     }
 }
 
 /**
- * This class represent a valid game move
+ * This class represents a threat move
  *
  * @author Chang tz'u jun
+ * @version 1.0
  */
-class Move {
-    int x;
-    int y;
-    String pieces;
+class ThreatMove {
+    private int x;
+    private int y;
+    private String pieces;
 
-    Move(int x, int y, String pieces) {
+    ThreatMove(int x, int y, String pieces) {
         this.x = x;
         this.y = y;
+        this.pieces = pieces;
+    }
+
+    public int getX() {
+        return x;
+    }
+
+    public void setX(int x) {
+        this.x = x;
+    }
+
+    public int getY() {
+        return y;
+    }
+
+    public void setY(int y) {
+        this.y = y;
+    }
+
+    public String getPieces() {
+        return pieces;
+    }
+
+    public void setPieces(String pieces) {
         this.pieces = pieces;
     }
 }

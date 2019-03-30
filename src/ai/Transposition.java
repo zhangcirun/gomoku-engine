@@ -11,35 +11,41 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * This class is an ai agent uses transposition table applied in alpha
- * beta pruning
+ * This class is an ai agent uses transposition table technique
  *
- * @author chang tz'u jun
+ * @author Cirun Zhang
+ * @version 1.1
  */
 
-public class UltraAgent extends Agent{
+public class Transposition extends Agent {
 
     /**
-     * Transposition table implements by a hash map
+     * Transposition table implemented by a hash map
      */
     private static Map<Integer, TranspositionNode> transpositionTable = new HashMap<>(100000);
 
-    private UltraAgent() {
+    private Transposition() {
     }
 
+    /**
+     * Entrance of transposition search
+     *
+     * @param chess The chessboard
+     * @return Position of the next move
+     */
     public static int[] startTranspositionSearch(int[][] chess) {
-        if(isOpenning(chess)){
+        if (isOpening(chess)) {
             return new int[] {7, 7, aiPieceType};
-        }else{
+        } else {
             //instantiate root node with preset x and y to the center of the chessboard(good for pruning)
             Node root = new Node(-1, -1, -1, chess);
             Node bestMove;
 
-            bestMove = transpositionSearch_abpMaximizer(root, 1, aiPieceType, Integer.MIN_VALUE, Integer.MAX_VALUE);
+            bestMove = transpositionMaximizer(root, 1, aiPieceType, Integer.MIN_VALUE, Integer.MAX_VALUE);
 
             int[] result = bestMove.getCoordinates();
-            Background
-                .addMessage("Computer move : (x, " + result[0] + ") (y, " + result[1] + ") score " + bestMove.getScore());
+            Background.addMessage(
+                "Computer move : (x, " + result[0] + ") (y, " + result[1] + ") score " + bestMove.getScore());
 
             Background.addMessage("Transposition table size: " + transpositionTable.size());
             return new int[] {result[0], result[1], aiPieceType};
@@ -49,14 +55,15 @@ public class UltraAgent extends Agent{
     /**
      * Maximizer of alpha beta pruning applied transposition search,
      * each node will be recorded in the transposition table.
-     * @param root Current game node
-     * @param depth Current depth of the node in the search tree
+     *
+     * @param root      Current game node
+     * @param depth     Current depth of the node in the search tree
      * @param pieceType Type of pieces
-     * @param alpha alpha value for Max node
-     * @param beta beta value for Min node
+     * @param alpha     Alpha value for Max node
+     * @param beta      Beta value for Min node
      * @return The most valuable node
      */
-    private static Node transpositionSearch_abpMaximizer(Node root, int depth, int pieceType, int alpha, int beta) {
+    private static Node transpositionMaximizer(Node root, int depth, int pieceType, int alpha, int beta) {
         //base case
         if (depth >= maximumSearchDepth) {
             count++;
@@ -72,20 +79,19 @@ public class UltraAgent extends Agent{
         int bestScore = Integer.MIN_VALUE;
         Node bestChild = null;
 
-        List<int[]> moves = AiUtils.moveGeneratorWithHeuristicSort(chess);
+        List<int[]> moves = AiUtils.moveGeneratorWithHeuristicSort(chess, 24);
 
-        //detect five in row
-        // @Todo Bad way
+        //terminal check
         if (depth == 1) {
-            Node n = AdvancedAgent.detectFiveInRow(chess, moves, pieceType);
+            Node n = MinimaxAbp.terminalCheck(chess, moves, pieceType);
             if (n != null) {
                 return n;
             }
         }
 
-        //If checksum is found in transposition table, and current depth is deeper than or
-        //equals to the node in the transposition table, and their minMax properties are the same,
-        //stop abp and use the score directly
+        /*If checksum is found in transposition table, and current depth is deeper than or equals to the
+        node in the transposition table, and their minMax properties are the same, stop abp and use the
+        score directly*/
         if (transpositionTable.containsKey(checkSum) && depth >= transpositionTable.get(checkSum).getDepth()
             && transpositionTable.get(checkSum).isMaxLayer()) {
             bestScore = transpositionTable.get(checkSum).getEvaluation();
@@ -98,7 +104,7 @@ public class UltraAgent extends Agent{
                 int[][] nextMove = AiUtils.nextMoveChessboard(chess, newX, newY, pieceType);
                 Node child = new Node(newX, newY, -1, nextMove);
 
-                int score = transpositionSearch_abpMinimizer(child, depth + 1, pieceType * -1, alpha, beta).getScore();
+                int score = transpositionMinimizer(child, depth + 1, pieceType * -1, alpha, beta).getScore();
 
                 if (score > bestScore) {
                     bestScore = score;
@@ -128,16 +134,17 @@ public class UltraAgent extends Agent{
     }
 
     /**
-     * Minimizer of alpha beta pruning applied transposition search,
-     * each node will be recorded in the transposition table.
-     * @param root Current game node
-     * @param depth Current depth of the node in the search tree
+     * Minimizer of alpha beta pruning with transposition search technique, each node will be hashed into the
+     * transposition table
+     *
+     * @param root      Current game node
+     * @param depth     Current depth of the node in the search tree
      * @param pieceType Type of pieces
-     * @param alpha alpha value for Max node
-     * @param beta beta value for Min node
+     * @param alpha     alpha value for Max node
+     * @param beta      beta value for Min node
      * @return The most valuable node
      */
-    private static Node transpositionSearch_abpMinimizer(Node root, int depth, int pieceType, int alpha, int beta) {
+    private static Node transpositionMinimizer(Node root, int depth, int pieceType, int alpha, int beta) {
         //base case
         if (depth >= maximumSearchDepth) {
             count++;
@@ -146,28 +153,24 @@ public class UltraAgent extends Agent{
         }
 
         int[][] chess = root.getChess();
-        /**
-         * checkSum
-         */
         int checkSum = getCheckSum(chess);
         int bestScore = Integer.MAX_VALUE;
         Node bestChild = null;
 
-        List<int[]> moves = AiUtils.moveGeneratorWithHeuristicSort(chess);
-        // @Todo Bad way
+        List<int[]> moves = AiUtils.moveGeneratorWithHeuristicSort(chess, 24);
+        //Terminal check
         if (depth == 1) {
-            Node n = AdvancedAgent.detectFiveInRow(chess, moves, pieceType);
+            Node n = MinimaxAbp.terminalCheck(chess, moves, pieceType);
             if (n != null) {
                 return n;
             }
         }
 
-        //If checksum is found in transposition table, and current depth is deeper than or
-        //equals to the node in the transposition table, and their minMax properties are the same,
-        //stop abp and use the score directly
+        /*If checksum is found in transposition table, and current depth is deeper than or equals to the node
+        in the transposition table, and their minMax properties are the same, stop abp and use the
+        score directly*/
         if (transpositionTable.containsKey(checkSum) && depth >= transpositionTable.get(checkSum).getDepth()
             && !transpositionTable.get(checkSum).isMaxLayer()) {
-            //System.out.println("table");
             bestScore = transpositionTable.get(checkSum).getEvaluation();
         } else {
             count++;
@@ -177,7 +180,7 @@ public class UltraAgent extends Agent{
                 int[][] nextMove = AiUtils.nextMoveChessboard(chess, newX, newY, pieceType);
                 Node child = new Node(newX, newY, -1, nextMove);
 
-                int score = transpositionSearch_abpMaximizer(child, depth + 1, pieceType * -1, alpha, beta).getScore();
+                int score = transpositionMaximizer(child, depth + 1, pieceType * -1, alpha, beta).getScore();
                 if (score < bestScore) {
                     bestScore = score;
                     bestChild = child;
@@ -204,9 +207,10 @@ public class UltraAgent extends Agent{
     }
 
     /**
-     * Calculates the checksum representing the chessboard
+     * Calculates the checksum of the chessboard
+     *
      * @param chess 2-dimensional array represents the chessboard
-     * @return Integer checksum
+     * @return Hash value
      */
     public static int getCheckSum(int[][] chess) {
         int checkSum = 0;
@@ -230,37 +234,37 @@ public class UltraAgent extends Agent{
 }
 
 /**
- * This class represents the nodes store in the transposition table,
- * each node records it's checksum, score, depth in the tree and
- * miniMax property.
+ * This class represents the node stored in the transposition table, each node encapsulates the checksum,
+ * score, Min&Max and depth in the tree
  *
- * @author Chang tz'u jun
+ * @author Cirun Zhang
+ * @version 1.1
  */
 class TranspositionNode {
     private int checksum, evaluation, depth;
 
     private boolean isMaxLayer;
 
-    public TranspositionNode(int checksum, int evaluation, int depth, boolean isMaxLayer) {
+    TranspositionNode(int checksum, int evaluation, int depth, boolean isMaxLayer) {
         this.checksum = checksum;
         this.evaluation = evaluation;
         this.depth = depth;
         this.isMaxLayer = isMaxLayer;
     }
 
-    public int getChecksum() {
+    int getChecksum() {
         return checksum;
     }
 
-    public int getEvaluation() {
+    int getEvaluation() {
         return evaluation;
     }
 
-    public int getDepth() {
+    int getDepth() {
         return depth;
     }
 
-    public boolean isMaxLayer() {
+    boolean isMaxLayer() {
         return isMaxLayer;
     }
 }

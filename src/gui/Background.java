@@ -1,21 +1,18 @@
 package gui;
 
 import gui.constant.GuiConst;
+
 import javax.swing.*;
-import javax.swing.text.DefaultCaret;
 import java.awt.*;
 
 /**
- * This class is the the outer layer above Chessboard which
- * shows background image and other UI components. It is the
- * interface between chessboard and other classes.
+ * This class is the most outer layer of the GUI structure, which is the interface between Chessboard component
+ * and other GUI components.
  *
- * @author Chang ta'z jun
+ * @author Cirun Zhang
  * @version Version 1.1
  */
 public class Background extends JPanel {
-    //private Image background, blackNext, whiteNext;
-
     /**
      * Chessboard is the component of this class
      */
@@ -31,54 +28,27 @@ public class Background extends JPanel {
      */
     private JScrollPane textAreaScrollPane;
 
-    /**
-     * Indicates which player should go in the next turn
-     */
-    static boolean blackTurn = true;
 
-    /**
-     * Indicates whether the game is over or not
-     */
-    //static boolean gameOnProgress = true;
-
-    public Background() throws Exception {
+    Background() {
         init();
     }
 
-    private void init() throws Exception {
-        //this.background = ImageIO.read(new File("src/gui/assets/backgroundAutumn.jpg"));
-        //this.background = new ImageIcon(this.getClass().getResource("/assets/backgroundAutumn.jpg")).getImage();
-        //this.blackNext = ImageIO.read(new File("src/gui/assets/blackNext.png"));
-        //this.whiteNext = ImageIO.read(new File("src/gui/assets/whiteNext.png"));
+    /**
+     * Initialize the Background component
+     */
+    private void init() {
         this.setPreferredSize(new Dimension(GuiConst.FRAME_WIDTH, GuiConst.FRAME_HEIGHT));
         this.setLayout(null);
         addTextArea();
         addChessboard();
-        //this.setBackground(Color.YELLOW);
     }
 
     /**
-     * Draws the background and user tips
-     *
-     * @param g The java.awt.Graphics class is the abstract base class for drawing components.
+     * Adds text area component to the background
      */
-    @Override public void paintComponent(Graphics g) {
-        //g.drawImage(background, 0, 0, null);
-        /*
-        //draw the flag
-        if (blackTurn) {
-            g.drawImage(blackNext, 1000, 450, null);
-        } else if (!blackTurn) {
-            g.drawImage(whiteNext, 1000, 450, null);
-        }
-        */
-
-    }
-
     private void addTextArea() {
         textArea = new JTextArea();
         textArea.setEditable(false);
-        //textArea.setEditable(false);
         textArea.setText("JGomoku 1.0.1 @2018 copyright :-)\n\n");
         this.textAreaScrollPane = new JScrollPane(textArea);
         textAreaScrollPane.setBounds(800, 12, 340, 536);
@@ -86,23 +56,37 @@ public class Background extends JPanel {
         this.add(textAreaScrollPane);
     }
 
-    private void addChessboard() throws Exception {
+    /**
+     * Add Chessboard component to the background
+     */
+    private void addChessboard() {
         chessboard = new Chessboard(this);
         chessboard.setBounds(100, 12, GuiConst.BOARD_WIDTH, GuiConst.BOARD_HEIGHT);
         this.add(chessboard);
     }
 
+    /**
+     * Passes message to the text area
+     *
+     * @param str Message body
+     */
     public static void addMessage(String str) {
-        if(textArea != null){
+        if (textArea != null) {
             textArea.append(str + "\n");
             scrollDown();
         }
     }
 
-    private static void scrollDown(){
+    /**
+     * Scrolls down the text area
+     */
+    private static void scrollDown() {
         textArea.setCaretPosition(textArea.getText().length());
     }
 
+    /**
+     * Clear all the history messages
+     */
     static void clearTextArea() {
         textArea.setText("");
     }
@@ -111,7 +95,7 @@ public class Background extends JPanel {
         this.chessboard.resetGame();
     }
 
-    void revertHistory(){
+    void revertHistory() {
         this.chessboard.revertHistory();
     }
 }

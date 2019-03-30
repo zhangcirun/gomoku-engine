@@ -1,15 +1,14 @@
 package ai.constant;
 
 /**
- * For test use
+ * This class manages constants in ai package
  * 1 for ally, 0 for empty, 2 for opponent
  *
- * @author Chang ta'z jun
- * @version Version 1.0
+ * @author Cirun Zhang
+ * @version 1.0
  */
-public class DemoConst {
-    private DemoConst(){}
-
+public class PieceConst {
+    private PieceConst(){}
 
     public static final String IMPLICATE_FIVE  = "11111";
 
@@ -40,8 +39,6 @@ public class DemoConst {
 
     public static final String IMPLICATE_THREE_D = "010110";
 
-    //for test use
-
     public static final String IMPLICATE_THREE_BLOCK_A = "211100";
 
     public static final String IMPLICATE_THREE_BLOCK_B = "001112";
@@ -61,6 +58,7 @@ public class DemoConst {
     public static final String IMPLICATE_THREE_BLOCK_I = "10101";
 
     public static final String IMPLICATE_THREE_BLOCK_J = "2011102";
+
     /**
      * Two pieces cases
      */

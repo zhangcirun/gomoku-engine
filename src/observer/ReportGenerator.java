@@ -5,6 +5,12 @@ import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.util.Stack;
 
+/**
+ * This class is used to automatically generate the report
+ *
+ * @author Cirun Zhang
+ * @version 1.1
+ */
 public class ReportGenerator {
     public ReportGenerator(){}
 
@@ -24,8 +30,7 @@ public class ReportGenerator {
             transferFile(this.getClass().getResourceAsStream("/assets/forward.png"), new File(directoryPath, "forward.png"));
             transferFile(this.getClass().getResourceAsStream("/assets/backward.png"), new File(directoryPath, "backward.png"));
 
-            //generate report html file
-
+            //generates report file
             File report = new File(directoryPath, "report.html");
             BufferedWriter writer = new BufferedWriter(new FileWriter(report));
             writer.write(readTemplate());
@@ -97,6 +102,7 @@ public class ReportGenerator {
         }
     }
 
+    //For test use
     private String replaceGameHistory(String content){
         return content.replace("#history#", "[{x:0,y:0,t:1}, {x:1,y:1,t:-1}, {x:2,y:2,t:-1}, {x:3,y:3,t:-1},\n"
             + "            {x:4,y:4,t:-1}, {x:5,y:5,t:-1}, {x:6,y:6,t:-1}, {x:7,y:7,t:-1},\n"

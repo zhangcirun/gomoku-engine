@@ -1,8 +1,6 @@
 package gui;
 
-import game.constant.GameConst;
 import gui.constant.GuiConst;
-import game.AiAnalyser;
 import observer.ReportGenerator;
 
 import javax.swing.*;
@@ -11,7 +9,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 /**
- * This class is the main frame of the game. The structure
+ * This class is the main frame of the GUI infrastructure. The structure
  * of the project is illustrated below
  *
  * |MainFrame |
@@ -19,7 +17,7 @@ import java.awt.event.ActionListener;
  *                        |Chessboard |
  *                                    |ResultPane
  *
- * @author Chang ta'z jun
+ * @author Cirun Zhang
  * @version Version 1.2
  */
 public class MainFrame extends JFrame {
@@ -100,7 +98,6 @@ public class MainFrame extends JFrame {
 
         //menu3
         JMenu menu3 = new JMenu("Help");
-        JMenuItem help = new JMenuItem("Rules");
         JMenuItem generateReport = new JMenuItem("Generate Report");
 
         generateReport.addActionListener(new ActionListener() {
@@ -114,23 +111,9 @@ public class MainFrame extends JFrame {
         });
 
         menu3.add(generateReport);
-        menu3.add(help);
-
-        //menu4
-        JMenu menu4 = new JMenu("Battle");
-        JMenuItem battle = new JMenuItem("battle");
-        battle.addActionListener(new ActionListener() {
-            @Override public void actionPerformed(ActionEvent e) {
-                System.out.println("battle on screen");
-                AiAnalyser.battleOnScreen(GameConst.ALPHA_BETA_PRUNING, GameConst.PURE_HEURISTIC, background.chessboard);
-            }
-        });
-        menu4.add(battle);
 
         menuBar.add(menu1);
-        //menuBar.add(menu2);
         menuBar.add(menu3);
-        menuBar.add(menu4);
         this.setJMenuBar(menuBar);
     }
 
@@ -150,7 +133,10 @@ public class MainFrame extends JFrame {
         fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
     }
 
-    public static void resetGame(){
+    /**
+     * Reset the game
+     */
+    static void resetGame(){
         background.resetGame();
     }
 

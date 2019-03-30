@@ -3,46 +3,55 @@ package observer;
 import java.util.Stack;
 
 /**
- * This class stores the moving histories of the game into a stack
+ * This class is used to maintain the game history
  *
- * @author chang ta'z jun
+ * @author Cirun Zhang
+ * @version 1.0
  */
 public class HistoryObserver {
     private HistoryObserver() {
     }
 
-    private static int lastScoreAspiration = 0;
-
     /**
-     * Each move is store in an array []
+     * A stack used to store the history moves
      */
     private static Stack<int[]> history = new Stack<>();
 
-    public static void addHistory(int[] move){
+    /**
+     * Add new history
+     *
+     * @param move Position information of the new move
+     */
+    public static void addHistory(int[] move) {
         history.push(move);
     }
 
-    public static int[] popHistory(){
+    /**
+     * Remove and return the last historical move
+     *
+     * @return Last move
+     */
+    public static int[] popHistory() {
         return history.pop();
     }
 
-    public static int getHistorySize(){
+    /**
+     * Get the size of historical moves
+     *
+     * @return Size of the history stack
+     */
+    public static int getHistorySize() {
         return history.size();
     }
 
-    public static int getLastScoreAspiration() {
-        return lastScoreAspiration;
-    }
-
-    public static void updateLastScoreAspiration(int newScore) {
-        lastScoreAspiration = newScore;
-    }
-
-    public static void cleanHistory(){
+    /**
+     * Reset the history stack
+     */
+    public static void cleanHistory() {
         history = new Stack<>();
     }
 
-    public static Stack<int[]> getHistory(){
+    public static Stack<int[]> getHistory() {
         return history;
     }
 }

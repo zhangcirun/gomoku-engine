@@ -2,10 +2,13 @@ package game.constant;
 
 /**
  * This class manages constants in game package
- * @author Chang tz'u jun
+ *
+ * @author Cirun Zhang
+ * @version 1.1
  */
 public class GameConst {
-    private GameConst(){}
+    private GameConst() {
+    }
 
     /**
      * Code for bench marker
@@ -13,17 +16,17 @@ public class GameConst {
     public static final int BENCH_MARKER = -1;
 
     /**
-     * Code for pure heuristic strategy
+     * Code for greedy best-first search
      */
-    public static final int PURE_HEURISTIC = 0;
+    public static final int BEST_FIRST = 0;
 
     /**
-     * Code for minimax strategy
+     * Code for minimax
      */
     public static final int MINIMAX = 1;
 
     /**
-     * Code for minimax applies alpha beta pruning
+     * Code for alpha beta pruning
      */
     public static final int ALPHA_BETA_PRUNING = 2;
 

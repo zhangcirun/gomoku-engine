@@ -3,7 +3,7 @@ package gui.constant;
 /**
  * This class maintains the constants used in gui package
  *
- * @author Chang ta'z jun
+ * @author Cirun Zhang
  * @version Version 1.0
  */
 public class GuiConst {

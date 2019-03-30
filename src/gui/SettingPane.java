@@ -1,25 +1,21 @@
 package gui;
 
-import ai.AdvancedAgent;
 import ai.Agent;
-import ai.UltraAgent;
-import ai.constant.AiConst;
 import game.GameController;
 import game.constant.GameConst;
-import gui.constant.GuiConst;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 /**
- * This class is the setting panel of the game, user setting will
- * be displayed in this panel
+ * This class is a GUI component, user setting is displayed in this panel
  *
- * @author Chang tz'u jun
+ * @author Cirun Zhang
+ * @version 1.0
  */
 public class SettingPane extends JFrame {
-    public SettingPane() {
+    SettingPane() {
         Box boxLayout = Box.createVerticalBox();
 
         //Search tree depth controller
@@ -46,9 +42,9 @@ public class SettingPane extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 int aiIndex = comboBox.getSelectedIndex();
-                if(aiIndex == GameConst.MONTE_CARLO_TREE_SEARCH || aiIndex == GameConst.PURE_HEURISTIC){
+                if (aiIndex == GameConst.MONTE_CARLO_TREE_SEARCH || aiIndex == GameConst.BEST_FIRST) {
                     depthSpinner.setEnabled(false);
-                }else {
+                } else {
                     depthSpinner.setEnabled(true);
                 }
             }
@@ -70,7 +66,8 @@ public class SettingPane extends JFrame {
         JPanel tmp4 = new JPanel();
         JButton confirmButton = new JButton("ok");
         confirmButton.addActionListener(new ActionListener() {
-            @Override public void actionPerformed(ActionEvent e) {
+            @Override
+            public void actionPerformed(ActionEvent e) {
                 int depth = (int)depthSpinner.getValue();
                 int aiIndex = comboBox.getSelectedIndex();
                 int firstMove = comboBox2.getSelectedIndex();
@@ -86,7 +83,6 @@ public class SettingPane extends JFrame {
         });
         tmp4.add(confirmButton);
 
-
         boxLayout.add(tmp1);
         boxLayout.add(tmp2);
         boxLayout.add(tmp3);
@@ -98,10 +94,15 @@ public class SettingPane extends JFrame {
         this.setVisible(false);
     }
 
-    private void setWhichPlayerMoveFirst(int firstMove){
-        if(firstMove == GameConst.HUMAN_MOVE_FIRST){
+    /**
+     * Sets which player will move first
+     *
+     * @param firstMove The index of the first player
+     */
+    private void setWhichPlayerMoveFirst(int firstMove) {
+        if (firstMove == GameConst.HUMAN_MOVE_FIRST) {
             GameController.setHumanFirst(true);
-        }else{
+        } else {
             GameController.setHumanFirst(false);
         }
     }

@@ -1,19 +1,25 @@
-/**
- * @author Cirun Zhang
- * @Date 2019.1.8
- */
 package ai;
 
 import ai.constant.AiConst;
 import ai.utility.AiUtils;
+import gui.Background;
 import gui.constant.GuiConst;
-import observer.GameStatuChecker;
+import observer.GameStatusChecker;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class MonteCalro extends Agent {
+/**
+ * This class is an AI agent uses Monte Carlo tree search
+ *
+ * @author Cirun Zhang
+ * @version 1.1
+ */
+public class MonteCarlo extends Agent {
+    /**
+     * Counter for MCTS
+     */
     private static int iteration;
 
     public static void tester(int[][] chess) {
@@ -36,20 +42,20 @@ public class MonteCalro extends Agent {
         }
 
         System.out.println(max_x + "===" + max_y);
-
     }
 
     /**
      * Entrance of MCTS
      *
      * @param chess 2-dimensional array represents the chessboard
-     * @return Desired next move
+     * @return Position of the next move
      */
-    public static int[] monteCalroTreeSearch(int[][] chess) {
+    public static int[] monteCarloTreeSearch(int[][] chess) {
+        Background.addMessage("Doing MCTS, please wait..");
         iteration = 0;
 
         TreeNode root = new TreeNode(true, aiPieceType * -1, -1, -1, chess, null);
-
+        //execute MCTS for 50000 times
         while (iteration < 50000) {
             selection(root);
         }
@@ -78,7 +84,6 @@ public class MonteCalro extends Agent {
      * @param root The node for process selection, initially the node is set to the node
      */
     private static void selection(TreeNode root) {
-        //System.out.println("selection");
         if (root.isLeaf()) {
             if (root.getVisitsCount() == 0) {
                 rollout(root);
@@ -103,14 +108,11 @@ public class MonteCalro extends Agent {
      * @param node The leaf node need to be expanded
      */
     private static void expansion(TreeNode node) {
-        //System.out.println("expansion");
         List<TreeNode> children = generatesChildren(node);
         node.setChildren(children);
         node.setLeaf(false);
         selection(node);
     }
-
-    //Todo check the validity of this function.
 
     /**
      * Rollout process of MCTS. The rollout only stops when the simulated game is terminated
@@ -133,34 +135,12 @@ public class MonteCalro extends Agent {
                 break;
             }
             placePiece(chess, randomMove, lastTurnPlayer);
-        } while (!GameStatuChecker.isFiveInLine(chess, randomMove.getX(), randomMove.getY()));
+        } while (!GameStatusChecker.isFiveInLine(chess, randomMove.getX(), randomMove.getY()));
 
         //back propagation
         backPropagation(node, 1, lastTurnPlayer);
     }
 
-    @Deprecated private static void rolloutCheat(TreeNode node) {
-        iteration++;
-        int numOfMoves = 0;
-        int[][] chess = AiUtils.copyArray(node.getChess());
-        int lastTurnPlayer = node.getThisTurnPlayer();
-        PossibleMove randomMove;
-
-        do {
-            lastTurnPlayer *= -1;
-            numOfMoves++;
-            randomMove = getRandomMoveCheat(chess);
-            if (randomMove == null) {
-                System.out.println("randomMove == null");
-                break;
-            }
-            placePiece(chess, randomMove, lastTurnPlayer);
-        } while (!GameStatuChecker.isFiveInLine(chess, randomMove.getX(), randomMove.getY()));
-
-        //back propagation
-        backPropagation(node, 1, lastTurnPlayer);
-
-    }
 
     /**
      * Back propagation process of MCTS
@@ -170,7 +150,6 @@ public class MonteCalro extends Agent {
      * @param winningPiece Indicates which player wins
      */
     private static void backPropagation(TreeNode node, int reward, int winningPiece) {
-        //System.out.println("back prop");
         if (node != null) {
             if (node.getThisTurnPlayer() == winningPiece) {
                 node.increaseReward(reward);
@@ -183,16 +162,17 @@ public class MonteCalro extends Agent {
     }
 
     /**
-     * UCB-1 function of MCTS
+     * UCB-1 function of MCTS, it is used to balance the visit count and win count
      *
      * @param node Calculates the UCB value for this particular node
      * @return UCB value
      */
     private static double ucb1(TreeNode node) {
+        //1.1 as the ucb constant
+        final double c = 1.1;
         int reward = node.getReward();
         int visitCount = node.getVisitsCount();
         int parentVisitCount = node.getParent().getVisitsCount();
-        double c = 1.1; //0.1;//1.414;
         return AiUtils.safeDivide(reward, visitCount) + c * Math
             .sqrt(AiUtils.safeDivide(Math.log(parentVisitCount), visitCount));
     }
@@ -225,6 +205,11 @@ public class MonteCalro extends Agent {
         return best;
     }
 
+    /**
+     * Generates 10 child nodes for a parent node
+     * @param node Parent node
+     * @return  Child nodes
+     */
     private static List<TreeNode> generatesChildren(TreeNode node) {
         List<TreeNode> children = new ArrayList<>();
 
@@ -232,18 +217,17 @@ public class MonteCalro extends Agent {
         int[][] chess = node.getChess();
 
         //Generates 10 child nodes
-        List<int[]> moves = AiUtils.moveGeneratorTop10(chess);
+        List<int[]> moves = AiUtils.moveGeneratorWithHeuristicSort(chess, 10);
 
         for (int[] move : moves) {
             int x = move[0];
             int y = move[1];
             int[][] nextChess = AiUtils.nextMoveChessboard(chess, x, y, nextTurnPlayer);
-            boolean isTerminal = GameStatuChecker.isFiveInLine(nextChess, x, y);
+            boolean isTerminal = GameStatusChecker.isFiveInLine(nextChess, x, y);
 
             if(!isTerminal){
                 children.add(new TreeNode(true, nextTurnPlayer, x, y, nextChess, node));
             }else{
-                //System.out.println("is terminal node");
                 backPropagation(node, 1, nextTurnPlayer);
             }
         }
@@ -251,6 +235,11 @@ public class MonteCalro extends Agent {
         return children;
     }
 
+    /**
+     * Randomly choose a move
+     * @param chess The chessboard
+     * @return A randomly chosen move
+     */
     private static PossibleMove getRandomMove(int[][] chess) {
         List<PossibleMove> possibleMoves = generatesMoves(chess);
         int size = possibleMoves.size();
@@ -264,20 +253,11 @@ public class MonteCalro extends Agent {
         return possibleMoves.get(randomIndex);
     }
 
-    @Deprecated private static PossibleMove getRandomMoveCheat(int[][] chess) {
-        List<int[]> possibleMoves = AiUtils.moveGeneratorTop100(chess);
-        int size = possibleMoves.size();
-
-        if (size == 0) {
-            System.out.println("Chess board full");
-            return null;
-        }
-
-        int randomIndex = ThreadLocalRandom.current().nextInt(0, size);
-        int[] nextMove = possibleMoves.get(randomIndex);
-        return new PossibleMove(nextMove[0], nextMove[1]);
-    }
-
+    /**
+     * Generates all possible legal game moves.
+     * @param chess The chessboard
+     * @return All possible moves.
+     */
     private static List<PossibleMove> generatesMoves(int[][] chess) {
         List<PossibleMove> possibleMoves = new ArrayList<>();
         for (int i = 0; i < GuiConst.TILE_NUM_PER_ROW; i++) {
@@ -290,17 +270,29 @@ public class MonteCalro extends Agent {
         return possibleMoves;
     }
 
+    /**
+     * Place piece on the chessboard
+     * @param chess The chessboard
+     * @param move The location of placing place
+     * @param pieceType Type of placed piece
+     */
     private static void placePiece(int[][] chess, PossibleMove move, int pieceType) {
         chess[move.getX()][move.getY()] = pieceType;
     }
 
 }
 
+/**
+ * This class is used to encapsulate the piece-placing location information
+ *
+ * @author Cirun Zhang
+ * @version 1.0
+ */
 class PossibleMove {
     private int x;
     private int y;
 
-    public PossibleMove(int x, int y) {
+    PossibleMove(int x, int y) {
         this.x = x;
         this.y = y;
     }
@@ -322,6 +314,12 @@ class PossibleMove {
     }
 }
 
+/**
+ * This class represents the node of MCT
+ *
+ * @author Cirun Zhang
+ * @version 1.0
+ */
 class TreeNode {
     private boolean isLeaf;
 

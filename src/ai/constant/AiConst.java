@@ -4,8 +4,8 @@ package ai.constant;
  * This class manages constants in ai package
  * 1 for ally, 0 for empty, 2 for opponent
  *
- * @author Chang ta'z jun
- * @version Version 1.1
+ * @author Cirun Zhang
+ * @version 1.1
  */
 public class AiConst {
     private AiConst(){}
@@ -179,8 +179,6 @@ public class AiConst {
 
     public static final String DEPENDENT_THREAT_AI = "t0t11";
 
-    //@Todo add more
-
     /**
      * Defensive move positions
      */
@@ -207,11 +205,9 @@ public class AiConst {
     public static final String DEFENSE_THREAT_C6 = "t11010";
 
 
-
     //Three
     public static final String DEFENSE_THREAT_D1= "t1110";
 
     public static final String DEFENSE_THREAT_D2 = "0111t";
-
 
 }

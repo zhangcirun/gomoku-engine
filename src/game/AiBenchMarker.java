@@ -3,23 +3,35 @@ package game;
 import ai.Agent;
 import ai.constant.AiConst;
 import ai.utility.ChessboardScanUtils;
+import ai.utility.HeuristicChessboardUtils;
 import gui.constant.GuiConst;
 
 import java.util.ArrayList;
-import java.util.Deque;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
+/**
+ * This class is an AI agent for undergoing agent performance test
+ *
+ * @author Cirun Zhang
+ * @version 1.0
+ */
 public class AiBenchMarker extends Agent {
     private static List<int[]> moveCandidates = new ArrayList<>();
+
+    /**
+     * Return the next move
+     *
+     * @param chess The chessboard
+     * @return Position information of the next move
+     */
     public static int[] nextMove(int[][] chess) {
         moveCandidates.clear();
 
-        if(isOpenning(chess)){
+        if (isOpening(chess)) {
             return openingStrategy();
-        }else{
-            int currentMaxScore = -1000000;
+        } else {
+            int currentMaxScore = Integer.MIN_VALUE;
             for (int i = 0; i < GuiConst.TILE_NUM_PER_ROW; i++) {
                 for (int j = 0; j < GuiConst.TILE_NUM_PER_ROW; j++) {
                     //for each empty tiles, calculates their marks
@@ -33,7 +45,7 @@ public class AiBenchMarker extends Agent {
                     }
                 }
             }
-            if(moveCandidates.size() == 0){
+            if (moveCandidates.size() == 0) {
                 System.err.println("cant");
             }
             int randomIndex = ThreadLocalRandom.current().nextInt(0, (moveCandidates.size() / 3) + 1);
@@ -42,54 +54,35 @@ public class AiBenchMarker extends Agent {
         }
     }
 
+    /**
+     * Calculate the total mark for both AI and human
+     *
+     * @param chess The chessboard
+     * @param x     X-coordinate of the piece
+     * @param y     Y-coordinate of the piece
+     * @return Evaluation score
+     */
     private static int totalMark(int[][] chess, int x, int y) {
         return markPiece(chess, x, y, -1) + markPiece(chess, x, y, 1);
     }
 
     private static int markPiece(int[][] chess, int x, int y, int pieceType) {
-        return marking(ChessboardScanUtils.horizontalAdjacentPieces(chess, x, y, pieceType, '1')) + marking(ChessboardScanUtils.verticalAdjacentPieces(chess, x, y, pieceType, '1'))
-            + marking(ChessboardScanUtils.diagonalAdjacentPieces(chess, x, y, pieceType, '1')) + marking(ChessboardScanUtils.antiDiagonalAdjacentPieces(chess, x, y, pieceType, '1'));
-    }
-
-    private static int marking(String pieces) {
-        if (pieces.contains(AiConst.IMPLICATE_FIVE)) {
-            return 500000;
-        }
-
-        if (pieces.contains(AiConst.IMPLICATE_FOUR_DOUBLE_EMPTY)) {
-            return 10000;
-        }
-
-        if (pieces.contains(AiConst.IMPLICATE_FOUR_SINGLE_EMPTY_A) || pieces
-            .contains(AiConst.IMPLICATE_FOUR_SINGLE_EMPTY_B) || pieces.contains(AiConst.IMPLICATE_FOUR_SINGLE_EMPTY_C)
-            || pieces.contains(AiConst.IMPLICATE_FOUR_SINGLE_EMPTY_D) || pieces
-            .contains(AiConst.IMPLICATE_FOUR_SINGLE_EMPTY_E)) {
-            return 720;
-        }
-
-        if (pieces.contains(AiConst.IMPLICATE_THREE_A) || pieces.contains(AiConst.IMPLICATE_THREE_B) || pieces
-            .contains(AiConst.IMPLICATE_THREE_C) || pieces.contains(AiConst.IMPLICATE_THREE_D)) {
-            return 720;
-        }
-
-        if (pieces.contains(AiConst.IMPLICATE_TWO_A) || pieces.contains(AiConst.IMPLICATE_TWO_B) || pieces
-            .contains(AiConst.IMPLICATE_TWO_C)) {
-            return 120;
-        }
-
-        if (pieces.contains(AiConst.IMPLICATE_ONE_A) || pieces.contains(AiConst.IMPLICATE_ONE_B)) {
-            return 20;
-        }
-
-        return 0;
-
+        return
+            HeuristicChessboardUtils.eval(ChessboardScanUtils.horizontalAdjacentPieces10(chess, x, y, pieceType, '1'))
+                + HeuristicChessboardUtils
+                .eval(ChessboardScanUtils.verticalAdjacentPieces10(chess, x, y, pieceType, '1'))
+                + HeuristicChessboardUtils
+                .eval(ChessboardScanUtils.diagonalAdjacentPieces10(chess, x, y, pieceType, '1'))
+                + HeuristicChessboardUtils
+                .eval(ChessboardScanUtils.antiDiagonalAdjacentPieces10(chess, x, y, pieceType, '1'));
     }
 
     /**
-     * Opening strategy with randomness
+     * Generates opening strategy randomly
+     *
      * @return A random opening move
      */
-    private static int[] openingStrategy(){
+    private static int[] openingStrategy() {
         //random integer between [min, max]
         int randomX = ThreadLocalRandom.current().nextInt(5, 8 + 1);
         int randomY = ThreadLocalRandom.current().nextInt(5, 8 + 1);

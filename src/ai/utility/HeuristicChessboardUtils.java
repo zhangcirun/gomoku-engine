@@ -5,13 +5,14 @@ import ai.constant.AiConst;
 import gui.constant.GuiConst;
 
 /**
- * This class provides a basic heuristic function for the whole chessboard
+ * This class provides an utility class for providing heuristic function of the whole game state(h1).
  *
- * @author Chang ta'z jun
- * @version 1.0
+ * @author Cirun Zhang
+ * @version 1.1
  */
 
 public class HeuristicChessboardUtils {
+    private static StringBuilder builder = new StringBuilder();
     private HeuristicChessboardUtils() {
     }
 
@@ -23,14 +24,17 @@ public class HeuristicChessboardUtils {
      */
     public static int heuristic(int[][] chess) {
         int allyScore =
-            scanVertical(chess, Agent.aiPieceType) + scanHorizontal(chess, Agent.aiPieceType) + scanDiagonal(chess, Agent.aiPieceType) + scanAntiDiagonal(chess, Agent.aiPieceType);
+            scanVertical(chess, Agent.aiPieceType) + scanHorizontal(chess, Agent.aiPieceType) + scanDiagonal(chess,
+                Agent.aiPieceType) + scanAntiDiagonal(chess, Agent.aiPieceType);
 
         int opponentScore =
-            scanVertical(chess, Agent.aiPieceType * -1) + scanHorizontal(chess, Agent.aiPieceType * -1) + scanDiagonal(chess, Agent.aiPieceType * -1) + scanAntiDiagonal(chess, Agent.aiPieceType * -1);
+            scanVertical(chess, Agent.aiPieceType * -1) + scanHorizontal(chess, Agent.aiPieceType * -1) + scanDiagonal(
+                chess, Agent.aiPieceType * -1) + scanAntiDiagonal(chess, Agent.aiPieceType * -1);
         return allyScore - opponentScore;
     }
 
-    @Deprecated public static int heuristic_megaMax(int[][] chess, int pieceType) {
+    @Deprecated
+    public static int heuristic_megaMax(int[][] chess, int pieceType) {
         int allyScore =
             scanVertical(chess, pieceType) + scanHorizontal(chess, pieceType) + scanDiagonal(chess, pieceType)
                 + scanAntiDiagonal(chess, pieceType);
@@ -50,7 +54,6 @@ public class HeuristicChessboardUtils {
      * @return Score of vertical rows
      */
     private static int scanVertical(int[][] chess, int pieceType) {
-        StringBuilder builder = new StringBuilder();
         int score = 0;
 
         for (int i = 0; i < GuiConst.TILE_NUM_PER_ROW; i++) {
@@ -59,8 +62,9 @@ public class HeuristicChessboardUtils {
                 builder.append(piece == 0 ? "0" : piece == pieceType ? "1" : "2");
             }
             score += eval(builder.toString());
-            builder.delete(0, builder.length());
+            builder.setLength(0);
         }
+        builder.setLength(0);
         return score;
     }
 
@@ -81,8 +85,9 @@ public class HeuristicChessboardUtils {
                 builder.append(piece == 0 ? "0" : piece == pieceType ? "1" : "2");
             }
             score += eval(builder.toString());
-            builder.delete(0, builder.length());
+            builder.setLength(0);
         }
+        builder.setLength(0);
         return score;
     }
 
@@ -116,8 +121,9 @@ public class HeuristicChessboardUtils {
                 builder.append(piece == 0 ? "0" : piece == pieceType ? "1" : "2");
             }
             score += eval(builder.toString());
-            builder.delete(0, builder.length());
+            builder.setLength(0);
         }
+        builder.setLength(0);
         return score;
     }
 
@@ -151,8 +157,9 @@ public class HeuristicChessboardUtils {
                 builder.append(piece == 0 ? "0" : piece == pieceType ? "1" : "2");
             }
             score += eval(builder.toString());
-            builder.delete(0, builder.length());
+            builder.setLength(0);
         }
+        builder.setLength(0);
         return score;
     }
 
@@ -162,7 +169,7 @@ public class HeuristicChessboardUtils {
      * @param pieces the string represents a row of pieces
      * @return the score of the pieces
      */
-    private static int eval(String pieces) {
+    public static int eval(String pieces) {
         if (pieces.contains(AiConst.IMPLICATE_FIVE)) {
             return 500000;
         }
@@ -194,6 +201,5 @@ public class HeuristicChessboardUtils {
 
         return 0;
     }
-
 
 }

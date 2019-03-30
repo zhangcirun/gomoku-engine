@@ -1,7 +1,6 @@
 package test;
 
-import ai.MonteCalro;
-
+import ai.MonteCarlo;
 public class TestMonte {
     private static int[][] dummyChess1 = new int[][]
         {
@@ -99,11 +98,8 @@ public class TestMonte {
         };
 
     public static void main(String[] args) {
-        //System.out.println(Double.MIN_VALUE);
-        //System.out.println(-0.13454320143637144 > Double.NEGATIVE_INFINITY);
-
         for(int i = 0; i < 10; i++){
-            MonteCalro.tester(dummyChess5);
+            MonteCarlo.tester(dummyChess5);
         }
 
     }
