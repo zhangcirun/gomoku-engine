@@ -1,4 +1,4 @@
-JGomoku
+Deep-Gomoku-Engine
 ==============
 
 Introduction
