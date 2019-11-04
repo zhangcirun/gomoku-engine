@@ -30,7 +30,7 @@ public class SettingPane extends JFrame {
         JPanel tmp2 = new JPanel();
         JComboBox<String> comboBox = new JComboBox<>();
         JLabel tip2 = new JLabel("AI strategy");
-        comboBox.addItem("Pure Heuristic");
+        comboBox.addItem("Greedy best-first search");
         comboBox.addItem("Minimax Search");
         comboBox.addItem("Alpha beta pruning");
         comboBox.addItem("Transposition search");

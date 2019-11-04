@@ -81,7 +81,7 @@ public class MonteCarlo extends Agent {
     /**
      * Selection process of MCTS
      *
-     * @param root The node for process selection, initially the node is set to the node
+     * @param root The node for process selection, initially the node is set to the root
      */
     private static void selection(TreeNode root) {
         if (root.isLeaf()) {

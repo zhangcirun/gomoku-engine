@@ -24,6 +24,8 @@ public class Transposition extends Agent {
      */
     private static Map<Integer, TranspositionNode> transpositionTable = new HashMap<>(100000);
 
+    private static int usage;
+
     private Transposition() {
     }
 
@@ -34,6 +36,7 @@ public class Transposition extends Agent {
      * @return Position of the next move
      */
     public static int[] startTranspositionSearch(int[][] chess) {
+        usage = 0;
         if (isOpening(chess)) {
             return new int[] {7, 7, aiPieceType};
         } else {
@@ -48,6 +51,7 @@ public class Transposition extends Agent {
                 "Computer move : (x, " + result[0] + ") (y, " + result[1] + ") score " + bestMove.getScore());
 
             Background.addMessage("Transposition table size: " + transpositionTable.size());
+            Background.addMessage("Transposition usage: " + usage);
             return new int[] {result[0], result[1], aiPieceType};
         }
     }
@@ -94,7 +98,9 @@ public class Transposition extends Agent {
         score directly*/
         if (transpositionTable.containsKey(checkSum) && depth >= transpositionTable.get(checkSum).getDepth()
             && transpositionTable.get(checkSum).isMaxLayer()) {
+            usage++;
             bestScore = transpositionTable.get(checkSum).getEvaluation();
+
         } else {
             //abp
             count++;
@@ -171,6 +177,7 @@ public class Transposition extends Agent {
         score directly*/
         if (transpositionTable.containsKey(checkSum) && depth >= transpositionTable.get(checkSum).getDepth()
             && !transpositionTable.get(checkSum).isMaxLayer()) {
+            usage++;
             bestScore = transpositionTable.get(checkSum).getEvaluation();
         } else {
             count++;

@@ -16,6 +16,7 @@ import java.awt.Graphics;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
+import java.util.Date;
 
 /**
  * This class is a GUI component, which provides functionality of drawing chessboard, placing pieces and invoking
@@ -209,7 +210,6 @@ public class Chessboard extends JPanel {
     void resetGame() {
         System.out.println("reset");
         GameController.resetChessboard();
-        //GameController.chess = TestUtility.dummyChess3;
         if (resultPane != null) {
             this.remove(resultPane);
         }
@@ -220,7 +220,7 @@ public class Chessboard extends JPanel {
             computerMove(GameController.chess);
         }
 
-        //validate();
+        placing = true;
         repaint();
         background.repaint();
     }
@@ -260,6 +260,8 @@ public class Chessboard extends JPanel {
     }
 
     private void computerMove(int[][] chess) {
+        long startTime = System.currentTimeMillis();
+        long elaspedTime = 0L;
         int[] result;
 
         switch (GameController.getAiIndex()) {
@@ -301,5 +303,8 @@ public class Chessboard extends JPanel {
         background.repaint();
         //Reverse the flag
         placing = true;
+        elaspedTime = (new Date()).getTime() - startTime;
+        Background.addMessage("time elapsed " + elaspedTime);
+        System.out.println("time elapsed: " + elaspedTime);
     }
 }

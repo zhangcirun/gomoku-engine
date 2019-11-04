@@ -25,10 +25,8 @@
                 var coords = getCoords();
                 var offset_x = coords[0];
                 var offset_y = coords[1];
-                //alert("kcoein");
                 if(count < chess.length){
                     for(var i = 0; i < chess.length; i++) {
-                        //alert(chess[i].t);
                         if(i == count){
                             draw(chess[i].x * 35 + offset_x + 5, chess[i].y * 35.8 + offset_y, chess[i].t);
                             count = count + 1;
@@ -69,20 +67,12 @@
         </head>
     <body>
 
-        <h1 style="text-align:center;">JGomoku Game Report</h1>
-        <input type="button" onclick="countTest()" value="cev" />
-        <input type="button" onclick="myFunction()" value="222" />
+        <h1 style="text-align:center;">JGomoku Game History Report</h1>
         <div id="images"></div>
         <p style="text-align:center;">
             <input type="image" onclick="deleteLastNode()" value="backward " src="backward.png" style="outline:none;"/>
             <img src="chessboard.jpg" alt="chessboard" id = "chessboard" align="center" />
             <input type="image" onclick="drawPieces()" value="forward " src="forward.png" style="outline:none;"/>
         </p>
-        <div style="text-align:center;">
-            <p> Method used: <b>alpha-beta prunning</b></p>
-            <p> Average node cuts: <b>8939</b></p>
-            <p> XXxxxxxxxxxxxx</p>
-            <p> xpwcowcnowncowno</p>
-        </div>
     </body>
 </html>

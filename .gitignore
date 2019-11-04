@@ -1,8 +1,9 @@
 # Compiled class file
 *.class
+.DS_Store
 
 # Out Directory
-out
+out/production
 
 #intellij
 .idea
